@@ -13,9 +13,4 @@ public class User {
     String mail;
     String pass_hash;
     String salt;
-
-    @Override
-    public int hashCode(){
-        return Objects.hash(name,surname,mail,pass_hash,salt);
-    }
 }

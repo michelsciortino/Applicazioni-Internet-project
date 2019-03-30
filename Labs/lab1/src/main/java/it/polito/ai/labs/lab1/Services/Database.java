@@ -12,23 +12,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class Database {
     private ConcurrentHashMap<String, User> users;
-    private static Database singleton = null;
 
-    public static Database getInstance() {
-        if (singleton == null)
-            singleton = new Database();
-        return singleton;
-    }
-
-    private Database() {
+    public Database() {
         this.users = new ConcurrentHashMap<>();
     }
 
-    public boolean AddUser(@NotNull User user) throws UserAlreadyExistException {
+    public void AddUser(@NotNull User user) throws UserAlreadyExistException {
         User u = users.putIfAbsent(user.getMail(), user);
-        if (u == null)
-            return true;
-        else
+        if (u != null)
             throw new UserAlreadyExistException();
     }
 
