@@ -15,5 +15,5 @@ public class RegistrationVM {
     String mail;
     @Size(min = 5, max = 32)
     String pass1, pass2;
-    boolean privacyConsent;
+    boolean privacyConsentAccepted;
 }

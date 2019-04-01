@@ -68,6 +68,11 @@ public class MainController {
                 return "register";
             }
 
+            if(!registrationVM.isPrivacyConsentAccepted()){
+                m.addAttribute("message","Devi accettare il consenso alle regole sulla privacy.");
+                return "register";
+            }
+
             String seed = seeder.GenNextSeed(PASSWORD_SEED_LEN);
             String hashed_pass;
 
@@ -77,6 +82,7 @@ public class MainController {
                 m.addAttribute("message", "Server error.");
                 return "error";
             }
+
 
             try {
                 database.AddUser(User.builder()
