@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
 
+import static it.polito.ai.labs.lab1.Util.Utils.AddErrors;
 import static it.polito.ai.labs.lab1.defines.PASSWORD_SEED_LEN;
 
 
@@ -56,12 +56,7 @@ public class MainController {
     @PostMapping("/register")
     public String processRegistrationForm(@Valid @ModelAttribute("registrationVM") RegistrationVM registrationVM, BindingResult res, Model m) {
         if (res.hasErrors()) {
-            StringBuilder errors = new StringBuilder();
-            for (ObjectError e : res.getAllErrors()) {
-                errors.append(e.getDefaultMessage());
-                errors.append("<br/>");
-            }
-            m.addAttribute("message", errors.toString());
+            AddErrors(m,res);
             return "register";
         } else {
             if (!registrationVM.getPass1().equals(registrationVM.getPass2())) {
@@ -70,7 +65,6 @@ public class MainController {
             }
 
             if(!registrationVM.isPrivacyConsentAccepted()){
-                res.field
                 m.addAttribute("message","Devi accettare il consenso alle regole sulla privacy.");
                 return "register";
             }
@@ -106,12 +100,7 @@ public class MainController {
     @PostMapping("/login")
     public String processLoginForm(@Valid @ModelAttribute("loginVM") LoginVM loginVM, BindingResult res, Model m) {
         if (res.hasErrors()) {
-            StringBuilder errors = new StringBuilder();
-            for (ObjectError e : res.getAllErrors()) {
-                errors.append(e.getDefaultMessage());
-                errors.append("<br/>");
-            }
-            m.addAttribute("message", errors.toString());
+            AddErrors(m,res);
             return "login";
         } else {
             try {
