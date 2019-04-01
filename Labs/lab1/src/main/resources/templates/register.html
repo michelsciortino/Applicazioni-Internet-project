@@ -6,7 +6,19 @@
     <link rel="stylesheet" href="/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="/style.css"/>
+    <style>
+        .login-container {
+            margin-top: 1%;
+            margin-bottom: 5%;
+            width: auto;
+            max-width: 30%;
+            min-width: 20%;
+        }
+
+        .login-container form {
+            padding: 5%;
+        }
+    </style>
 </head>
 <body>
 
@@ -15,47 +27,38 @@
 </div>
 
 
-<div class="container p-5">
-    <div class="row">
-        <h4>Registration</h4>
-    </div>
-    <div class="col-md-6">
-        <form method="post" action="#" th:action="@{/register}" th:object="${registrationVM}">
+<div class="container login-container">
+
+    <div class="col-md-12">
+        <div class="row" style="align-content: center">
+            <h4>Registration</h4>
+        </div>
+        <form action="#" th:action="@{/register}" th:object="${registrationVM}" method="post">
             <div class="form-group">
                 <label class="col-form-label" for="name">Name</label>
-                <input id="name" name="name" th:field="*{name}" type="text" class="form-control" placeholder="name"
-                       value=""/>
+                <input id="name" name="name" th:field="*{name}" type="text" class="form-control" placeholder="name" value=""/>
 
                 <label class="col-form-label" for="surname">Surname</label>
-                <input id="surname" name="surname" th:field="*{surname}" type="text" class="form-control"
-                       placeholder="surname" value=""/>
-
+                <input id="surname" name="surname" type="text" class="form-control" placeholder="surname" value=""/>
                 <label class="col-form-label" for="mail">Mail</label>
-                <input id="mail" name="mail" th:field="*{mail}" type="text" class="form-control" placeholder="email"
-                       value=""/>
-
+                <input id="mail" name="mail" type="text" class="form-control" placeholder="email" value=""/>
                 <label class="col-form-label" for="pass1">Password</label>
-                <input id="pass1" name="pass1" th:field="*{pass1}" type="password" class="form-control"
-                       placeholder="password" value=""/>
-
+                <input id="pass1" name="pass1" type="password" class="form-control" placeholder="password" value=""/>
                 <label class="col-form-label" for="pass2">Repeat password</label>
-                <input id="pass2" name="pass2" th:field="*{pass2}" type="password" class="form-control"
-                       placeholder="repeat password"
+                <input id="pass2" name="pass2" type="password" class="form-control" placeholder="repeat password"
                        value=""/>
-
-                <p class="col-form-label"> Do you agree to Privacy Rules?</p>
-                <input id="consent"
-                       type="checkbox"
-                       th:field="*{privacyConsent}">
-                <label class="col-form-label" for="consent">I agree.</label>
-
-                <div class="form-check">
-                    <input type="submit" class="btnSubmit" value="Register"/>
+                <br>
+                <div class="custom-control custom-checkbox mb-3">
+                    <input type="checkbox" class="custom-control-input" id="consent">
+                    <label class="custom-control-label" for="consent">I Agree Privacy Rule</label>
                 </div>
             </div>
+
+            <hr class="my-4">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
         </form>
 
-        <div class="row alert-danger">
+        <div class="row">
             <div th:utext="${message}"></div>
         </div>
     </div>
