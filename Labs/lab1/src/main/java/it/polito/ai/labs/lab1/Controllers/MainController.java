@@ -5,7 +5,7 @@ import it.polito.ai.labs.lab1.Services.Exceptions.ServiceException;
 import it.polito.ai.labs.lab1.Services.Exceptions.UserAlreadyExistException;
 import it.polito.ai.labs.lab1.Services.Seeder;
 import it.polito.ai.labs.lab1.Util.DigestGenerator;
-import it.polito.ai.labs.lab1.ViewModels.LoginVm;
+import it.polito.ai.labs.lab1.ViewModels.LoginVM;
 import it.polito.ai.labs.lab1.ViewModels.RegistrationVM;
 import it.polito.ai.labs.lab1.ViewModels.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,8 @@ public class MainController {
     }
 
     @GetMapping("/login")
-    public String getLoginPage() {
+    public String getLoginPage(Model model) {
+        model.addAttribute("loginVM", new LoginVM());
         return "login";
     }
 
@@ -69,6 +70,7 @@ public class MainController {
             }
 
             if(!registrationVM.isPrivacyConsentAccepted()){
+                res.field
                 m.addAttribute("message","Devi accettare il consenso alle regole sulla privacy.");
                 return "register";
             }
@@ -82,7 +84,6 @@ public class MainController {
                 m.addAttribute("message", "Server error.");
                 return "error";
             }
-
 
             try {
                 database.AddUser(User.builder()
@@ -103,19 +104,19 @@ public class MainController {
     }
 
     @PostMapping("/login")
-    public String processLoginForm(@Valid LoginVm vm, BindingResult res, Model m) {
+    public String processLoginForm(@Valid @ModelAttribute("loginVM") LoginVM loginVM, BindingResult res, Model m) {
         if (res.hasErrors()) {
             StringBuilder errors = new StringBuilder();
             for (ObjectError e : res.getAllErrors()) {
                 errors.append(e.getDefaultMessage());
-                errors.append("&#10;");
+                errors.append("<br/>");
             }
             m.addAttribute("message", errors.toString());
             return "login";
         } else {
             try {
-                if (database.VerifyLogin(vm.getMail(), vm.getPass())) {
-                    m.addAttribute("message", "user " + vm.getMail() + " now logged on.");
+                if (database.VerifyLogin(loginVM.getMail(), loginVM.getPass())) {
+                    m.addAttribute("message", "user " + loginVM.getMail() + " now logged on.");
                     return "home";
                 } else {
                     m.addAttribute("message", "Invalid credentials.");

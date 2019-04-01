@@ -6,7 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
 @Data
-public class LoginVm {
+public class LoginVM {
     @Email
     @Size(min=5, max=255)
     String mail;
