@@ -37,16 +37,18 @@
 
             <div class="form-group">
                 <label class="col-form-label" for="mail">Mail</label>
-                <input id="mail" name="mail" type="text" class="form-control" placeholder="email" value=""/>
+                <input id="mail" name="mail" th:field="*{mail}" type="text" class="form-control" placeholder="email" value=""/>
+                <p th:if="${#fields.hasErrors('mail')}" th:errors="*{mail}"></p>
                 <label class="col-form-label" for="pass">Password</label>
-                <input id="pass" name="pass" type="password" class="form-control" placeholder="password" value=""/>
+                <input id="pass" name="pass" th:field="*{pass}"  type="password" class="form-control" placeholder="password" value=""/>
+                <p th:if="${#fields.hasErrors('pass')}" th:errors="*{pass}"></p>
             </div>
 
             <hr class="my-4">
             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>
         <div class="row">
-            <div th:utext="${message}"></div>
+            <!--div th:utext="${message}"></div-->
         </div>
     </div>
 </div>
