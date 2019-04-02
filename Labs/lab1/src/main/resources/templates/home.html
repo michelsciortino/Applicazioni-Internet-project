@@ -5,24 +5,39 @@
     <title>Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/bootstrap.css">
 </head>
 <body>
-<div class="container-fluid p-5">
-    <H1>Home Page</H1>
 
-    <div class="row">
-        <div th:text="${message}"></div>
-    </div>
+<div class="navbar navbar-nav navbar-dark">
+    <h3>Laboratorio Applicazioni Internet - lab1</h3>
+</div>
 
-    <div class="row">
+<nav class="navbar navbar-dark bg-dark">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+            <a class="nav-link" href="/">Home</a>
+        </li>
+    </ul>
+    <span class="navbar-text">
+         <div class="row">
         <div class="col-md-6 col-lg-6">
             <a href="/login">Login</a>
         </div>
         <div class="col-md-6 col-lg-6">
             <a href="/register">Register</a>
         </div>
-
     </div>
+    </span>
+</nav>
+
+<div class="container-fluid p-5">
+    <H1>Home Page</H1>
+
+    <div class="row">
+        <div class="alert-success" style="text-align: center" th:text="${message}"></div>
+    </div>
+
 </div>
 </body>
 </html>

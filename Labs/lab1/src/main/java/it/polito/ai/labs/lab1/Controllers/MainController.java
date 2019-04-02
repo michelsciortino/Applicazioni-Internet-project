@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import static it.polito.ai.labs.lab1.Util.Utils.AddErrors;
@@ -54,9 +55,9 @@ public class MainController {
     }
 
     @PostMapping("/register")
-    public String processRegistrationForm(@Valid @ModelAttribute("registrationVM") RegistrationVM registrationVM, BindingResult res, Model m) {
+    public String processRegistrationForm(@Valid @ModelAttribute("registrationVM") RegistrationVM registrationVM, BindingResult res, Model m, HttpServletResponse httpServletResponse) {
         if (res.hasErrors()) {
-            AddErrors(m,res);
+            //AddErrors(m,res);
             return "register";
         } else {
             if (!registrationVM.getPass1().equals(registrationVM.getPass2())) {
@@ -91,16 +92,16 @@ public class MainController {
                 m.addAttribute("message", e.getMessage());
                 return "register";
             }
-
             m.addAttribute("message", "user " + registrationVM.getMail() + " has been properly registered");
         }
-        return "home";
+        return "redirect:/";
     }
 
     @PostMapping("/login")
     public String processLoginForm(@Valid @ModelAttribute("loginVM") LoginVM loginVM, BindingResult res, Model m) {
         if (res.hasErrors()) {
-            AddErrors(m,res);
+            m.addAttribute("message", "Invalid credentials.");
+            //AddErrors(m,res);
             return "login";
         } else {
             try {
