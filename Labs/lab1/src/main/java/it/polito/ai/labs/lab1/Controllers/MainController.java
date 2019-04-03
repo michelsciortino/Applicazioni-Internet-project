@@ -22,7 +22,6 @@ import javax.validation.Valid;
 import static it.polito.ai.labs.lab1.Util.Utils.AddErrors;
 import static it.polito.ai.labs.lab1.defines.PASSWORD_SEED_LEN;
 
-
 @Controller
 public class MainController {
 
@@ -91,10 +90,11 @@ public class MainController {
             } catch (UserAlreadyExistException e) {
                 m.addAttribute("message", e.getMessage());
                 return "register";
+
             }
             m.addAttribute("message", "user " + registrationVM.getMail() + " has been properly registered");
         }
-        return "redirect:/";
+        return "home"; //"redirect:/";
     }
 
     @PostMapping("/login")
