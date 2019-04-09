@@ -10,7 +10,7 @@ import java.nio.file.Path;
 
 @Component
 public class LinesDeserializer {
-    public static Line readLinesFromJsonFile(Path path) throws IOException {
+    public Line readLinesFromJsonFile(Path path) throws IOException {
         String json = null;
 
         try {

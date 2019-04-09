@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 @JsonComponent
 public class Line {
-    public long id;
     public String name;
     ArrayList<PediStop> stops;
 

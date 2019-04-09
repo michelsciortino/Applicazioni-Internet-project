@@ -31,9 +31,7 @@ public class Lab2Application {
             Line line=deserializer.readLinesFromJsonFile(f.toPath());
             lines.add(line);
         }
-
         //Use lines to populate DataBase
-
     }
 
 }
