@@ -1,4 +1,4 @@
-package it.polito.ai.labs.lab2.lab2.models;
+package it.polito.ai.labs.lab2.models.json;
 
 import org.springframework.boot.jackson.JsonComponent;
 

@@ -1,7 +1,7 @@
-package it.polito.ai.labs.lab2.lab2.files;
+package it.polito.ai.labs.lab2.files;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polito.ai.labs.lab2.lab2.models.Line;
+import it.polito.ai.labs.lab2.models.json.Line;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
