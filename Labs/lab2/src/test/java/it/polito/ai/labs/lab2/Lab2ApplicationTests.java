@@ -1,4 +1,4 @@
-package it.polito.ai.labs.lab2.lab2;
+package it.polito.ai.labs.lab2;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
