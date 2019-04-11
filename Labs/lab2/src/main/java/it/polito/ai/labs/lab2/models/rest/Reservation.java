@@ -1,7 +1,10 @@
 package it.polito.ai.labs.lab2.models.rest;
 
-import javax.validation.Valid;
+import lombok.Builder;
+import lombok.Data;
 
+@Builder
+@Data
 public class Reservation {
     String childName;
     String stopName;

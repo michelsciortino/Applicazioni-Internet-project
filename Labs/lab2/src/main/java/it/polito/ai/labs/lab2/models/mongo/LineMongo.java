@@ -1,26 +1,29 @@
 package it.polito.ai.labs.lab2.models.mongo;
 
+import lombok.Data;
 import org.bson.types.ObjectId;
-import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 
 @Document(collection="lines")
-public class Line {
-    //@Id
-    //public ObjectId id;
-    public String name;
-    ArrayList<PediStop> outboundStops;
-    ArrayList<PediStop> returnStops;
+@Data
+public class LineMongo {
+    @Id
+    private ObjectId id;
+    @Indexed(unique=true)
+    private String name;
+    private ArrayList<PediStopMongo> outboundStops;
+    private ArrayList<PediStopMongo> returnStops;
 
-    public Line() {
+    public LineMongo() {
         outboundStops = new ArrayList<>();
         returnStops = new ArrayList<>();
     }
 
-    public Line(String name, ArrayList<PediStop> outboundStops,ArrayList<PediStop> returnStops) {
+    public LineMongo(String name, ArrayList<PediStopMongo> outboundStops, ArrayList<PediStopMongo> returnStops) {
         this.name = name;
         this.outboundStops = outboundStops;
         this.returnStops = returnStops;
