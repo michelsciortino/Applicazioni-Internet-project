@@ -49,8 +49,6 @@ public class Lab2Application implements CommandLineRunner {
             logger.info("Load Line"+ line.name+ " from json: "+f);
             InsertLines(line);
         }
-        //Use lines to populate DataBase
-
     }
 
     public void TestInsert(){
