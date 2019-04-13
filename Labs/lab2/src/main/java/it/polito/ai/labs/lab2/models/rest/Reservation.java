@@ -6,7 +6,7 @@ import lombok.Data;
 @Builder
 @Data
 public class Reservation {
-    String childName;
-    String stopName;
-    String direction;
+    private String childName;
+    private String stopName;
+    private String direction;
 }

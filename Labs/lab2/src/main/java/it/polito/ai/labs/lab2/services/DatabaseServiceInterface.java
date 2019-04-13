@@ -11,7 +11,7 @@ import java.util.Collection;
 public interface DatabaseServiceInterface {
     public boolean insertLine(Line line) throws UnknownServiceException;
 
-    public Collection<String> getLinesNames();
+    public Collection<String> getLinesNames() throws UnknownServiceException;
 
     public Line getLine(String lineName) throws UnknownServiceException;
 
