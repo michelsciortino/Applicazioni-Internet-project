@@ -46,12 +46,16 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public Collection<String> getLinesNames() {
-        List<LineMongo> list=lineRepository.findAllName();
-        List<String> names=new ArrayList<>();
-        for(LineMongo lineMongo :list)
-            names.add(lineMongo.getName());
-        return names;
+    public Collection<String> getLinesNames() throws UnknownServiceException {
+        try {
+            List<LineMongo> list = lineRepository.findAllName();
+            List<String> names = new ArrayList<>();
+            for (LineMongo lineMongo : list)
+                names.add(lineMongo.getName());
+            return names;
+        }catch (Exception e){
+            throw new UnknownServiceException(e.toString());
+        }
     }
 
     @Override
