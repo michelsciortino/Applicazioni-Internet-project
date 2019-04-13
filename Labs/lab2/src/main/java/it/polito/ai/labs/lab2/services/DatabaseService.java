@@ -26,7 +26,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     private ReservationRepository reservationRepository;
 
     @Override
-    public boolean InsertLine(Line line) throws UnknownServiceException {
+    public boolean insertLine(Line line) throws UnknownServiceException {
         try{
             ArrayList<PediStopMongo> outboundStops= new ArrayList<>();
             for (PediStop p:line.outboundStops)

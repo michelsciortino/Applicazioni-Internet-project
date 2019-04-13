@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 public interface DatabaseServiceInterface {
-    public boolean InsertLine(Line line) throws UnknownServiceException;
+    public boolean insertLine(Line line) throws UnknownServiceException;
 
     public Collection<String> getLinesNames();
 
