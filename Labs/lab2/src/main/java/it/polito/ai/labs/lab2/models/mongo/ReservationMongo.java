@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Document(collection = "reservations")
 @Data
-@CompoundIndex(name = "reservationID",unique = true,def = "{'userID':1,'childName':1,'data':1")
+//@CompoundIndex(name = "reservationID",unique = true,def = "{'userID':1,'childName':1,'data':1")
 @Builder
 public class ReservationMongo {
     @Id
