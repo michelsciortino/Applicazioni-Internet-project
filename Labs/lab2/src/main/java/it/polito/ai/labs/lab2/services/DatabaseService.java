@@ -11,6 +11,7 @@ import it.polito.ai.labs.lab2.repositories.LineRepository;
 import it.polito.ai.labs.lab2.repositories.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.ServiceNotFoundException;
 import java.net.UnknownServiceException;
@@ -19,6 +20,7 @@ import java.util.*;
 
 @Service
 public class DatabaseService implements DatabaseServiceInterface {
+
     @Autowired
     private LineRepository lineRepository;
 
@@ -64,11 +66,14 @@ public class DatabaseService implements DatabaseServiceInterface {
             LineMongo lineMongo = lineRepository.findLineByName(lineName);
             ArrayList<PediStop> out = new ArrayList<>();
             for (PediStopMongo p : lineMongo.getOutboundStops())
-                out.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
+                out.add(new PediStop(p.getName(),p.getLatitude(),p.getLongitude()));
+               // out.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
             ArrayList<PediStop> ret = new ArrayList<>();
             for (PediStopMongo p : lineMongo.getReturnStops())
-                ret.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
-            return Line.builder().name(lineMongo.getName()).outboundStops(out).returnStops(ret).build();
+                ret.add(new PediStop(p.getName(),p.getLatitude(),p.getLongitude()));
+               // ret.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
+            return new Line(lineMongo.getName(),out,ret);
+            //return Line.builder().name(lineMongo.getName()).outboundStops(out).returnStops(ret).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.toString());
         }
