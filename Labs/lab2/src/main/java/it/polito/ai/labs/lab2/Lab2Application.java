@@ -59,7 +59,7 @@ public class Lab2Application implements CommandLineRunner {
     public void InsertLineFromFileInFolder(String foldername) throws IOException {
         File folder = new ClassPathResource(foldername).getFile();
         for (File f : folder.listFiles()) {
-            InsertLineFromFile("/JsonFiles/" + f.getName());
+            InsertLineFromFile(foldername + f.getName());
         }
     }
 
@@ -103,6 +103,10 @@ public class Lab2Application implements CommandLineRunner {
             if (splitted.length < 2)
                 return;
             foldername = splitted[1];
+            if (!foldername.endsWith("/"))
+                foldername+="/";
+            if (!foldername.startsWith("/"))
+                foldername = "/" + foldername;
         }
     }
 }
