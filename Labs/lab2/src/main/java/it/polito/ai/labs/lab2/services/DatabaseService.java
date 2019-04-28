@@ -108,18 +108,22 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Override
     public String addReservation(String UserID, Reservation reservation, String lineName, LocalDateTime dateTime) throws UnknownServiceException {
         try{
-                if (lineRepository.findLineByName(lineName)!=null)
-                    reservationRepository.save(ReservationMongo.builder().childName(reservation.getChildName()).direction(reservation.getDirection()).stopName(reservation.getStopName()).data(dateTime).userID(UserID).lineName(lineName).build());
+            ReservationMongo res;
+                if (lineRepository.findLineByName(lineName)!=null) {
+                    res = reservationRepository.save(ReservationMongo.builder().childName(reservation.getChildName()).direction(reservation.getDirection()).stopName(reservation.getStopName()).data(dateTime).userID(UserID).lineName(lineName).build());
+                    return res.toString();
+                }
                 else
                     throw new ServiceNotFoundException();
         }
         catch (Exception e){
             throw new UnknownServiceException(e.toString());
         }
-        return null;
+
     }
 
     @Override
+    @Transactional
     public boolean updateReservation(String UserID, Reservation reservation, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException {
         try{
             ReservationMongo rp=reservationRepository.findById(reservationId).get();
@@ -136,6 +140,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
+    @Transactional
     public boolean deleteReservation(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException {
         try{
               reservationRepository.delete(reservationRepository.findById(reservationId).get());
