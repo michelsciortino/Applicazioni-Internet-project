@@ -1,6 +1,6 @@
-package it.polito.ai.labs.lab3.authentication;
+package it.polito.ai.labs.lab3.services.database.models;
 
-public class AccountRoles {
+public class Roles {
     public static final String ADMINISTRATOR = "admin";
     public static final String ACCOMPANIER = "accompanier";
     public static final String ADULT = "adult";
