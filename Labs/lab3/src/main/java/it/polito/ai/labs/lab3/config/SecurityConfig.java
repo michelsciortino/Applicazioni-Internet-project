@@ -2,6 +2,7 @@ package it.polito.ai.labs.lab3.config;
 
 import it.polito.ai.labs.lab3.security.JwtConfigurer;
 import it.polito.ai.labs.lab3.security.JwtTokenProvider;
+import it.polito.ai.labs.lab3.services.database.models.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth//confirm").permitAll()
                 .antMatchers("/auth/recover").permitAll()
                 .antMatchers("/auth/recover/*").permitAll()
+                .antMatchers("/auth/users").hasAnyRole(Roles.ADMIN,Roles.SYSTEM_ADMIN)
+                .antMatchers("/auth/users/*").hasAnyRole(Roles.ADMIN,Roles.SYSTEM_ADMIN)
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));

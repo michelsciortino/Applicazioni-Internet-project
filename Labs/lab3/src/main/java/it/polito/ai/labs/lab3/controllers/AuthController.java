@@ -6,6 +6,7 @@ import it.polito.ai.labs.lab3.controllers.models.RegistrationRequest;
 import it.polito.ai.labs.lab3.security.JwtTokenProvider;
 import it.polito.ai.labs.lab3.services.database.DatabaseServiceInterface;
 import it.polito.ai.labs.lab3.services.database.models.ConfirmationToken;
+import it.polito.ai.labs.lab3.services.database.models.Roles;
 import it.polito.ai.labs.lab3.services.database.models.ScopeToken;
 import it.polito.ai.labs.lab3.services.database.models.User;
 import it.polito.ai.labs.lab3.services.database.repositories.ConfirmationTokenRepository;
@@ -25,10 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.UnknownServiceException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -92,7 +90,7 @@ public class AuthController {
                     return new ResponseEntity<>("password is not equals", HttpStatus.BAD_REQUEST);
 
                 System.out.println("register new user");
-                User user = database.insertUser(username, data.getPassword());
+                User user = database.insertUser(username, data.getPassword(), Arrays.asList(Roles.USER,Roles.ADMIN));
 
                 ConfirmationToken confirmationToken = new ConfirmationToken(user);
                 confirmationToken.setScope(ScopeToken.CONFIRM);
@@ -122,19 +120,23 @@ public class AuthController {
     public ResponseEntity confirmUserAccount(@RequestParam("token") String confirmationToken) {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
 
-        if (token != null) {
-            Optional<User> user = userRepository.findById(token.getUser().getId());
-            if (user.isPresent() && token.getExpirationDate().after(new Date())) {
-                user.get().setEnable(true);
-                userRepository.save(user.get());
-                Map<Object, Object> model = new HashMap<>();
-                model.put("username", user.get().getUsername());
-                model.put("verification", "accountVerified");
-                return ok(model);
-            } else
-                return new ResponseEntity<>("User not found or token expired", HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>("The link is invalid or broken!", HttpStatus.BAD_REQUEST);
+        try {
+            if (token != null) {
+                Optional<User> user = userRepository.findById(token.getUser().getId());
+                if (user.isPresent() && token.getExpirationDate().after(new Date())) {
+                    user.get().setEnable(true);
+                    database.updateUser(user.get());
+                    Map<Object, Object> model = new HashMap<>();
+                    model.put("username", user.get().getUsername());
+                    model.put("verification", "accountVerified");
+                    return ok(model);
+                } else
+                    return new ResponseEntity<>("User not found or token expired", HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>("The link is invalid or broken!", HttpStatus.BAD_REQUEST);
+            }
+        } catch (UnknownServiceException e) {
+            return new ResponseEntity<>("Internal error create user", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -146,7 +148,7 @@ public class AuthController {
 
                 ConfirmationToken changeToken = new ConfirmationToken(userExist.get());
                 changeToken.setScope(ScopeToken.RECOVERY);
-                confirmationTokenRepository.save(changeToken);
+                database.insertToken(changeToken);
 
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
                 mailMessage.setTo(userExist.get().getUsername());
@@ -187,7 +189,7 @@ public class AuthController {
                     //non serve controllare la password vecchia perchè si dovrebbe essere gia autenticati con il token
                     if (data.getPassword().equals(data.getPasswordCheck())) {
                         try {
-                            database.insertUser(data.getUsername(), data.getPassword());
+                            database.modifyUserPassword(user.get(), data.getPassword());
                         } catch (UnknownServiceException e) {
                             return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
                         }
@@ -207,4 +209,17 @@ public class AuthController {
             return new ResponseEntity<>("The link is invalid or broken!", HttpStatus.BAD_REQUEST);
         }
     }
+
+    @RequestMapping(value = "/users", method = {RequestMethod.GET})
+    public ResponseEntity getUsers() {
+        try {
+            List<User> users = database.getUsers();
+            return new ResponseEntity<>("users: "+users, HttpStatus.OK);
+        } catch (UnknownServiceException e) {
+            return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 }
