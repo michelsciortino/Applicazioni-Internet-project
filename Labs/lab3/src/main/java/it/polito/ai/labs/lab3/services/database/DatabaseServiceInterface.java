@@ -4,10 +4,12 @@ package it.polito.ai.labs.lab3.services.database;
 import it.polito.ai.labs.lab3.files.json.Line;
 import it.polito.ai.labs.lab3.controllers.models.LineReservations;
 import it.polito.ai.labs.lab3.controllers.models.Reservation;
+import it.polito.ai.labs.lab3.services.database.models.User;
 
 import java.net.UnknownServiceException;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface DatabaseServiceInterface {
     public boolean insertLine(Line line) throws UnknownServiceException;
@@ -26,4 +28,5 @@ public interface DatabaseServiceInterface {
 
     public Reservation getReservation(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException;
 
+    public boolean insertUser(String Username,String Password) throws UnknownServiceException;
 }

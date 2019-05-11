@@ -5,13 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationRequest implements Serializable {
+public class RegistrationRequest implements Serializable {
+    @NotNull
     private String username;
+    @NotNull
     private String password;
+    @NotNull
+    private String passwordCheck;
 }

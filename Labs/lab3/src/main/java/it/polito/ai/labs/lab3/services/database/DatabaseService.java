@@ -7,9 +7,12 @@ import it.polito.ai.labs.lab3.services.database.models.PediStopMongo;
 import it.polito.ai.labs.lab3.services.database.models.ReservationMongo;
 import it.polito.ai.labs.lab3.controllers.models.LineReservations;
 import it.polito.ai.labs.lab3.controllers.models.Reservation;
+import it.polito.ai.labs.lab3.services.database.models.User;
 import it.polito.ai.labs.lab3.services.database.repositories.LineRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.ReservationRepository;
+import it.polito.ai.labs.lab3.services.database.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,12 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Override
     public boolean insertLine(Line line) throws UnknownServiceException {
         try{
@@ -43,7 +52,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             return true;
         }
         catch (Exception e){
-            throw new UnknownServiceException(e.toString());
+            throw new UnknownServiceException(e.getMessage());
         }
     }
 
@@ -56,7 +65,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 names.add(lineMongo.getName());
             return names;
         }catch (Exception e){
-            throw new UnknownServiceException(e.toString());
+            throw new UnknownServiceException(e.getMessage());
         }
     }
 
@@ -75,7 +84,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             return new Line(lineMongo.getName(),out,ret);
             //return Line.builder().name(lineMongo.getName()).outboundStops(out).returnStops(ret).build();
         } catch (Exception e) {
-            throw new UnknownServiceException(e.toString());
+            throw new UnknownServiceException(e.getMessage());
         }
     }
 
@@ -101,7 +110,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             }
             return LineReservations.builder().backStopsReservations(backStopsReservations).outwardStopsReservations(outwardStopsReservations).build();
         } catch (Exception e) {
-            throw new UnknownServiceException(e.toString());
+            throw new UnknownServiceException(e.getMessage());
         }
     }
 
@@ -117,7 +126,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                     throw new ServiceNotFoundException();
         }
         catch (Exception e){
-            throw new UnknownServiceException(e.toString());
+            throw new UnknownServiceException(e.getMessage());
         }
 
     }
@@ -135,7 +144,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             return true;
         }
         catch (Exception e){
-            throw new UnknownServiceException(e.toString());
+            throw new UnknownServiceException(e.getMessage());
         }
     }
 
@@ -147,7 +156,7 @@ public class DatabaseService implements DatabaseServiceInterface {
               return true;
         }
         catch (Exception e){
-            throw new UnknownServiceException(e.toString());
+            throw new UnknownServiceException(e.getMessage());
         }
     }
 
@@ -158,7 +167,21 @@ public class DatabaseService implements DatabaseServiceInterface {
             return Reservation.builder().childName(rm.getChildName()).direction(rm.getDirection()).stopName(rm.getStopName()).build();
         }
         catch (Exception e){
-            throw new UnknownServiceException(e.toString());
+            throw new UnknownServiceException(e.getMessage());
         }
     }
+
+    @Override
+    public boolean insertUser(String username,String password) throws UnknownServiceException {
+        try{
+            if(!userRepository.findByUsername(username).isPresent())
+                this.userRepository.save(new User( this.passwordEncoder.encode(password), username, Arrays.asList("ROLE_USER")));
+            return true;
+        }
+        catch (Exception e){
+            throw new UnknownServiceException(e.getMessage());
+        }
+    }
+
+
 }

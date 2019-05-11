@@ -29,9 +29,9 @@ public class User implements UserDetails {
     private String username;
 
     boolean enable=true;
-    boolean credentialsExpired=false;
-    boolean locked=false;
-    boolean accountExpired=false;
+    boolean credentialsExpired=true;
+    boolean accountLocked=true;
+    boolean accountExpired=true;
 
     private List<String> roles=new ArrayList<>();
 
@@ -44,6 +44,17 @@ public class User implements UserDetails {
     public User() {
     }
 
+    public User(String id, @NotNull String password, @NotNull String username, boolean enable, boolean credentialsExpired, boolean accountLocked, boolean accountExpired, List<String> roles) {
+        this.id = id;
+        this.password = password;
+        this.username = username;
+        this.enable = enable;
+        this.credentialsExpired = credentialsExpired;
+        this.accountLocked = accountLocked;
+        this.accountExpired = accountExpired;
+        this.roles = roles;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
@@ -51,17 +62,17 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return accountExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return accountLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return credentialsExpired;
     }
 
     @Override
