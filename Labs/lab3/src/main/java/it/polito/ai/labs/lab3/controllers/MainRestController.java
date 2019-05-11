@@ -17,7 +17,6 @@ import java.util.Collection;
 public class MainRestController {
     private DatabaseServiceInterface database;
 
-
     @Autowired
     public MainRestController(DatabaseServiceInterface database) {
         this.database = database;

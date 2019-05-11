@@ -36,9 +36,6 @@ public class Lab3Application implements CommandLineRunner {
     @Autowired
     DatabaseServiceInterface database;
 
-    @Autowired
-    private LineRepository repository;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -53,7 +50,6 @@ public class Lab3Application implements CommandLineRunner {
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
 
     @Override
     public void run(String[] args) throws Exception {
