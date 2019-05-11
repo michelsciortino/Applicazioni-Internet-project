@@ -54,11 +54,10 @@ public class Lab3Application implements CommandLineRunner {
     @Override
     public void run(String[] args) throws Exception {
 
-
-        if(!users.findByUsername("user").isPresent())
-            this.users.save(new User( this.passwordEncoder.encode("password"), "user", Arrays.asList("ROLE_USER") ));
-        if(!users.findByUsername("admin").isPresent())
-            this.users.save(new User( this.passwordEncoder.encode("password"), "admin", Arrays.asList("ROLE_USER", "ROLE_ADMIN") ));
+        if(!users.findByUsername("prova@mail.it").isPresent())
+            this.users.save(new User( this.passwordEncoder.encode("password"), "prova@mail.it", Arrays.asList("ROLE_USER") ));
+        if(!users.findByUsername("admin@mail.it").isPresent())
+            this.users.save(new User( this.passwordEncoder.encode("password"), "admin@mail.it", Arrays.asList("ROLE_USER", "ROLE_ADMIN") ));
 
         for (String arg : args) {
             if (arg.startsWith("--files=")) {

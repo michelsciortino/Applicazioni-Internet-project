@@ -28,10 +28,10 @@ public class User implements UserDetails {
     @Indexed(unique = true)
     private String username;
 
-    boolean enable=true;
-    boolean credentialsExpired=true;
-    boolean accountLocked=true;
-    boolean accountExpired=true;
+    boolean enable=false;
+    boolean credentialsNotExpired=true;
+    boolean accountNotLocked=true;
+    boolean accountNotExpired=true;
 
     private List<String> roles=new ArrayList<>();
 
@@ -49,9 +49,9 @@ public class User implements UserDetails {
         this.password = password;
         this.username = username;
         this.enable = enable;
-        this.credentialsExpired = credentialsExpired;
-        this.accountLocked = accountLocked;
-        this.accountExpired = accountExpired;
+        this.credentialsNotExpired = credentialsExpired;
+        this.accountNotLocked = accountLocked;
+        this.accountNotExpired = accountExpired;
         this.roles = roles;
     }
 
@@ -62,17 +62,17 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return accountExpired;
+        return accountNotExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return accountLocked;
+        return accountNotLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return credentialsExpired;
+        return credentialsNotExpired;
     }
 
     @Override

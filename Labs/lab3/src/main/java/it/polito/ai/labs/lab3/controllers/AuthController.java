@@ -4,23 +4,26 @@ import it.polito.ai.labs.lab3.controllers.models.AuthenticationRequest;
 import it.polito.ai.labs.lab3.controllers.models.RegistrationRequest;
 import it.polito.ai.labs.lab3.security.JwtTokenProvider;
 import it.polito.ai.labs.lab3.services.database.DatabaseServiceInterface;
+import it.polito.ai.labs.lab3.services.database.models.ConfirmationToken;
 import it.polito.ai.labs.lab3.services.database.models.User;
+import it.polito.ai.labs.lab3.services.database.repositories.ConfirmationTokenRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.UserRepository;
+import it.polito.ai.labs.lab3.services.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.net.UnknownServiceException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,14 +48,20 @@ public class AuthController {
     JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    UserRepository users;
+    UserRepository userRepository;
+
+    @Autowired
+    private ConfirmationTokenRepository confirmationTokenRepository;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody AuthenticationRequest data) {
         try {
             String username = data.getUsername();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
-            String token = jwtTokenProvider.createToken(username, this.users.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")).getRoles());
+            String token = jwtTokenProvider.createToken(username, this.userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")).getRoles());
             Map<Object, Object> model = new HashMap<>();
             model.put("username", username);
             model.put("token", token);
@@ -72,16 +81,31 @@ public class AuthController {
         try {
             String username = data.getUsername();
 
-            Optional<User> user= this.users.findByUsername(username);
-            if (user.isPresent()) {
+            Optional<User> userExist = this.userRepository.findByUsername(username);
+            if (userExist.isPresent()) {
                 System.out.println("User already register");
-                    return new ResponseEntity<>("Invalid username... User already exist", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Invalid username... User already exist", HttpStatus.BAD_REQUEST);
             } else {
-                if(!data.getPassword().equals(data.getPasswordCheck()))
+                if (!data.getPassword().equals(data.getPasswordCheck()))
                     return new ResponseEntity<>("password is not equals", HttpStatus.BAD_REQUEST);
 
                 System.out.println("register new user");
-                database.insertUser(username,data.getPassword());
+                User user = database.insertUser(username, data.getPassword());
+
+                ConfirmationToken confirmationToken = new ConfirmationToken(user);
+
+                confirmationTokenRepository.save(confirmationToken);
+
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
+                mailMessage.setTo(user.getUsername());
+                mailMessage.setSubject("Complete Registration!");
+                mailMessage.setFrom("chand312902@gmail.com");
+                mailMessage.setText("To confirm your account, please click here : "
+                        + "http://localhost:8080/confirm?token=" + confirmationToken.getConfirmationToken());
+
+                //link print in console not send with email for test
+                System.out.println(mailMessage);
+                //emailSenderService.sendEmail(mailMessage);
 
                 Map<Object, Object> model = new HashMap<>();
                 model.put("username", username);
@@ -92,4 +116,24 @@ public class AuthController {
         }
     }
 
+    @RequestMapping(value = "/confirm", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity confirmUserAccount(@RequestParam("token") String confirmationToken) {
+        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
+
+        if (token != null) {
+            Optional<User> user = userRepository.findById(token.getUser().getId());
+            if(user.isPresent() && token.getExpirationDate().after(new Date())){
+                user.get().setEnable(true);
+                userRepository.save(user.get());
+                Map<Object, Object> model = new HashMap<>();
+                model.put("username", user.get().getUsername());
+                model.put("verification", "accountVerified");
+                return ok(model);
+            }
+            else
+                return new ResponseEntity<>("User not found or token expired", HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>("The link is invalid or broken!", HttpStatus.BAD_REQUEST);
+        }
+    }
 }

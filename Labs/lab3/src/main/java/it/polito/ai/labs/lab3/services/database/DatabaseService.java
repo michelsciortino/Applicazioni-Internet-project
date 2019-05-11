@@ -172,11 +172,12 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public boolean insertUser(String username,String password) throws UnknownServiceException {
+    public User insertUser(String username,String password) throws UnknownServiceException {
         try{
+            User user = null;
             if(!userRepository.findByUsername(username).isPresent())
-                this.userRepository.save(new User( this.passwordEncoder.encode(password), username, Arrays.asList("ROLE_USER")));
-            return true;
+               user= userRepository.save(new User( this.passwordEncoder.encode(password), username, Arrays.asList("ROLE_USER")));
+            return user;
         }
         catch (Exception e){
             throw new UnknownServiceException(e.getMessage());

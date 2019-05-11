@@ -28,5 +28,5 @@ public interface DatabaseServiceInterface {
 
     public Reservation getReservation(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException;
 
-    public boolean insertUser(String Username,String Password) throws UnknownServiceException;
+    public User insertUser(String Username,String Password) throws UnknownServiceException;
 }
