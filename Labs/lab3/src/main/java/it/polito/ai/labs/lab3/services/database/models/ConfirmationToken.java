@@ -23,6 +23,8 @@ public class ConfirmationToken {
 
     private Date expirationDate;
 
+    private String Scope;
+
     @DBRef
     private User user;
 
