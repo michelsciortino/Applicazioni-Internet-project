@@ -5,7 +5,7 @@ import it.polito.ai.labs.lab3.controllers.models.Reservation;
 import it.polito.ai.labs.lab3.files.json.Line;
 import it.polito.ai.labs.lab3.files.json.PediStop;
 import it.polito.ai.labs.lab3.services.database.models.*;
-import it.polito.ai.labs.lab3.services.database.repositories.ConfirmationTokenRepository;
+import it.polito.ai.labs.lab3.services.database.repositories.TokenRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.CredentialRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.LineRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.ReservationRepository;
@@ -32,7 +32,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     private CredentialRepository credentialRepository;
 
     @Autowired
-    private ConfirmationTokenRepository confirmationTokenRepository;
+    private TokenRepository tokenRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -204,9 +204,9 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public boolean insertToken(ConfirmationToken token) throws UnknownServiceException {
+    public boolean insertToken(Token token) throws UnknownServiceException {
         try {
-            confirmationTokenRepository.save(token);
+            tokenRepository.save(token);
             return true;
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());

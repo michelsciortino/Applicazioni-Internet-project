@@ -4,7 +4,7 @@ package it.polito.ai.labs.lab3.services.database;
 import it.polito.ai.labs.lab3.files.json.Line;
 import it.polito.ai.labs.lab3.controllers.models.LineReservations;
 import it.polito.ai.labs.lab3.controllers.models.Reservation;
-import it.polito.ai.labs.lab3.services.database.models.ConfirmationToken;
+import it.polito.ai.labs.lab3.services.database.models.Token;
 import it.polito.ai.labs.lab3.services.database.models.Credential;
 
 import java.net.UnknownServiceException;
@@ -35,7 +35,7 @@ public interface DatabaseServiceInterface {
 
     public boolean updateUser(Credential credential) throws  UnknownServiceException;
 
-    public boolean insertToken(ConfirmationToken token) throws UnknownServiceException;
+    public boolean insertToken(Token token) throws UnknownServiceException;
 
     public List<Credential> getUsers() throws UnknownServiceException;
 }

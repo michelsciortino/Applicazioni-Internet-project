@@ -9,9 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.UUID;
 
-@Document(collection = "confirmationToken")
+@Document(collection = "token")
 @Data
-public class ConfirmationToken {
+public class Token {
 
     @Id
     private String id;
@@ -29,7 +29,7 @@ public class ConfirmationToken {
     @DBRef
     private Credential credential;
 
-    public ConfirmationToken(Credential credential) {
+    public Token(Credential credential) {
         this.credential = credential;
         createdDate = new Date();
         expirationDate = new Date(System.currentTimeMillis() + 3600 * 1000); //1h validity

@@ -5,11 +5,11 @@ import it.polito.ai.labs.lab3.controllers.models.ChangePasswordRequest;
 import it.polito.ai.labs.lab3.controllers.models.RegistrationRequest;
 import it.polito.ai.labs.lab3.security.JwtTokenProvider;
 import it.polito.ai.labs.lab3.services.database.DatabaseServiceInterface;
-import it.polito.ai.labs.lab3.services.database.models.ConfirmationToken;
+import it.polito.ai.labs.lab3.services.database.models.Token;
 import it.polito.ai.labs.lab3.services.database.models.Credential;
 import it.polito.ai.labs.lab3.services.database.models.Roles;
 import it.polito.ai.labs.lab3.services.database.models.ScopeToken;
-import it.polito.ai.labs.lab3.services.database.repositories.ConfirmationTokenRepository;
+import it.polito.ai.labs.lab3.services.database.repositories.TokenRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.CredentialRepository;
 import it.polito.ai.labs.lab3.services.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class AuthController {
     CredentialRepository credentialRepository;
 
     @Autowired
-    private ConfirmationTokenRepository confirmationTokenRepository;
+    private TokenRepository tokenRepository;
 
     @Autowired
     private EmailSenderService emailSenderService;
@@ -92,16 +92,16 @@ public class AuthController {
                 System.out.println("register new credential");
                 Credential credential = database.insertUser(username, data.getPassword(), Arrays.asList(Roles.USER,Roles.ADMIN));
 
-                ConfirmationToken confirmationToken = new ConfirmationToken(credential);
-                confirmationToken.setScope(ScopeToken.CONFIRM);
-                confirmationTokenRepository.save(confirmationToken);
+                Token token = new Token(credential);
+                token.setScope(ScopeToken.CONFIRM);
+                tokenRepository.save(token);
 
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
                 mailMessage.setTo(credential.getUsername());
                 mailMessage.setSubject("Complete Registration!");
                 mailMessage.setFrom("chand312902@gmail.com");
                 mailMessage.setText("To confirm your account, please click here : "
-                        + "http://localhost:8080/confirm?token=" + confirmationToken.getConfirmationToken());
+                        + "http://localhost:8080/confirm?token=" + token.getConfirmationToken());
 
                 //link print in console not send with email for test
                 System.out.println(mailMessage);
@@ -118,7 +118,7 @@ public class AuthController {
 
     @RequestMapping(value = "/confirm", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity confirmUserAccount(@RequestParam("token") String confirmationToken) {
-        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
+        Token token = tokenRepository.findByConfirmationToken(confirmationToken);
 
         try {
             if (token != null) {
@@ -146,7 +146,7 @@ public class AuthController {
             Optional<Credential> userExist = this.credentialRepository.findByUsername(email);
             if (userExist.isPresent()) {
 
-                ConfirmationToken changeToken = new ConfirmationToken(userExist.get());
+                Token changeToken = new Token(userExist.get());
                 changeToken.setScope(ScopeToken.RECOVERY);
                 database.insertToken(changeToken);
 
@@ -180,7 +180,7 @@ public class AuthController {
     @RequestMapping(value = "/recover/{randomUUID}", method = {RequestMethod.POST})
     public ResponseEntity modifyPassword(@PathVariable("randomUUID") String randomUUID, @RequestBody @Validated ChangePasswordRequest data) {
 
-        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(randomUUID);
+        Token token = tokenRepository.findByConfirmationToken(randomUUID);
 
         if (token != null && token.getScope().equals(ScopeToken.RECOVERY)) {
             Optional<Credential> user = credentialRepository.findById(token.getCredential().getId());
