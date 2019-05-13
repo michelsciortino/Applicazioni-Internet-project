@@ -2,10 +2,9 @@ package it.polito.ai.labs.lab3;
 
 import it.polito.ai.labs.lab3.files.LinesDeserializer;
 import it.polito.ai.labs.lab3.files.json.Line;
-import it.polito.ai.labs.lab3.services.database.models.User;
-import it.polito.ai.labs.lab3.services.database.repositories.LineRepository;
+import it.polito.ai.labs.lab3.services.database.models.Credential;
 import it.polito.ai.labs.lab3.services.database.DatabaseServiceInterface;
-import it.polito.ai.labs.lab3.services.database.repositories.UserRepository;
+import it.polito.ai.labs.lab3.services.database.repositories.CredentialRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class Lab3Application implements CommandLineRunner {
     }
 
     @Autowired
-    UserRepository users;
+    CredentialRepository credentials;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -54,10 +53,10 @@ public class Lab3Application implements CommandLineRunner {
     @Override
     public void run(String[] args) throws Exception {
 
-        if(!users.findByUsername("prova@mail.it").isPresent())
-            this.users.save(new User( this.passwordEncoder.encode("password"), "prova@mail.it", Arrays.asList("ROLE_USER") ));
-        if(!users.findByUsername("admin@mail.it").isPresent())
-            this.users.save(new User( this.passwordEncoder.encode("password"), "admin@mail.it", Arrays.asList("ROLE_USER", "ROLE_ADMIN") ));
+        if(!credentials.findByUsername("prova@mail.it").isPresent())
+            this.credentials.save(new Credential( this.passwordEncoder.encode("password"), "prova@mail.it", Arrays.asList("ROLE_USER") ));
+        if(!credentials.findByUsername("admin@mail.it").isPresent())
+            this.credentials.save(new Credential( this.passwordEncoder.encode("password"), "admin@mail.it", Arrays.asList("ROLE_USER", "ROLE_ADMIN") ));
 
         for (String arg : args) {
             if (arg.startsWith("--files=")) {

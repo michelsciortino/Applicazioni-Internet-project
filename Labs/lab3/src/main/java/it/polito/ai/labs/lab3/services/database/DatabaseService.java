@@ -6,9 +6,9 @@ import it.polito.ai.labs.lab3.files.json.Line;
 import it.polito.ai.labs.lab3.files.json.PediStop;
 import it.polito.ai.labs.lab3.services.database.models.*;
 import it.polito.ai.labs.lab3.services.database.repositories.ConfirmationTokenRepository;
+import it.polito.ai.labs.lab3.services.database.repositories.CredentialRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.LineRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.ReservationRepository;
-import it.polito.ai.labs.lab3.services.database.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private CredentialRepository credentialRepository;
 
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
@@ -167,25 +167,25 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public User insertUser(String username, String password, List<String> role) throws UnknownServiceException {
+    public Credential insertUser(String username, String password, List<String> role) throws UnknownServiceException {
         try {
-            User user = null;
-            if (!userRepository.findByUsername(username).isPresent())
-                user = userRepository.save(new User(this.passwordEncoder.encode(password), username, role));
+            Credential credential = null;
+            if (!credentialRepository.findByUsername(username).isPresent())
+                credential = credentialRepository.save(new Credential(this.passwordEncoder.encode(password), username, role));
             else
                 return null;
-            return user;
+            return credential;
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
     }
 
     @Override
-    public boolean modifyUserPassword(User user, String password) throws UnknownServiceException {
+    public boolean modifyUserPassword(Credential credential, String password) throws UnknownServiceException {
         try {
-            if (userRepository.findByUsername(user.getUsername()).isPresent())
-                user.setPassword(this.passwordEncoder.encode(password));
-            userRepository.save(user);
+            if (credentialRepository.findByUsername(credential.getUsername()).isPresent())
+                credential.setPassword(this.passwordEncoder.encode(password));
+            credentialRepository.save(credential);
             return true;
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
@@ -193,10 +193,10 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public boolean updateUser(User user) throws UnknownServiceException {
+    public boolean updateUser(Credential credential) throws UnknownServiceException {
         try {
-           // if (userRepository.findByUsername(user.getUsername()).isPresent())
-            userRepository.save(user);
+           // if (credentialRepository.findByUsername(credential.getUsername()).isPresent())
+            credentialRepository.save(credential);
             return true;
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
@@ -214,9 +214,9 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public List<User> getUsers() throws UnknownServiceException {
+    public List<Credential> getUsers() throws UnknownServiceException {
         try {
-            return userRepository.findAllUsername();
+            return credentialRepository.findAllUsername();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }

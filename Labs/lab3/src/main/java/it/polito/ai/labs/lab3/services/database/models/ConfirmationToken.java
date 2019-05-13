@@ -1,6 +1,7 @@
 package it.polito.ai.labs.lab3.services.database.models;
 
 import lombok.Data;
+import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,10 +27,10 @@ public class ConfirmationToken {
     private String Scope;
 
     @DBRef
-    private User user;
+    private Credential credential;
 
-    public ConfirmationToken(User user) {
-        this.user = user;
+    public ConfirmationToken(Credential credential) {
+        this.credential = credential;
         createdDate = new Date();
         expirationDate = new Date(System.currentTimeMillis() + 3600 * 1000); //1h validity
         confirmationToken = UUID.randomUUID().toString();

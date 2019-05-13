@@ -20,7 +20,7 @@ public class RegisterController {
                                         @RequestParam String password) {
 
         // i want to give this username and password ROLE_USER
-        // hence user can login with spring security
+        // hence credentials can login with spring security
 
         // done
         return "redirect:/login";

@@ -6,11 +6,11 @@ import it.polito.ai.labs.lab3.controllers.models.RegistrationRequest;
 import it.polito.ai.labs.lab3.security.JwtTokenProvider;
 import it.polito.ai.labs.lab3.services.database.DatabaseServiceInterface;
 import it.polito.ai.labs.lab3.services.database.models.ConfirmationToken;
+import it.polito.ai.labs.lab3.services.database.models.Credential;
 import it.polito.ai.labs.lab3.services.database.models.Roles;
 import it.polito.ai.labs.lab3.services.database.models.ScopeToken;
-import it.polito.ai.labs.lab3.services.database.models.User;
 import it.polito.ai.labs.lab3.services.database.repositories.ConfirmationTokenRepository;
-import it.polito.ai.labs.lab3.services.database.repositories.UserRepository;
+import it.polito.ai.labs.lab3.services.database.repositories.CredentialRepository;
 import it.polito.ai.labs.lab3.services.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,7 +48,7 @@ public class AuthController {
     JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    UserRepository userRepository;
+    CredentialRepository credentialRepository;
 
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
@@ -61,7 +61,7 @@ public class AuthController {
         try {
             String username = data.getUsername();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
-            String token = jwtTokenProvider.createToken(username, this.userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")).getRoles());
+            String token = jwtTokenProvider.createToken(username, this.credentialRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")).getRoles());
             Map<Object, Object> model = new HashMap<>();
             model.put("username", username);
             model.put("token", token);
@@ -81,23 +81,23 @@ public class AuthController {
         try {
             String username = data.getUsername();
 
-            Optional<User> userExist = this.userRepository.findByUsername(username);
+            Optional<Credential> userExist = this.credentialRepository.findByUsername(username);
             if (userExist.isPresent()) {
-                System.out.println("User already register");
-                return new ResponseEntity<>("Invalid username... User already exist", HttpStatus.BAD_REQUEST);
+                System.out.println("Credential already register");
+                return new ResponseEntity<>("Invalid username... Credential already exist", HttpStatus.BAD_REQUEST);
             } else {
                 if (!data.getPassword().equals(data.getPasswordCheck()))
                     return new ResponseEntity<>("password is not equals", HttpStatus.BAD_REQUEST);
 
-                System.out.println("register new user");
-                User user = database.insertUser(username, data.getPassword(), Arrays.asList(Roles.USER,Roles.ADMIN));
+                System.out.println("register new credential");
+                Credential credential = database.insertUser(username, data.getPassword(), Arrays.asList(Roles.USER,Roles.ADMIN));
 
-                ConfirmationToken confirmationToken = new ConfirmationToken(user);
+                ConfirmationToken confirmationToken = new ConfirmationToken(credential);
                 confirmationToken.setScope(ScopeToken.CONFIRM);
                 confirmationTokenRepository.save(confirmationToken);
 
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
-                mailMessage.setTo(user.getUsername());
+                mailMessage.setTo(credential.getUsername());
                 mailMessage.setSubject("Complete Registration!");
                 mailMessage.setFrom("chand312902@gmail.com");
                 mailMessage.setText("To confirm your account, please click here : "
@@ -112,7 +112,7 @@ public class AuthController {
                 return ok(model);
             }
         } catch (UnknownServiceException e) {
-            return new ResponseEntity<>("Internal error create user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Internal error create credentials", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -122,7 +122,7 @@ public class AuthController {
 
         try {
             if (token != null) {
-                Optional<User> user = userRepository.findById(token.getUser().getId());
+                Optional<Credential> user = credentialRepository.findById(token.getCredential().getId());
                 if (user.isPresent() && token.getExpirationDate().after(new Date())) {
                     user.get().setEnable(true);
                     database.updateUser(user.get());
@@ -131,19 +131,19 @@ public class AuthController {
                     model.put("verification", "accountVerified");
                     return ok(model);
                 } else
-                    return new ResponseEntity<>("User not found or token expired", HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>("Credential not found or token expired", HttpStatus.NOT_FOUND);
             } else {
                 return new ResponseEntity<>("The link is invalid or broken!", HttpStatus.BAD_REQUEST);
             }
         } catch (UnknownServiceException e) {
-            return new ResponseEntity<>("Internal error create user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Internal error create credentials", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @RequestMapping(value = "/recover", method = RequestMethod.POST)
     public ResponseEntity register(@RequestParam String email) {
         try {
-            Optional<User> userExist = this.userRepository.findByUsername(email);
+            Optional<Credential> userExist = this.credentialRepository.findByUsername(email);
             if (userExist.isPresent()) {
 
                 ConfirmationToken changeToken = new ConfirmationToken(userExist.get());
@@ -183,9 +183,9 @@ public class AuthController {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(randomUUID);
 
         if (token != null && token.getScope().equals(ScopeToken.RECOVERY)) {
-            Optional<User> user = userRepository.findById(token.getUser().getId());
+            Optional<Credential> user = credentialRepository.findById(token.getCredential().getId());
             if (user.isPresent() && token.getExpirationDate().after(new Date())) {
-                if (user.get().getUsername().equals(token.getUser().getUsername())) {
+                if (user.get().getUsername().equals(token.getCredential().getUsername())) {
                     //non serve controllare la password vecchia perchè si dovrebbe essere gia autenticati con il token
                     if (data.getPassword().equals(data.getPasswordCheck())) {
                         try {
@@ -196,7 +196,7 @@ public class AuthController {
                     } else
                         return new ResponseEntity<>("password is not equals", HttpStatus.BAD_REQUEST);
                 } else {
-                    return new ResponseEntity<>("Token user is not equal of user pass", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Token credentials is not equal of credentials pass", HttpStatus.BAD_REQUEST);
                 }
 
                 Map<Object, Object> model = new HashMap<>();
@@ -204,7 +204,7 @@ public class AuthController {
                 model.put("result", "Password Change correctly");
                 return ok(model);
             } else
-                return new ResponseEntity<>("User not found or token expired", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Credential not found or token expired", HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>("The link is invalid or broken!", HttpStatus.BAD_REQUEST);
         }
@@ -213,8 +213,8 @@ public class AuthController {
     @RequestMapping(value = "/users", method = {RequestMethod.GET})
     public ResponseEntity getUsers() {
         try {
-            List<User> users = database.getUsers();
-            return new ResponseEntity<>("users: "+users, HttpStatus.OK);
+            List<Credential> credentials = database.getUsers();
+            return new ResponseEntity<>("credentials: "+ credentials, HttpStatus.OK);
         } catch (UnknownServiceException e) {
             return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
         }

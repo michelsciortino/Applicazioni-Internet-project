@@ -6,6 +6,7 @@ import it.polito.ai.labs.lab3.services.database.models.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -33,10 +34,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/auth/login").permitAll()
                 .antMatchers("/auth/register").permitAll()
-                .antMatchers("/auth//confirm").permitAll()
+                .antMatchers("/auth/confirm").permitAll()
                 .antMatchers("/auth/recover").permitAll()
                 .antMatchers("/auth/recover/*").permitAll()
-                .antMatchers("/auth/users").hasAnyRole(Roles.ADMIN,Roles.SYSTEM_ADMIN)
+                .antMatchers(HttpMethod.GET,"/auth/users").hasAnyRole(Roles.ADMIN,Roles.SYSTEM_ADMIN)
                 .antMatchers("/auth/users/*").hasAnyRole(Roles.ADMIN,Roles.SYSTEM_ADMIN)
                 .anyRequest().authenticated()
                 .and()
