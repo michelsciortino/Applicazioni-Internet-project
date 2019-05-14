@@ -1,6 +1,8 @@
 package it.polito.ai.labs.lab3.services.database.repositories;
 
 import it.polito.ai.labs.lab3.services.database.models.Credential;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -14,4 +16,7 @@ public interface CredentialRepository extends MongoRepository<Credential, String
 
     @Query(value = "{}", fields = "{'username' : 1, '_id' : 0}")
     List<Credential> findAllUsername();
+
+    @Query(value = "{}", fields = "{'username' : 1, '_id' : 0}")
+    Page<Credential> findAllUsername(Pageable pegeable);
 }

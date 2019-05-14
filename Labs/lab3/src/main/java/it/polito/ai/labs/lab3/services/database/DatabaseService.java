@@ -5,11 +5,11 @@ import it.polito.ai.labs.lab3.controllers.models.Reservation;
 import it.polito.ai.labs.lab3.files.json.Line;
 import it.polito.ai.labs.lab3.files.json.PediStop;
 import it.polito.ai.labs.lab3.services.database.models.*;
-import it.polito.ai.labs.lab3.services.database.repositories.TokenRepository;
-import it.polito.ai.labs.lab3.services.database.repositories.CredentialRepository;
-import it.polito.ai.labs.lab3.services.database.repositories.LineRepository;
-import it.polito.ai.labs.lab3.services.database.repositories.ReservationRepository;
+import it.polito.ai.labs.lab3.services.database.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +33,9 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Autowired
     private TokenRepository tokenRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -167,7 +170,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public Credential insertUser(String username, String password, List<String> role) throws UnknownServiceException {
+    public Credential insertCredential(String username, String password, List<String> role) throws UnknownServiceException {
         try {
             Credential credential = null;
             if (!credentialRepository.findByUsername(username).isPresent())
@@ -193,7 +196,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public boolean updateUser(Credential credential) throws UnknownServiceException {
+    public boolean updateCredential(Credential credential) throws UnknownServiceException {
         try {
            // if (credentialRepository.findByUsername(credential.getUsername()).isPresent())
             credentialRepository.save(credential);
@@ -214,9 +217,47 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public List<Credential> getUsers() throws UnknownServiceException {
+    public boolean deleteToken(Token token) throws UnknownServiceException {
         try {
-            return credentialRepository.findAllUsername();
+            tokenRepository.delete(token);
+            return true;
+        } catch (Exception e) {
+            throw new UnknownServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Page<User> getUsers(int pageNumber) throws UnknownServiceException {
+        try {
+            Pageable pageable = PageRequest.of(pageNumber, 10);
+            return userRepository.findAllNoCredential(pageable);
+        } catch (Exception e) {
+            throw new UnknownServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public User getUser(String id) throws UnknownServiceException {
+        try {
+            return userRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new UnknownServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public User getUserByUsername(String username) throws UnknownServiceException {
+        try {
+            return userRepository.findByUsername(username);
+        } catch (Exception e) {
+            throw new UnknownServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public User insertUser(User user) throws UnknownServiceException {
+        try {
+            return userRepository.save(user);
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }

@@ -4,6 +4,7 @@ import it.polito.ai.labs.lab3.files.LinesDeserializer;
 import it.polito.ai.labs.lab3.files.json.Line;
 import it.polito.ai.labs.lab3.services.database.models.Credential;
 import it.polito.ai.labs.lab3.services.database.DatabaseServiceInterface;
+import it.polito.ai.labs.lab3.services.database.models.Roles;
 import it.polito.ai.labs.lab3.services.database.repositories.CredentialRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +55,9 @@ public class Lab3Application implements CommandLineRunner {
     public void run(String[] args) throws Exception {
 
         if(!credentials.findByUsername("prova@mail.it").isPresent())
-            this.credentials.save(new Credential( this.passwordEncoder.encode("password"), "prova@mail.it", Arrays.asList("ROLE_USER") ));
+            this.credentials.save(new Credential( this.passwordEncoder.encode("password"), "prova@mail.it", Arrays.asList(Roles.USER) ));
         if(!credentials.findByUsername("admin@mail.it").isPresent())
-            this.credentials.save(new Credential( this.passwordEncoder.encode("password"), "admin@mail.it", Arrays.asList("ROLE_USER", "ROLE_ADMIN") ));
+            this.credentials.save(new Credential( this.passwordEncoder.encode("password"), "admin@mail.it", Arrays.asList(Roles.USER,Roles.ADMIN,Roles.SYSTEM_ADMIN) ));
 
         for (String arg : args) {
             if (arg.startsWith("--files=")) {

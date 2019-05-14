@@ -5,14 +5,12 @@ import it.polito.ai.labs.lab3.controllers.models.ChangePasswordRequest;
 import it.polito.ai.labs.lab3.controllers.models.RegistrationRequest;
 import it.polito.ai.labs.lab3.security.JwtTokenProvider;
 import it.polito.ai.labs.lab3.services.database.DatabaseServiceInterface;
-import it.polito.ai.labs.lab3.services.database.models.Token;
-import it.polito.ai.labs.lab3.services.database.models.Credential;
-import it.polito.ai.labs.lab3.services.database.models.Roles;
-import it.polito.ai.labs.lab3.services.database.models.ScopeToken;
+import it.polito.ai.labs.lab3.services.database.models.*;
 import it.polito.ai.labs.lab3.services.database.repositories.TokenRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.CredentialRepository;
 import it.polito.ai.labs.lab3.services.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -20,6 +18,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.UnknownServiceException;
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -90,7 +92,7 @@ public class AuthController {
                     return new ResponseEntity<>("password is not equals", HttpStatus.BAD_REQUEST);
 
                 System.out.println("register new credential");
-                Credential credential = database.insertUser(username, data.getPassword(), Arrays.asList(Roles.USER,Roles.ADMIN));
+                Credential credential = database.insertCredential(username, data.getPassword(), Arrays.asList(Roles.USER,Roles.ADMIN));
 
                 Token token = new Token(credential);
                 token.setScope(ScopeToken.CONFIRM);
@@ -117,17 +119,21 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/confirm", method = {RequestMethod.GET, RequestMethod.POST})
-    public ResponseEntity confirmUserAccount(@RequestParam("token") String confirmationToken) {
+    public ResponseEntity confirmUserAccount(@RequestParam("token") String confirmationToken, @RequestBody @Validated User user) {
         Token token = tokenRepository.findByConfirmationToken(confirmationToken);
 
         try {
             if (token != null) {
-                Optional<Credential> user = credentialRepository.findById(token.getCredential().getId());
-                if (user.isPresent() && token.getExpirationDate().after(new Date())) {
-                    user.get().setEnable(true);
-                    database.updateUser(user.get());
+                Optional<Credential> credential = credentialRepository.findById(token.getCredential().getId());
+                if (credential.isPresent() && token.getExpirationDate().after(new Date())) {
+                    credential.get().setEnable(true);
+                    database.updateCredential(credential.get());
+                    user.setId(credential.get().getId());
+                    user.setCredential(credential.get());
+                    database.insertUser(user);
+                    database.deleteToken(token);
                     Map<Object, Object> model = new HashMap<>();
-                    model.put("username", user.get().getUsername());
+                    model.put("username", credential.get().getUsername());
                     model.put("verification", "accountVerified");
                     return ok(model);
                 } else
@@ -211,15 +217,46 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/users", method = {RequestMethod.GET})
-    public ResponseEntity getUsers() {
+    public ResponseEntity getUsers(@RequestParam int page) {
         try {
-            List<Credential> credentials = database.getUsers();
-            return new ResponseEntity<>("credentials: "+ credentials, HttpStatus.OK);
+            Page<User> credentials = database.getUsers(page);
+            return new ResponseEntity<>("users: "+ credentials.getContent(), HttpStatus.OK);
         } catch (UnknownServiceException e) {
             return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @RequestMapping(value = "/users/{userID}", method={RequestMethod.PUT})
+    public ResponseEntity putUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("userID") String userID, @RequestBody @Validated User user) {
+        try{
+           List<String> roles=userDetails.getAuthorities()
+                    .stream()
+                    .map(a -> ((GrantedAuthority) a).getAuthority())
+                    .collect(toList());
+            if(roles.contains(Roles.SYSTEM_ADMIN)){
+                User userCheck=database.getUser(userID);
+                if(userCheck!=null){
+                    database.insertUser(user);
+                }
+                return new ResponseEntity<>("User update",HttpStatus.OK);
+            }
+            else if(roles.contains(Roles.ADMIN)){
+                User userPrincipal=database.getUserByUsername(userDetails.getUsername());
 
-
+                if(userPrincipal.getLines()!=null && user.getLines()!=null && userPrincipal.getLines().contains(user.getLines().get(0))){
+                    User userCheck=database.getUser(userID);
+                    if(userCheck!=null){
+                        database.insertUser(user);
+                    }
+                    return new ResponseEntity<>("User update",HttpStatus.OK);
+                }
+                else
+                    return new ResponseEntity<>("Not permitted for this line",HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>("Not permitted for this line",HttpStatus.BAD_REQUEST);
+        }
+        catch  (Exception e) {
+            return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

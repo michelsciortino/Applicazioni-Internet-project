@@ -6,6 +6,8 @@ import it.polito.ai.labs.lab3.controllers.models.LineReservations;
 import it.polito.ai.labs.lab3.controllers.models.Reservation;
 import it.polito.ai.labs.lab3.services.database.models.Token;
 import it.polito.ai.labs.lab3.services.database.models.Credential;
+import it.polito.ai.labs.lab3.services.database.models.User;
+import org.springframework.data.domain.Page;
 
 import java.net.UnknownServiceException;
 import java.time.LocalDateTime;
@@ -29,13 +31,21 @@ public interface DatabaseServiceInterface {
 
     public Reservation getReservation(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException;
 
-    public Credential insertUser(String Username, String Password, List<String> role) throws UnknownServiceException;
+    public Credential insertCredential(String Username, String Password, List<String> role) throws UnknownServiceException;
 
     public boolean modifyUserPassword(Credential credential, String password) throws  UnknownServiceException;
 
-    public boolean updateUser(Credential credential) throws  UnknownServiceException;
+    public boolean updateCredential(Credential credential) throws  UnknownServiceException;
 
     public boolean insertToken(Token token) throws UnknownServiceException;
 
-    public List<Credential> getUsers() throws UnknownServiceException;
+    public boolean deleteToken(Token token) throws UnknownServiceException;
+
+    public Page<User> getUsers(int pageNumber) throws UnknownServiceException;
+
+    public User getUser(String id) throws UnknownServiceException;
+
+    public User getUserByUsername(String username) throws UnknownServiceException;
+
+    public User insertUser(User user) throws UnknownServiceException;
 }
