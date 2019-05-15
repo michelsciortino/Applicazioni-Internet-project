@@ -4,6 +4,7 @@ package it.polito.ai.labs.lab3.services.database;
 import it.polito.ai.labs.lab3.files.json.Line;
 import it.polito.ai.labs.lab3.controllers.models.LineReservations;
 import it.polito.ai.labs.lab3.controllers.models.Reservation;
+import it.polito.ai.labs.lab3.services.database.models.ReservationMongo;
 import it.polito.ai.labs.lab3.services.database.models.Token;
 import it.polito.ai.labs.lab3.services.database.models.Credential;
 import it.polito.ai.labs.lab3.services.database.models.User;
@@ -33,7 +34,11 @@ public interface DatabaseServiceInterface {
 
     public Reservation getReservation(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException;
 
+    public ReservationMongo getReservationMongo(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException;
+
     public Credential insertCredential(String Username, String Password, List<String> role) throws UnknownServiceException;
+
+    public Credential getCredential(String id) throws UnknownServiceException;
 
     public boolean modifyUserPassword(Credential credential, String password) throws UnknownServiceException;
 
@@ -53,7 +58,11 @@ public interface DatabaseServiceInterface {
 
     public User insertUser(User user) throws UnknownServiceException;
 
-    public boolean adminmakeAdmin(User user, UserDetails userDetails, String userID, String line) throws UnknownServiceException;
+    public boolean makeAdminFromAdmin(User user, UserDetails userDetails, String userID, String line) throws UnknownServiceException;
 
-    public boolean superadminmakeAdmin(User user, String userID) throws UnknownServiceException;
-}
+    public boolean makeAdminFromSystemAdmin(User user, String userID) throws UnknownServiceException;
+
+    public boolean removeAdminFromAdmin(User user, UserDetails userDetails, String userID, String line) throws UnknownServiceException;
+
+    public boolean removeAdminFromSystemAdmin(User user, String userID) throws UnknownServiceException;
+    }

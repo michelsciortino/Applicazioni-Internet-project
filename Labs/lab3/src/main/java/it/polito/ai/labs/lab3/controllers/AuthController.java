@@ -89,7 +89,7 @@ public class AuthController {
                     return new ResponseEntity<>("password is not equals", HttpStatus.BAD_REQUEST);
 
                 System.out.println("register new credential");
-                Credential credential = database.insertCredential(username, data.getPassword(), Arrays.asList(Roles.USER, Roles.ADMIN));
+                Credential credential = database.insertCredential(username, data.getPassword(), Arrays.asList(Roles.prefix+Roles.USER));
 
                 Token token = new Token(credential);
                 token.setScope(ScopeToken.CONFIRM);
@@ -218,46 +218,6 @@ public class AuthController {
                 return new ResponseEntity<>("Credential not found or token expired", HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>("The link is invalid or broken!", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @RequestMapping(value = "/users", method = {RequestMethod.GET})
-    public ResponseEntity getUsers(@RequestParam int page) {
-        try {
-            Page<User> credentials = database.getUsers(page);
-            return new ResponseEntity<>("users: " + credentials.getContent(), HttpStatus.OK);
-        } catch (UnknownServiceException e) {
-            return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @RequestMapping(value = "/users/{userID}", method={RequestMethod.PUT})
-    public ResponseEntity putUser( @AuthenticationPrincipal UserDetails userDetails,@RequestParam("line") String line, @PathVariable("userID") String userID, @RequestBody @Validated User user) {
-        try
-        {
-            List<String> roles=userDetails.getAuthorities()
-                    .stream()
-                    .map(a -> ((GrantedAuthority) a).getAuthority())
-                    .collect(toList());
-            if(roles.contains(Roles.SYSTEM_ADMIN))
-            {
-                if(database.superadminmakeAdmin(user, userID))
-                    return new ResponseEntity<>("User update",HttpStatus.OK);
-                else
-                    return new ResponseEntity<>("Error while updating",HttpStatus.BAD_REQUEST);
-            }
-            else if(roles.contains(Roles.ADMIN))
-            {
-                if (database.adminmakeAdmin(user, userDetails, userID, line))
-                    return new ResponseEntity<>("User update",HttpStatus.OK);
-                else
-                    return new ResponseEntity<>("Error while updating",HttpStatus.BAD_REQUEST);
-            }
-            else
-                return new ResponseEntity<>("Not permitted for this line",HttpStatus.BAD_REQUEST);
-        }
-        catch  (Exception e) {
-            return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
