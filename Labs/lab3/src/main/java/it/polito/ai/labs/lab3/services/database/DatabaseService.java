@@ -266,26 +266,29 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Override
     @Transactional
-    public void adminmakeAdmin(User user, UserDetails userDetails, String userID) throws UnknownServiceException {
+    public boolean adminmakeAdmin(User user, UserDetails userDetails, String userID) throws UnknownServiceException {
         User userPrincipal = getUserByUsername(userDetails.getUsername());
         if (userPrincipal.getLines() != null && user.getLines() != null && userPrincipal.getLines().contains(user.getLines().get(0)))
         {
-            if (getUser(userID) != null)
+            if (getUser(userID) != null) {
                 insertUser(user);
-            else
-                throw new UnknownServiceException();
+                return true;
+            }
+
+            return false;
 
         }
     }
 
     @Override
     @Transactional
-    public void superadminmakeAdmin(User user, String userID) throws UnknownServiceException
-    {
-        if(getUser(userID)!=null)
+    public boolean superadminmakeAdmin(User user, String userID) throws UnknownServiceException {
+        if (getUser(userID) != null)
+        {
             insertUser(user);
-        else
-            throw new UnknownServiceException();
+            return true;
+        }
+        return  false;
     }
 
 

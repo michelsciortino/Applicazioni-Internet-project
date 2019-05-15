@@ -236,13 +236,17 @@ public class AuthController {
                     .collect(toList());
             if(roles.contains(Roles.SYSTEM_ADMIN))
             {
-                database.superadminmakeAdmin(user, userID);
-                return new ResponseEntity<>("User update",HttpStatus.OK);
+                if(database.superadminmakeAdmin(user, userID))
+                    return new ResponseEntity<>("User update",HttpStatus.OK);
+                else
+                    return new ResponseEntity<>("Error while updating",HttpStatus.BAD_REQUEST);
             }
             else if(roles.contains(Roles.ADMIN))
                 {
-                    database.adminmakeAdmin(user, userDetails, userID);
-                    return new ResponseEntity<>("User update",HttpStatus.OK);
+                    if (database.adminmakeAdmin(user, userDetails, userID))
+                        return new ResponseEntity<>("User update",HttpStatus.OK);
+                    else
+                        return new ResponseEntity<>("Error while updating",HttpStatus.BAD_REQUEST);
                 }
             else
                 return new ResponseEntity<>("Not permitted for this line",HttpStatus.BAD_REQUEST);

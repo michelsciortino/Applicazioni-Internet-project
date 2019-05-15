@@ -51,7 +51,7 @@ public interface DatabaseServiceInterface {
 
     public User insertUser(User user) throws UnknownServiceException;
 
-    public void adminmakeAdmin(User user, UserDetails userDetails, String userID) throws UnknownServiceException;
+    public boolean adminmakeAdmin(User user, UserDetails userDetails, String userID) throws UnknownServiceException;
 
-    public void superadminmakeAdmin(User user, String userID) throws UnknownServiceException;
+    public boolean superadminmakeAdmin(User user, String userID) throws UnknownServiceException;
 }
