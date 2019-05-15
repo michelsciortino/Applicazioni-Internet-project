@@ -269,15 +269,12 @@ public class DatabaseService implements DatabaseServiceInterface {
     public boolean adminmakeAdmin(User user, UserDetails userDetails, String userID) throws UnknownServiceException {
         User userPrincipal = getUserByUsername(userDetails.getUsername());
         if (userPrincipal.getLines() != null && user.getLines() != null && userPrincipal.getLines().contains(user.getLines().get(0)))
-        {
             if (getUser(userID) != null) {
                 insertUser(user);
                 return true;
             }
+        return false;
 
-            return false;
-
-        }
     }
 
     @Override
