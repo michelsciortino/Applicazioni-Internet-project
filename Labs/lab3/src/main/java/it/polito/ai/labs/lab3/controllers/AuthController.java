@@ -161,7 +161,7 @@ public class AuthController {
                 mailMessage.setSubject("Change Password!");
                 mailMessage.setFrom("chand312902@gmail.com");
                 mailMessage.setText("To change your password, please click here : "
-                        + "http://localhost:8080/recover?token=" + changeToken.getConfirmationToken());
+                        + "http://localhost:8080/recover/" + changeToken.getConfirmationToken());
 
                 //link print in console not send with email for test
                 System.out.println(mailMessage);
