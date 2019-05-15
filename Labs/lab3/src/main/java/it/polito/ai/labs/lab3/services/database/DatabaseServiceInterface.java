@@ -7,7 +7,9 @@ import it.polito.ai.labs.lab3.controllers.models.Reservation;
 import it.polito.ai.labs.lab3.services.database.models.Token;
 import it.polito.ai.labs.lab3.services.database.models.Credential;
 import it.polito.ai.labs.lab3.services.database.models.User;
+import org.springframework.data.authentication.UserCredentials;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.net.UnknownServiceException;
 import java.time.LocalDateTime;
@@ -48,4 +50,8 @@ public interface DatabaseServiceInterface {
     public User getUserByUsername(String username) throws UnknownServiceException;
 
     public User insertUser(User user) throws UnknownServiceException;
+
+    public void adminmakeAdmin(User user, UserDetails userDetails, String userID) throws UnknownServiceException;
+
+    public void superadminmakeAdmin(User user, String userID) throws UnknownServiceException;
 }

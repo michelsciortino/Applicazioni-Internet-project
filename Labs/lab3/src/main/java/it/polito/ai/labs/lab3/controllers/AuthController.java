@@ -228,32 +228,24 @@ public class AuthController {
 
     @RequestMapping(value = "/users/{userID}", method={RequestMethod.PUT})
     public ResponseEntity putUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("userID") String userID, @RequestBody @Validated User user) {
-        try{
+        try
+        {
            List<String> roles=userDetails.getAuthorities()
                     .stream()
                     .map(a -> ((GrantedAuthority) a).getAuthority())
                     .collect(toList());
-            if(roles.contains(Roles.SYSTEM_ADMIN)){
-                User userCheck=database.getUser(userID);
-                if(userCheck!=null){
-                    database.insertUser(user);
-                }
+            if(roles.contains(Roles.SYSTEM_ADMIN))
+            {
+                database.superadminmakeAdmin(user, userID);
                 return new ResponseEntity<>("User update",HttpStatus.OK);
             }
-            else if(roles.contains(Roles.ADMIN)){
-                User userPrincipal=database.getUserByUsername(userDetails.getUsername());
-
-                if(userPrincipal.getLines()!=null && user.getLines()!=null && userPrincipal.getLines().contains(user.getLines().get(0))){
-                    User userCheck=database.getUser(userID);
-                    if(userCheck!=null){
-                        database.insertUser(user);
-                    }
+            else if(roles.contains(Roles.ADMIN))
+                {
+                    database.adminmakeAdmin(user, userDetails, userID);
                     return new ResponseEntity<>("User update",HttpStatus.OK);
                 }
-                else
-                    return new ResponseEntity<>("Not permitted for this line",HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>("Not permitted for this line",HttpStatus.BAD_REQUEST);
+            else
+                return new ResponseEntity<>("Not permitted for this line",HttpStatus.BAD_REQUEST);
         }
         catch  (Exception e) {
             return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);

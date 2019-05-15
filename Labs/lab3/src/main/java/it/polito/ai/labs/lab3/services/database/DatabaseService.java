@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -262,6 +263,31 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new UnknownServiceException(e.getMessage());
         }
     }
+
+    @Override
+    @Transactional
+    public void adminmakeAdmin(User user, UserDetails userDetails, String userID) throws UnknownServiceException {
+        User userPrincipal = getUserByUsername(userDetails.getUsername());
+        if (userPrincipal.getLines() != null && user.getLines() != null && userPrincipal.getLines().contains(user.getLines().get(0)))
+        {
+            if (getUser(userID) != null)
+                insertUser(user);
+            else
+                throw new UnknownServiceException();
+
+        }
+    }
+
+    @Override
+    @Transactional
+    public void superadminmakeAdmin(User user, String userID) throws UnknownServiceException
+    {
+        if(getUser(userID)!=null)
+            insertUser(user);
+        else
+            throw new UnknownServiceException();
+    }
+
 
 
 }
