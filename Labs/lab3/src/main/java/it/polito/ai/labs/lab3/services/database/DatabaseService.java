@@ -276,13 +276,13 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Override
     @Transactional
-    public boolean adminmakeAdmin(User user, UserDetails userDetails, String userID) throws UnknownServiceException {
+    public boolean adminmakeAdmin(User user, UserDetails userDetails, String userID, String line) throws UnknownServiceException {
         User userPrincipal = getUserByUsername(userDetails.getUsername());
-        if (userPrincipal.getLines() != null && user.getLines() != null && userPrincipal.getLines().contains(user.getLines().get(0)))
+        if (userPrincipal.getLines() != null && user.getLines() != null && userPrincipal.getLines().contains(line))
             if (getUser(userID) != null) {
                 insertUser(user);
                 return true;
-            }
+             }
         return false;
 
     }
@@ -297,6 +297,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         return  false;
     }
+
 
 
 

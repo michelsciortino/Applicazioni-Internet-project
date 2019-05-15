@@ -231,26 +231,32 @@ public class AuthController {
         }
     }
 
-    @RequestMapping(value = "/users/{userID}", method = {RequestMethod.PUT})
-    public ResponseEntity putUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("userID") String userID, @RequestBody @Validated User user) {
-        try {
-            List<String> roles = userDetails.getAuthorities()
+    @RequestMapping(value = "/users/{userID}", method={RequestMethod.PUT})
+    public ResponseEntity putUser( @AuthenticationPrincipal UserDetails userDetails,@RequestParam("line") String line, @PathVariable("userID") String userID, @RequestBody @Validated User user) {
+        try
+        {
+            List<String> roles=userDetails.getAuthorities()
                     .stream()
                     .map(a -> ((GrantedAuthority) a).getAuthority())
                     .collect(toList());
-            if (roles.contains(Roles.SYSTEM_ADMIN)) {
-                if (database.superadminmakeAdmin(user, userID))
-                    return new ResponseEntity<>("User update", HttpStatus.OK);
+            if(roles.contains(Roles.SYSTEM_ADMIN))
+            {
+                if(database.superadminmakeAdmin(user, userID))
+                    return new ResponseEntity<>("User update",HttpStatus.OK);
                 else
-                    return new ResponseEntity<>("Error while updating", HttpStatus.BAD_REQUEST);
-            } else if (roles.contains(Roles.ADMIN)) {
-                if (database.adminmakeAdmin(user, userDetails, userID))
-                    return new ResponseEntity<>("User update", HttpStatus.OK);
+                    return new ResponseEntity<>("Error while updating",HttpStatus.BAD_REQUEST);
+            }
+            else if(roles.contains(Roles.ADMIN))
+            {
+                if (database.adminmakeAdmin(user, userDetails, userID, line))
+                    return new ResponseEntity<>("User update",HttpStatus.OK);
                 else
-                    return new ResponseEntity<>("Error while updating", HttpStatus.BAD_REQUEST);
-            } else
-                return new ResponseEntity<>("Not permitted for this line", HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
+                    return new ResponseEntity<>("Error while updating",HttpStatus.BAD_REQUEST);
+            }
+            else
+                return new ResponseEntity<>("Not permitted for this line",HttpStatus.BAD_REQUEST);
+        }
+        catch  (Exception e) {
             return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
