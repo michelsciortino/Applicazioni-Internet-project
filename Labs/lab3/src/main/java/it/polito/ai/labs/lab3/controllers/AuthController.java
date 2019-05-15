@@ -6,8 +6,8 @@ import it.polito.ai.labs.lab3.controllers.models.RegistrationRequest;
 import it.polito.ai.labs.lab3.security.JwtTokenProvider;
 import it.polito.ai.labs.lab3.services.database.DatabaseServiceInterface;
 import it.polito.ai.labs.lab3.services.database.models.*;
-import it.polito.ai.labs.lab3.services.database.repositories.TokenRepository;
 import it.polito.ai.labs.lab3.services.database.repositories.CredentialRepository;
+import it.polito.ai.labs.lab3.services.database.repositories.TokenRepository;
 import it.polito.ai.labs.lab3.services.email.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,27 +36,24 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private DatabaseServiceInterface database;
-
-    @Autowired
-    public AuthController(DatabaseServiceInterface database) {
-        this.database = database;
-    }
-
     @Autowired
     AuthenticationManager authenticationManager;
-
     @Autowired
     JwtTokenProvider jwtTokenProvider;
-
     @Autowired
     CredentialRepository credentialRepository;
 
+    private DatabaseServiceInterface database;
     @Autowired
     private TokenRepository tokenRepository;
 
     @Autowired
     private EmailSenderService emailSenderService;
+
+    @Autowired
+    public AuthController(DatabaseServiceInterface database) {
+        this.database = database;
+    }
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody AuthenticationRequest data) {
@@ -92,22 +89,26 @@ public class AuthController {
                     return new ResponseEntity<>("password is not equals", HttpStatus.BAD_REQUEST);
 
                 System.out.println("register new credential");
-                Credential credential = database.insertCredential(username, data.getPassword(), Arrays.asList(Roles.USER,Roles.ADMIN));
+                Credential credential = database.insertCredential(username, data.getPassword(), Arrays.asList(Roles.USER, Roles.ADMIN));
 
                 Token token = new Token(credential);
                 token.setScope(ScopeToken.CONFIRM);
                 tokenRepository.save(token);
+                try {
+                    SimpleMailMessage mailMessage = new SimpleMailMessage();
+                    mailMessage.setTo(credential.getUsername());
+                    mailMessage.setSubject("Complete Registration!");
+                    mailMessage.setFrom("chand312902@gmail.com");
+                    mailMessage.setText("To confirm your account, please click here : "
+                            + "http://localhost:8080/confirm?token=" + token.getConfirmationToken());
 
-                SimpleMailMessage mailMessage = new SimpleMailMessage();
-                mailMessage.setTo(credential.getUsername());
-                mailMessage.setSubject("Complete Registration!");
-                mailMessage.setFrom("chand312902@gmail.com");
-                mailMessage.setText("To confirm your account, please click here : "
-                        + "http://localhost:8080/confirm?token=" + token.getConfirmationToken());
-
-                //link print in console not send with email for test
-                System.out.println(mailMessage);
-                //emailSenderService.sendEmail(mailMessage);
+                    //link print in console not send with email for test
+                    System.out.println(mailMessage);
+                    //emailSenderService.sendEmail(mailMessage);
+                } catch (Exception e) {
+                    database.deleteCredential(credential);
+                    throw new UnknownServiceException();
+                }
 
                 Map<Object, Object> model = new HashMap<>();
                 model.put("username", username);
@@ -155,17 +156,21 @@ public class AuthController {
                 Token changeToken = new Token(userExist.get());
                 changeToken.setScope(ScopeToken.RECOVERY);
                 database.insertToken(changeToken);
+                try {
+                    SimpleMailMessage mailMessage = new SimpleMailMessage();
+                    mailMessage.setTo(userExist.get().getUsername());
+                    mailMessage.setSubject("Change Password!");
+                    mailMessage.setFrom("chand312902@gmail.com");
+                    mailMessage.setText("To change your password, please click here : "
+                            + "http://localhost:8080/recover/" + changeToken.getConfirmationToken());
 
-                SimpleMailMessage mailMessage = new SimpleMailMessage();
-                mailMessage.setTo(userExist.get().getUsername());
-                mailMessage.setSubject("Change Password!");
-                mailMessage.setFrom("chand312902@gmail.com");
-                mailMessage.setText("To change your password, please click here : "
-                        + "http://localhost:8080/recover/" + changeToken.getConfirmationToken());
-
-                //link print in console not send with email for test
-                System.out.println(mailMessage);
-                //emailSenderService.sendEmail(mailMessage);
+                    //link print in console not send with email for test
+                    System.out.println(mailMessage);
+                    //emailSenderService.sendEmail(mailMessage);
+                } catch (Exception e) {
+                    database.deleteToken(changeToken);
+                    throw new UnknownServiceException();
+                }
 
                 Map<Object, Object> model = new HashMap<>();
                 model.put("username", email);
@@ -220,38 +225,32 @@ public class AuthController {
     public ResponseEntity getUsers(@RequestParam int page) {
         try {
             Page<User> credentials = database.getUsers(page);
-            return new ResponseEntity<>("users: "+ credentials.getContent(), HttpStatus.OK);
+            return new ResponseEntity<>("users: " + credentials.getContent(), HttpStatus.OK);
         } catch (UnknownServiceException e) {
             return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @RequestMapping(value = "/users/{userID}", method={RequestMethod.PUT})
+    @RequestMapping(value = "/users/{userID}", method = {RequestMethod.PUT})
     public ResponseEntity putUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("userID") String userID, @RequestBody @Validated User user) {
-        try
-        {
-           List<String> roles=userDetails.getAuthorities()
+        try {
+            List<String> roles = userDetails.getAuthorities()
                     .stream()
                     .map(a -> ((GrantedAuthority) a).getAuthority())
                     .collect(toList());
-            if(roles.contains(Roles.SYSTEM_ADMIN))
-            {
-                if(database.superadminmakeAdmin(user, userID))
-                    return new ResponseEntity<>("User update",HttpStatus.OK);
+            if (roles.contains(Roles.SYSTEM_ADMIN)) {
+                if (database.superadminmakeAdmin(user, userID))
+                    return new ResponseEntity<>("User update", HttpStatus.OK);
                 else
-                    return new ResponseEntity<>("Error while updating",HttpStatus.BAD_REQUEST);
-            }
-            else if(roles.contains(Roles.ADMIN))
-                {
-                    if (database.adminmakeAdmin(user, userDetails, userID))
-                        return new ResponseEntity<>("User update",HttpStatus.OK);
-                    else
-                        return new ResponseEntity<>("Error while updating",HttpStatus.BAD_REQUEST);
-                }
-            else
-                return new ResponseEntity<>("Not permitted for this line",HttpStatus.BAD_REQUEST);
-        }
-        catch  (Exception e) {
+                    return new ResponseEntity<>("Error while updating", HttpStatus.BAD_REQUEST);
+            } else if (roles.contains(Roles.ADMIN)) {
+                if (database.adminmakeAdmin(user, userDetails, userID))
+                    return new ResponseEntity<>("User update", HttpStatus.OK);
+                else
+                    return new ResponseEntity<>("Error while updating", HttpStatus.BAD_REQUEST);
+            } else
+                return new ResponseEntity<>("Not permitted for this line", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
             return new ResponseEntity<>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

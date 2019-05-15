@@ -35,9 +35,11 @@ public interface DatabaseServiceInterface {
 
     public Credential insertCredential(String Username, String Password, List<String> role) throws UnknownServiceException;
 
-    public boolean modifyUserPassword(Credential credential, String password) throws  UnknownServiceException;
+    public boolean modifyUserPassword(Credential credential, String password) throws UnknownServiceException;
 
-    public boolean updateCredential(Credential credential) throws  UnknownServiceException;
+    public boolean updateCredential(Credential credential) throws UnknownServiceException;
+
+    public boolean deleteCredential(Credential credential) throws UnknownServiceException;
 
     public boolean insertToken(Token token) throws UnknownServiceException;
 

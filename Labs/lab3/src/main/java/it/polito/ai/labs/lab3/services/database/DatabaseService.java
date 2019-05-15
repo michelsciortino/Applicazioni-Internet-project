@@ -208,6 +208,16 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
+    public boolean deleteCredential(Credential credential) throws UnknownServiceException {
+        try {
+            credentialRepository.delete(credential);
+            return true;
+        } catch (Exception e) {
+            throw new UnknownServiceException(e.getMessage());
+        }
+    }
+
+    @Override
     public boolean insertToken(Token token) throws UnknownServiceException {
         try {
             tokenRepository.save(token);
