@@ -171,6 +171,15 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
+    public ReservationMongo getReservationMongo(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException {
+        try {
+            return reservationRepository.findById(reservationId).get();
+        } catch (Exception e) {
+            throw new UnknownServiceException(e.getMessage());
+        }
+    }
+
+    @Override
     public Credential insertCredential(String username, String password, List<String> role) throws UnknownServiceException {
         try {
             Credential credential = null;
@@ -179,6 +188,15 @@ public class DatabaseService implements DatabaseServiceInterface {
             else
                 return null;
             return credential;
+        } catch (Exception e) {
+            throw new UnknownServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Credential getCredential(String id) throws UnknownServiceException {
+        try {
+            return credentialRepository.findById(id).get();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
@@ -276,29 +294,81 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Override
     @Transactional
-    public boolean adminmakeAdmin(User user, UserDetails userDetails, String userID, String line) throws UnknownServiceException {
+    public boolean makeAdminFromAdmin(User user, UserDetails userDetails, String userID, String line) throws UnknownServiceException {
         User userPrincipal = getUserByUsername(userDetails.getUsername());
-        if (userPrincipal.getLines() != null && user.getLines() != null && userPrincipal.getLines().contains(line))
-            if (getUser(userID) != null) {
-                insertUser(user);
+        if (userPrincipal.getLines() != null && user.getLines() != null && userPrincipal.getLines().contains(line)){
+            Credential credentialDB=getCredential(userID);
+            if (credentialDB != null)
+            {
+                List<String> roles=credentialDB.getRoles();
+                if(roles.contains(Roles.prefix+Roles.ADMIN))
+                    return false;
+                else
+                    roles.add(Roles.prefix+Roles.ADMIN);
+                credentialDB.setRoles(roles);
+                updateCredential(credentialDB);
                 return true;
-             }
+            }
+        }
         return false;
-
     }
 
     @Override
     @Transactional
-    public boolean superadminmakeAdmin(User user, String userID) throws UnknownServiceException {
-        if (getUser(userID) != null)
+    public boolean makeAdminFromSystemAdmin(User user, String userID) throws UnknownServiceException {
+        Credential credentialDB=getCredential(userID);
+        if (credentialDB != null)
         {
-            insertUser(user);
+            List<String> roles=credentialDB.getRoles();
+            if(roles.contains(Roles.prefix+Roles.ADMIN))
+                return false;
+            else
+                roles.add(Roles.prefix+Roles.ADMIN);
+            credentialDB.setRoles(roles);
+            updateCredential(credentialDB);
             return true;
         }
         return  false;
     }
 
+    @Override
+    @Transactional
+    public boolean removeAdminFromAdmin(User user, UserDetails userDetails, String userID, String line) throws UnknownServiceException {
+        User userPrincipal = getUserByUsername(userDetails.getUsername());
+        if (userPrincipal.getLines() != null && user.getLines() != null && userPrincipal.getLines().contains(line)){
+            Credential credentialDB=getCredential(userID);
+            if (credentialDB != null)
+            {
+                List<String> roles=credentialDB.getRoles();
+                if(roles.contains(Roles.prefix+Roles.ADMIN)) {
+                    roles.remove(Roles.prefix + Roles.ADMIN);
+                    credentialDB.setRoles(roles);
+                    updateCredential(credentialDB);
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
+    }
 
+    @Override
+    @Transactional
+    public boolean removeAdminFromSystemAdmin(User user, String userID) throws UnknownServiceException {
+        Credential credentialDB=getCredential(userID);
+        if (credentialDB != null)
+        {
+            List<String> roles=credentialDB.getRoles();
+            if(roles.contains(Roles.prefix+Roles.ADMIN)) {
+                roles.remove(Roles.prefix + Roles.ADMIN);
+                credentialDB.setRoles(roles);
+                updateCredential(credentialDB);
+                return true;
+            }
+            return false;
+        }
+        return  false;
+    }
 
 
 }

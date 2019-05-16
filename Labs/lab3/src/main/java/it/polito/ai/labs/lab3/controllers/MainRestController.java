@@ -4,9 +4,14 @@ import it.polito.ai.labs.lab3.files.json.Line;
 import it.polito.ai.labs.lab3.controllers.models.LineReservations;
 import it.polito.ai.labs.lab3.controllers.models.Reservation;
 import it.polito.ai.labs.lab3.services.database.DatabaseServiceInterface;
+import it.polito.ai.labs.lab3.services.database.models.Credential;
+import it.polito.ai.labs.lab3.services.database.models.ReservationMongo;
+import it.polito.ai.labs.lab3.services.database.models.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -103,8 +108,20 @@ public class MainRestController {
     @RequestMapping(value = "/reservations/{line_name}/{date}/{reservation_id}", method = RequestMethod.GET)
     public Reservation getReservation(@PathVariable String line_name,
                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable LocalDateTime date,
-                                      @PathVariable String reservation_id) {
+                                      @PathVariable String reservation_id, @AuthenticationPrincipal Credential credential) {
         try {
+            if(credential.getRoles().contains(Roles.prefix+Roles.SYSTEM_ADMIN) ||
+                    credential.getRoles().contains(Roles.prefix+Roles.ADMIN)) {
+                return database.getReservation(null, line_name, date, reservation_id);
+            }
+            else
+            if(credential.getRoles().contains(Roles.prefix+Roles.USER)) {
+                ReservationMongo reservation=database.getReservationMongo(null, line_name, date, reservation_id);
+                if(credential.getId().equals(reservation.getUserID()))
+                    return database.getReservation(null, line_name, date, reservation_id);
+                else
+                    return null;
+            }
             return database.getReservation(null, line_name, date, reservation_id);
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
