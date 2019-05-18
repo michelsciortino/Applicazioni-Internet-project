@@ -1,20 +1,30 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { from } from 'rxjs';
+import { AngularWaitBarrier } from 'blocking-proxy/built/lib/angular_wait_barrier';
 import { NgModule } from '@angular/core';
-import { MatCardModule } from '@angular/material/card'
 import { FlexLayoutModule } from '@angular/flex-layout'
+import { MatCardModule } from '@angular/material/card'
 import { MatListModule } from '@angular/material/list'
+import { MatPaginatorModule, MatPaginatorIntl, MatPaginator } from '@angular/material/paginator';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 
 import { AppComponent } from './app.component';
-import { from } from 'rxjs';
+import { LinesPaginator, LinesPaginatorIntl } from './LinesPaginator'
+import { OrderByName } from './OrderByPypes'
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent, OrderByName
   ],
   imports: [
-    BrowserModule, MatCardModule, MatListModule, FlexLayoutModule
+    MatCardModule, MatListModule, MatPaginatorModule, NoopAnimationsModule, FlexLayoutModule
   ],
-  providers: [],
+  providers: [{
+    provide: MatPaginatorIntl,
+    useClass: LinesPaginatorIntl
+  }, {
+    provide: MatPaginator,
+    useClass: LinesPaginator,
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

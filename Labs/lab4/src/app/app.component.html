@@ -6,17 +6,19 @@
 
 <mat-card class="line-card centered">
     <mat-card-header>
-        <mat-card-title>{{line.name}}</mat-card-title>
-        <mat-card-subtitle>{{line.date}}</mat-card-subtitle>
+        <mat-card-title> {{lines[selectedLineIndex].name}} </mat-card-title>
+        <mat-card-subtitle>{{lines[selectedLineIndex].date}}</mat-card-subtitle>
+        <mat-paginator hidePageSize=true id="paginator" (page)="changeLineEvent($event)" [length]=lines.length [pageSize]="1" [pageSizeOptions]="[1]"></mat-paginator>
     </mat-card-header>
     <mat-card-content class="timeline">
-        <div class="container right" *ngFor="let stop of line.stops">
+        <div class="container right" *ngFor="let stop of lines[selectedLineIndex].stops">
             <div class="content">
                 <div mat-line>
                     {{stop.time}} {{stop.name}}
                 </div>
                 <ul mat-line>
-                    <li *ngFor="let name of stop.children">{{name}} </li>
+                    <li *ngFor="let child of stop.children  | OrderByName" [ngClass]="{'present':child.isPresent === true}" (click)="changeChildPresence(child)">
+                        {{child.name}} </li>
                 </ul>
             </div>
         </div>

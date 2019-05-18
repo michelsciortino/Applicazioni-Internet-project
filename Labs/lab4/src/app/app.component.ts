@@ -8,29 +8,50 @@ import { Component } from '@angular/core';
 
 export class AppComponent {
   title = 'lab4';
-  line = {
+  selectedLineIndex = 0;
+  spluced
+  lines = [{
     name: 'Bruchi Cantanti',
     date: 'mer 13 marzo 2019',
+    backward: false,
     stops: [
       {
         name: 'Piazza Mellano',
         time: '07.35',
-        children: ['Benedetta', 'Aurora', 'Chanel', 'Matteo', 'Sara', 'Simone', 'Claudia']
+        children: [
+          { id: "0xf5", name: 'Benedetta', isPresent: true },
+          { id: "0xf6", name: 'Aurora', isPresent: true },
+          { id: "0xf7", name: 'Chanel', isPresent: false },
+          { id: "0xf9", name: 'Matteo', isPresent: true },
+          { id: "0xf10", name: 'Sara', isPresent: false },
+          { id: "0xf11", name: 'Simone', isPresent: true },
+          { id: "0xf8", name: 'Claudia', isPresent: true }
+        ]
       },
       {
         name: 'Via primo Alpini',
         time: '07.40',
-        children: ['Giacomo', 'Emma']
+        children: [
+          { id: "0xf12", name: 'Giacomo', isPresent: true },
+          { id: "0xf13", name: 'Emma', isPresent: true }
+        ]
       },
       {
         name: 'Via Vigo',
         time: '07.50',
-        children: ['Isabel', 'Mohammed', 'Iaia']
+        children: [
+          { id: "0xf14", name: 'Isabel', isPresent: true },
+          { id: "0xf15", name: 'Mohammed', isPresent: true },
+          { id: "0xf16", name: 'Iaia', isPresent: false }
+        ]
       },
       {
         name: 'Piazza XXV Aprile',
         time: '07.55',
-        children: ['Shibo', 'Vittoria']
+        children: [
+          { id: "0xf17", name: 'Shibo', isPresent: true },
+          { id: "0xf18", name: 'Vittoria', isPresent: true }
+        ]
       },
       {
         name: 'Scuola',
@@ -38,5 +59,50 @@ export class AppComponent {
         children: []
       }
     ]
+  }, {
+    name: 'Coccinelle felici',
+    date: 'mer 14 aprile 2019',
+    backward: false,
+    stops: [
+      {
+        name: 'Piazza Mellano',
+        time: '07.35',
+        children: [
+          { id: "0xf5", name: 'Benedetta', isPresent: true },
+          { id: "0xf6", name: 'Aurora', isPresent: true },
+          { id: "0xf7", name: 'Chanel', isPresent: false },
+          { id: "0xf8", name: 'Claudia', isPresent: true }
+        ]
+      },
+      {
+        name: 'Via primo Alpini',
+        time: '07.40',
+        children: [
+          { id: "0xf12", name: 'Giacomo', isPresent: true },
+          { id: "0xf13", name: 'Emma', isPresent: true }
+        ]
+      },
+      {
+        name: 'Piazza XXV Aprile',
+        time: '07.55',
+        children: [
+          { id: "0xf17", name: 'Shibo', isPresent: true },
+          { id: "0xf18", name: 'Vittoria', isPresent: true }
+        ]
+      },
+      {
+        name: 'Scuola',
+        time: '08.00',
+        children: []
+      }
+    ]
+  }]
+
+  changeLineEvent(event) {
+    this.selectedLineIndex = (event.pageIndex - 0) * event.pageSize;
+  }
+
+  changeChildPresence = function (child) {
+    child.isPresent = !child.isPresent;
   }
 }

@@ -1,3 +1,8 @@
+.present {
+    color: blue;
+    font-weight: bold;
+}
+
 .line-card {
     max-width: 400px;
     align-content: center;
@@ -17,6 +22,18 @@ ul li {
 
 ul {
     padding-inline-start: 0%
+}
+
+:host /deep/ .mat-paginator {
+    margin-left: auto;
+}
+
+:host /deep/ .mat-paginator-container {
+    min-height: 0px;
+}
+
+:host /deep/ .mat-paginator-range-label {
+    display: none;
 }
 
 .timeline {
