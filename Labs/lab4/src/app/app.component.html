@@ -17,8 +17,10 @@
                     {{stop.time}} {{stop.name}}
                 </div>
                 <ul mat-line>
-                    <li *ngFor="let child of stop.children  | OrderByName" [ngClass]="{'present':child.isPresent === true}" (click)="changeChildPresence(child)">
-                        {{child.name}} </li>
+                    <li *ngFor="let child of stop.children | OrderByName; last as isLast">
+                        <span [ngClass]="{'present':child.isPresent}" (click)="changeChildPresence(child)">{{child.name}}</span>
+                        <span *ngIf="!isLast">, </span>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -16,6 +16,7 @@ export class AppComponent {
     backward: false,
     stops: [
       {
+        id: 201,
         name: 'Piazza Mellano',
         time: '07.35',
         children: [
@@ -29,6 +30,7 @@ export class AppComponent {
         ]
       },
       {
+        id: 202,
         name: 'Via primo Alpini',
         time: '07.40',
         children: [
@@ -37,6 +39,7 @@ export class AppComponent {
         ]
       },
       {
+        id: 203,
         name: 'Via Vigo',
         time: '07.50',
         children: [
@@ -46,6 +49,7 @@ export class AppComponent {
         ]
       },
       {
+        id: 204,
         name: 'Piazza XXV Aprile',
         time: '07.55',
         children: [
@@ -54,6 +58,7 @@ export class AppComponent {
         ]
       },
       {
+        id: 301,
         name: 'Scuola',
         time: '08.00',
         children: []
@@ -65,6 +70,7 @@ export class AppComponent {
     backward: false,
     stops: [
       {
+        id: 201,
         name: 'Piazza Mellano',
         time: '07.35',
         children: [
@@ -75,6 +81,7 @@ export class AppComponent {
         ]
       },
       {
+        id: 202,
         name: 'Via primo Alpini',
         time: '07.40',
         children: [
@@ -83,6 +90,7 @@ export class AppComponent {
         ]
       },
       {
+        id: 204,
         name: 'Piazza XXV Aprile',
         time: '07.55',
         children: [
@@ -91,6 +99,7 @@ export class AppComponent {
         ]
       },
       {
+        id: 301,
         name: 'Scuola',
         time: '08.00',
         children: []
