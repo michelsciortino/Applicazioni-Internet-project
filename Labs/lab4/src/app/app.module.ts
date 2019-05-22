@@ -9,11 +9,12 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 
 import { AppComponent } from './app.component';
 import { LinesPaginator, LinesPaginatorIntl } from './LinesPaginator'
-import { OrderByName } from './OrderByPypes'
+import { OrderByName } from './Utils/OrderByPypes'
+import { TimeToString,DateToString } from './Utils/ToStringPipes'
 
 @NgModule({
   declarations: [
-    AppComponent, OrderByName
+    AppComponent, OrderByName, TimeToString, DateToString
   ],
   imports: [
     MatCardModule, MatListModule, MatPaginatorModule, NoopAnimationsModule, FlexLayoutModule

@@ -7,14 +7,14 @@
 <mat-card class="line-card centered">
     <mat-card-header>
         <mat-card-title> {{lines[selectedLineIndex].name}} </mat-card-title>
-        <mat-card-subtitle>{{lines[selectedLineIndex].date}}</mat-card-subtitle>
+        <mat-card-subtitle>{{lines[selectedLineIndex].date | DateToString}}</mat-card-subtitle>
         <mat-paginator hidePageSize=true id="paginator" (page)="changeLineEvent($event)" [length]=lines.length [pageSize]="1" [pageSizeOptions]="[1]"></mat-paginator>
     </mat-card-header>
     <mat-card-content class="timeline">
         <div class="container right" *ngFor="let stop of lines[selectedLineIndex].stops">
             <div class="content">
                 <div mat-line>
-                    {{stop.time}} {{stop.name}}
+                    {{stop.time| TimeToString}} {{stop.name}}
                 </div>
                 <ul mat-line>
                     <li *ngFor="let child of stop.children | OrderByName; last as isLast">
