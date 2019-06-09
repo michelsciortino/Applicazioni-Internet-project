@@ -1,6 +1,6 @@
 package it.polito.ai.lab5.controllers;
 
-import it.polito.ai.lab5.controllers.models.AuthenticationRequest;
+import it.polito.ai.lab5.controllers.models.LoginRequest;
 import it.polito.ai.lab5.controllers.models.ChangePasswordRequest;
 import it.polito.ai.lab5.controllers.models.RegistrationRequest;
 import it.polito.ai.lab5.security.JwtTokenProvider;
@@ -51,7 +51,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody AuthenticationRequest data) {
+    public ResponseEntity login(@RequestBody LoginRequest data) {
         try {
             String username = data.getUsername();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
@@ -93,7 +93,7 @@ public class AuthController {
                     SimpleMailMessage mailMessage = new SimpleMailMessage();
                     mailMessage.setTo(credential.getUsername());
                     mailMessage.setSubject("Complete Registration!");
-                    mailMessage.setFrom("chand312902@gmail.com");
+                    mailMessage.setFrom("brucolini19@gmail.com");
                     mailMessage.setText("To confirm your account, please click here : "
                             + "http://localhost:8080/confirm?token=" + token.getConfirmationToken());
 
@@ -102,6 +102,7 @@ public class AuthController {
                     //emailSenderService.sendEmail(mailMessage);
                 } catch (Exception e) {
                     database.deleteCredential(credential);
+                    tokenRepository.delete(token);
                     throw new UnknownServiceException();
                 }
 

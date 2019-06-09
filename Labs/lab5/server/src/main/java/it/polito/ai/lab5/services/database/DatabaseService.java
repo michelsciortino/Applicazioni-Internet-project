@@ -182,12 +182,10 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Override
     public Credential insertCredential(String username, String password, List<String> role) throws UnknownServiceException {
         try {
-            Credential credential = null;
             if (!credentialRepository.findByUsername(username).isPresent())
-                credential = credentialRepository.save(new Credential(this.passwordEncoder.encode(password), username, role));
+                return credentialRepository.save(new Credential(this.passwordEncoder.encode(password), username, role));
             else
                 return null;
-            return credential;
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
