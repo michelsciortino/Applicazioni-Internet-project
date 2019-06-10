@@ -7,12 +7,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Document(collection = "reservations")
 @Data
 @Builder
-@CompoundIndex(def = "{'childName':1, 'userID':1, 'data':1}", unique = true, name = "reservationIndex")
+@CompoundIndex(def = "{'childName':1, 'direction':1, 'data':1}", unique = true, name = "reservationIndex")
 public class ReservationMongo {
     @Id
     private ObjectId id;
@@ -22,7 +23,7 @@ public class ReservationMongo {
     private String lineName;
     private String stopName;
     private String direction;
-    private LocalDateTime data;
+    private LocalDate data;
 }
 
 

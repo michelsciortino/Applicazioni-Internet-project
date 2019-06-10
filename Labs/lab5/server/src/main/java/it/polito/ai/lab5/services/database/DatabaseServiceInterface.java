@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.net.UnknownServiceException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -23,17 +24,17 @@ public interface DatabaseServiceInterface {
 
     Line getLine(String lineName) throws UnknownServiceException;
 
-    LineReservations getLineReservations(String lineName, LocalDateTime dateTime) throws UnknownServiceException;
+    LineReservations getLineReservations(String lineName, LocalDate date) throws UnknownServiceException;
 
-    String addReservation(String UserID, Reservation reservation, String lineName, LocalDateTime dateTime) throws UnknownServiceException;
+    Reservation addReservation(String UserID, Reservation reservation, String lineName, LocalDate date) throws UnknownServiceException;
 
-    boolean updateReservation(String UserID, Reservation reservation, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException;
+    boolean updateReservation(String UserID, Reservation reservation, String lineName, LocalDate date, String reservationId) throws UnknownServiceException;
 
-    boolean deleteReservation(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException;
+    boolean deleteReservation(String UserID, String lineName, LocalDate date, String reservationId) throws UnknownServiceException;
 
-    Reservation getReservation(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException;
+    Reservation getReservation(String UserID, String lineName, LocalDate date, String reservationId) throws UnknownServiceException;
 
-    ReservationMongo getReservationMongo(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException;
+    ReservationMongo getReservationMongo(String UserID, String lineName, LocalDate date, String reservationId) throws UnknownServiceException;
 
     Credential insertCredential(String Username, String Password, List<String> role) throws UnknownServiceException;
 

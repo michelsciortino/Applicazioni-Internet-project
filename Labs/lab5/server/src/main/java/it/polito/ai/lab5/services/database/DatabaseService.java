@@ -1,5 +1,6 @@
 package it.polito.ai.lab5.services.database;
 
+import it.polito.ai.lab5.controllers.models.DirectionType;
 import it.polito.ai.lab5.controllers.models.LineReservations;
 import it.polito.ai.lab5.controllers.models.Reservation;
 import it.polito.ai.lab5.files.json.Line;
@@ -17,29 +18,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.ServiceNotFoundException;
 import java.net.UnknownServiceException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
 public class DatabaseService implements DatabaseServiceInterface {
 
     @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
     private LineRepository lineRepository;
-
     @Autowired
     private ReservationRepository reservationRepository;
-
     @Autowired
     private CredentialRepository credentialRepository;
-
     @Autowired
     private TokenRepository tokenRepository;
-
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @Override
     public boolean insertLine(Line line) throws UnknownServiceException {
@@ -93,7 +89,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public LineReservations getLineReservations(String lineName, LocalDateTime dateTime) throws UnknownServiceException {
+    public LineReservations getLineReservations(String lineName, LocalDate date) throws UnknownServiceException {
         try {
             LineMongo lineMongo = lineRepository.findLineByName(lineName);
 
@@ -102,15 +98,25 @@ public class DatabaseService implements DatabaseServiceInterface {
 
             for (PediStopMongo s : lineMongo.getOutboundStops()) {
                 List<String> names = new ArrayList<>();
-                for (ReservationMongo r : reservationRepository.getReservationByStopNameAndDirection(s.getName(), "outbound", dateTime, lineName))
-                    names.add(r.getChildName());
-                outwardStopsReservations.put(s.getName(), names);
+                try {
+                    for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.OUTWARD, date, lineName))
+                        names.add(r.getChildName());
+                    if (!names.isEmpty())
+                        outwardStopsReservations.put(s.getName(), names);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
             }
             for (PediStopMongo s : lineMongo.getReturnStops()) {
                 List<String> names = new ArrayList<>();
-                for (ReservationMongo r : reservationRepository.getReservationByStopNameAndDirection(s.getName(), "return", dateTime, lineName))
-                    names.add(r.getChildName());
-                backStopsReservations.put(s.getName(), names);
+                try {
+                    for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.RETURN, date, lineName))
+                        names.add(r.getChildName());
+                    if (!names.isEmpty())
+                        backStopsReservations.put(s.getName(), names);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
             }
             return LineReservations.builder().backStopsReservations(backStopsReservations).outwardStopsReservations(outwardStopsReservations).build();
         } catch (Exception e) {
@@ -119,12 +125,12 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public String addReservation(String UserID, Reservation reservation, String lineName, LocalDateTime dateTime) throws UnknownServiceException {
+    public Reservation addReservation(String UserID, Reservation reservation, String lineName, LocalDate date) throws UnknownServiceException {
         try {
             ReservationMongo res;
             if (lineRepository.findLineByName(lineName) != null) {
-                res = reservationRepository.save(ReservationMongo.builder().childName(reservation.getChildName()).direction(reservation.getDirection()).stopName(reservation.getStopName()).data(dateTime).userID(UserID).lineName(lineName).build());
-                return res.toString();
+                res = reservationRepository.save(ReservationMongo.builder().childName(reservation.getChildName()).direction(reservation.getDirection()).stopName(reservation.getStopName()).data(date).userID(UserID).lineName(lineName).build());
+                return Reservation.builder().childName(res.getChildName()).stopName(res.getStopName()).direction(res.getDirection()).build();
             } else
                 throw new ServiceNotFoundException();
         } catch (Exception e) {
@@ -135,7 +141,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Override
     @Transactional
-    public boolean updateReservation(String UserID, Reservation reservation, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException {
+    public boolean updateReservation(String UserID, Reservation reservation, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
         try {
             ReservationMongo rp = reservationRepository.findById(reservationId).get();
             rp.setChildName(reservation.getChildName());
@@ -151,7 +157,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Override
     @Transactional
-    public boolean deleteReservation(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException {
+    public boolean deleteReservation(String UserID, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
         try {
             reservationRepository.delete(reservationRepository.findById(reservationId).get());
             return true;
@@ -161,7 +167,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public Reservation getReservation(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException {
+    public Reservation getReservation(String UserID, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
         try {
             ReservationMongo rm = reservationRepository.findById(reservationId).get();
             return Reservation.builder().childName(rm.getChildName()).direction(rm.getDirection()).stopName(rm.getStopName()).build();
@@ -171,7 +177,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public ReservationMongo getReservationMongo(String UserID, String lineName, LocalDateTime dateTime, String reservationId) throws UnknownServiceException {
+    public ReservationMongo getReservationMongo(String UserID, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
         try {
             return reservationRepository.findById(reservationId).get();
         } catch (Exception e) {
@@ -215,7 +221,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Override
     public boolean updateCredential(Credential credential) throws UnknownServiceException {
         try {
-            // if (credentialRepository.findByUsername(credential.getUsername()).isPresent())
+            // if (credentialRepository.findByUsername(credential.getMail()).isPresent())
             credentialRepository.save(credential);
             return true;
         } catch (Exception e) {
