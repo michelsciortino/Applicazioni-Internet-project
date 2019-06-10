@@ -1,0 +1,11 @@
+<div class="padded-content">
+    <mat-card class="compact-card centered">
+        <nav mat-tab-nav-bar mat-align-tabs="center">
+            <a mat-tab-link routerLink='/login' routerLinkActive='active'>Login</a>
+            <a mat-tab-link routerLink='/register' routerLinkActive='active'>Register</a>
+        </nav>
+        <div class="auth-content">
+            <router-outlet></router-outlet>
+        </div>
+    </mat-card>
+</div>
