@@ -12,6 +12,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest implements Serializable {
-    private String username;
+    private String mail;
     private String password;
 }

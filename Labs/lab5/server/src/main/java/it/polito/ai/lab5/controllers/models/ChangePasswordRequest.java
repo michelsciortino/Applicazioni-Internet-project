@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ChangePasswordRequest {
     @NotNull
-    private String username;
+    private String mail;
     @NotNull
     private String OldPassword;
     @NotNull

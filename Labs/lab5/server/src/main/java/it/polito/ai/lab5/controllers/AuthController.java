@@ -27,6 +27,7 @@ import java.util.*;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -51,17 +52,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequest data) {
+    public ResponseEntity login(@RequestBody LoginRequest data ) {
         try {
-            String username = data.getUsername();
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
-            String token = jwtTokenProvider.createToken(username, this.credentialRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")).getRoles());
+            String mail = data.getMail();
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(mail, data.getPassword()));
+            String token = jwtTokenProvider.createToken(mail, this.credentialRepository.findByUsername(mail).orElseThrow(() -> new UsernameNotFoundException("Username " + mail + "not found")).getRoles());
             Map<Object, Object> model = new HashMap<>();
-            model.put("username", username);
+            model.put("mail", mail);
             model.put("token", token);
             return ok(model);
         } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username/password supplied");
+            throw new BadCredentialsException("Invalid mail/password supplied");
         }
     }
 
@@ -73,18 +74,18 @@ public class AuthController {
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity register(@RequestBody @Validated RegistrationRequest data) {
         try {
-            String username = data.getUsername();
+            String mail = data.getMail();
 
-            Optional<Credential> userExist = this.credentialRepository.findByUsername(username);
+            Optional<Credential> userExist = this.credentialRepository.findByUsername(mail);
             if (userExist.isPresent()) {
                 System.out.println("Credential already register");
-                return new ResponseEntity<>("Invalid username... Credential already exist", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Invalid mail... Credential already exist", HttpStatus.BAD_REQUEST);
             } else {
                 if (!data.getPassword().equals(data.getPasswordCheck()))
                     return new ResponseEntity<>("password is not equals", HttpStatus.BAD_REQUEST);
 
                 System.out.println("register new credential");
-                Credential credential = database.insertCredential(username, data.getPassword(), Arrays.asList(Roles.prefix + Roles.USER));
+                Credential credential = database.insertCredential(mail, data.getPassword(), Arrays.asList(Roles.prefix + Roles.USER));
 
                 Token token = new Token(credential);
                 token.setScope(ScopeToken.CONFIRM);
@@ -107,7 +108,7 @@ public class AuthController {
                 }
 
                 Map<Object, Object> model = new HashMap<>();
-                model.put("username", username);
+                model.put("mail", mail);
                 return ok(model);
             }
         } catch (UnknownServiceException e) {
@@ -130,7 +131,7 @@ public class AuthController {
                     database.insertUser(user);
                     database.deleteToken(token);
                     Map<Object, Object> model = new HashMap<>();
-                    model.put("username", credential.get().getUsername());
+                    model.put("mail", credential.get().getUsername());
                     model.put("verification", "accountVerified");
                     return ok(model);
                 } else

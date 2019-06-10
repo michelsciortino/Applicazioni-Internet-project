@@ -14,7 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class RegistrationRequest implements Serializable {
     @NotNull
-    private String username;
+    private String mail;
     @NotNull
     private String password;
     @NotNull
