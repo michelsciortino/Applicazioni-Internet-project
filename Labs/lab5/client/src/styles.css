@@ -3,6 +3,16 @@ body {
     margin: 0px;
 }
 
+.fill {
+    flex: 1 1 auto;
+}
+
+.mat-tab-link.active {
+    color: white;
+    background-color: #3f51b5;
+    opacity: 1;
+}
+
 .full-width {
     width: 100%;
 }

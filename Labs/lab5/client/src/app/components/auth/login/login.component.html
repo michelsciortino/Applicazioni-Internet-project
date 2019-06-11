@@ -1,15 +1,19 @@
 <form [formGroup]="form" (ngSubmit)="login()">
-    <mat-form-field>
-        <input matInput type="email" placeholder="Mail" formControlName="mail" required>
-        <mat-error *ngIf="!form.controls['mail'].valid"> Please isert a correct mail address </mat-error>
-    </mat-form-field>
-    <mat-form-field>
-        <input matInput type="password" placeholder="Password" [formControl]="form.controls['password']" required>
-        <mat-error *ngIf="!form.controls['password'].valid"> Insert a valid password </mat-error>
-    </mat-form-field>
-    <mat-spinner [style.display]="showSpinner ? 'block' : 'none' "></mat-spinner>
-    <div class="form-error">
-        <mat-error *ngIf="form.hasError('invalidCredentials')"> Invalid credentials </mat-error>
-    </div>
-    <button [disabled]="!form.valid" mat-raised-button color="primary" type="submit ">Login</button>
+  <mat-form-field>
+    <label>
+      <input matInput type="email" placeholder="Mail" formControlName="mail" required>
+    </label>
+    <mat-error *ngIf="!form.controls['mail'].valid"> Please isert a correct mail address</mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <label>
+      <input matInput type="password" placeholder="Password" [formControl]="form.controls['password']" required>
+    </label>
+    <mat-error *ngIf="!form.controls['password'].valid"> Insert a valid password</mat-error>
+  </mat-form-field>
+  <mat-spinner [diameter]="32" [style.display]="showSpinner ? 'block' : 'none' "></mat-spinner>
+  <div class="form-error">
+    <mat-error *ngIf="invalidCredentials"> Invalid credentials</mat-error>
+  </div>
+  <button [disabled]="!form.valid" mat-raised-button color="primary" type="submit ">Login</button>
 </form>

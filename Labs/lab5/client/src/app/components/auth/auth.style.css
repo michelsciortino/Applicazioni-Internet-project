@@ -1,24 +1,32 @@
 .auth-content {
-    text-align: center;
-    margin: 2em;
+  text-align: center;
+  margin: 2em;
 }
 
 mat-card {
-    max-width: 400px;
-    margin: 2em auto;
-    text-align: center;
+  max-width: 400px;
+  margin: 2em auto;
+  text-align: center;
 }
 
 .signin-content {
-    padding: 60px 1rem;
+  padding: 60px 1rem;
 }
 
 mat-form-field {
-    padding-left: 8px;
-    padding-right: 8px;
-    width: 80%;
+  padding-left: 8px;
+  padding-right: 8px;
+  width: 80%;
 }
 
 .form-error {
-    margin: 8px;
+  margin: 8px;
+}
+
+mat-spinner {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }

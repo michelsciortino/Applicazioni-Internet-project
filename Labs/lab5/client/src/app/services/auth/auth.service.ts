@@ -1,40 +1,62 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Router } from '@angular/router';
-import { User } from './models/user';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {Credentials, User} from './models/user';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {map} from 'rxjs/operators';
 
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class AuthService {
-  private loggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private static readonly AUTHENTICATED_USER: string = 'authUser';
+  private static readonly serverUrl = 'http://localhost:8080';
+  private reqHeaders = new HttpHeaders({ContentType: 'application/json'});
 
-  get isLoggedIn() {
-    return this.loggedIn.asObservable();
+  private userSubject: BehaviorSubject<User>;
+  private user: Observable<User>;
+
+  constructor(private http: HttpClient) {
+    this.userSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem(AuthService.AUTHENTICATED_USER)));
+    this.user = this.userSubject.asObservable();
   }
 
-  constructor(private router: Router) { }
+  //#region Properties
+  public isLoggedIn(): boolean {
+    return this.userSubject.value != null;
+  }
 
-  login(user: User): Observable<boolean> {
-    if (user.mail == "admin@mail.com" && user.password == "admin") {
-      this.loggedIn.next(true);
-      this.router.navigate(['/']);
-    }
-    else
-      this.loggedIn.next(false);
-    return this.loggedIn;
+  public getUser(): User {
+    return this.userSubject.value;
+  }
+
+  public getUserObserver(): Observable<User> {
+    return this.user;
+  }
+
+  //#endregion
+
+  //#region Methods
+  login(credentials: Credentials): Observable<object> {
+    return this.http.post(AuthService.serverUrl + '/auth/login', credentials, {headers: this.reqHeaders})
+      .pipe(
+        map((user: User) => {
+          if (user != null) {
+            localStorage.setItem(AuthService.AUTHENTICATED_USER, JSON.stringify(user));
+            this.userSubject.next(user);
+          }
+          return user;
+        })
+      );
   }
 
   logout() {
-    this.loggedIn.next(false);
-    this.router.navigate(['/']);
+    localStorage.removeItem(AuthService.AUTHENTICATED_USER);
+    this.userSubject.next(null);
   }
 
+  // TODO registration
   register(user: User) {
-    if (user.mail == "admin" && user.password == "admin") {
-      this.loggedIn.next(true);
-      this.router.navigate(['/']);
-    }
-    else
-      this.loggedIn.next(false);
+
   }
+
+  //#endregion
 }

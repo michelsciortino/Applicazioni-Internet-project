@@ -1,33 +1,43 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthService } from 'src/app/services/auth/auth.service';
-import { User } from 'src/app/services/auth/models/user';
-import { take } from 'rxjs/operators';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AuthService} from 'src/app/services/auth/auth.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ["../auth.style.css"]
+  styleUrls: ['../auth.style.css']
 })
 
 export class LoginComponent implements OnInit {
   form: FormGroup;
+  invalidCredentials = false;
+  showSpinner = false;
 
-  constructor(private auth: AuthService,private fb: FormBuilder) { }
+  constructor(private auth: AuthService, private router: Router, private fb: FormBuilder) {
+  }
 
   ngOnInit() {
     this.form = this.fb.group({
-      mail: ['', Validators.compose([Validators.email,Validators.required])],
+      mail: ['', Validators.compose([Validators.email, Validators.required])],
       password: ['', Validators.required]
     });
   }
 
   login(): void {
-    if(this.form.valid){
-      this.auth.login(this.form.value).subscribe((data:any)=>{
-        if(data==false)
-          this.form.setErrors({ invalidCredentials: true })
-      })
+    if (this.form.valid) {
+      this.showSpinner = true;
+      this.auth.login(this.form.value).subscribe(
+        () => {
+          this.showSpinner = false;
+          this.router.navigate(['/home']);
+        },
+        (error: HttpErrorResponse) => {
+          this.showSpinner = false;
+          this.invalidCredentials = true;
+          console.log(error);
+        });
     }
   }
 }
