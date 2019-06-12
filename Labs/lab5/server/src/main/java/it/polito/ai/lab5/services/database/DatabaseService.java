@@ -73,20 +73,13 @@ public class DatabaseService implements DatabaseServiceInterface {
     public Line getLine(String lineName) throws UnknownServiceException {
         try {
             LineMongo lineMongo = lineRepository.findLineByName(lineName);
-            ArrayList<PediStop> out = new ArrayList<>();
-            for (PediStopMongo p : lineMongo.getOutboundStops())
-                out.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude()));
-            // out.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
-            ArrayList<PediStop> ret = new ArrayList<>();
-            for (PediStopMongo p : lineMongo.getReturnStops())
-                ret.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude()));
-            // ret.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
-            return new Line(lineMongo.getName(), out, ret);
+            return lineMongoToLine(lineMongo);
             //return Line.builder().name(lineMongo.getName()).outboundStops(out).returnStops(ret).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
     }
+
 
     @Override
     public LineReservations getLineReservations(String lineName, LocalDate date) throws UnknownServiceException {
@@ -124,13 +117,69 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
+
     @Override
-    public Reservation addReservation(String UserID, Reservation reservation, String lineName, LocalDate date) throws UnknownServiceException {
+    @Transactional
+    public Line addSubscriber(String UserID, Child child, String lineName, List<String> roles) throws UnknownServiceException
+    {
+        try
+        {
+            if(!isParentorAdmin(UserID, roles, child))
+            {
+                throw new UnknownServiceException("You can subscribe your children only!");
+            }
+            LineMongo lm;
+            lm = lineRepository.findLineByName(lineName);
+            if (lm != null)
+            {
+                if(!lm.getSubscribedChildren().contains(child))
+                {
+                    lm.getSubscribedChildren().add(child);
+                    lineRepository.save(lm);
+                    return lineMongoToLine(lm);
+                }
+                else
+                    {
+                        throw new UnknownServiceException("Child already subscribed!");
+                    }
+            } else
+                throw new ServiceNotFoundException();
+        } catch (Exception e)
+        {
+            throw new UnknownServiceException(e.getMessage());
+        }
+
+    }
+
+    @Override
+    public Reservation addReservation(List<String> roles, String UserID, Reservation reservation, String lineName, LocalDate date) throws UnknownServiceException {
         try {
+
+            if (!roles.contains(Roles.prefix + Roles.ADMIN)||!roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN))
+            {
+                User u= getUserByUsername(UserID);
+                List<Child> children = u.getChildren();
+                Child child;
+                boolean flag= false;
+                for (Child c : children)
+                {
+
+                    if(c.getCF() == reservation.getChildCf())
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                if(!flag)
+                {
+                    throw new UnknownServiceException("You can subscribe your children only!");
+                }
+
+            }
             ReservationMongo res;
             if (lineRepository.findLineByName(lineName) != null) {
-                res = reservationRepository.save(ReservationMongo.builder().childName(reservation.getChildName()).direction(reservation.getDirection()).stopName(reservation.getStopName()).data(date).userID(UserID).lineName(lineName).build());
-                return Reservation.builder().childName(res.getChildName()).stopName(res.getStopName()).direction(res.getDirection()).build();
+                res = reservationRepository.save(ReservationMongo.builder().childName(reservation.getChildName()).childCf(reservation.getChildCf()).direction(reservation.getDirection()).stopName(reservation.getStopName()).data(date).userID(UserID).lineName(lineName).present(false).build());
+                return Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childCf(res.getChildCf()).stopName(res.getStopName()).direction(res.getDirection()).present(false).build();
             } else
                 throw new ServiceNotFoundException();
         } catch (Exception e) {
@@ -141,15 +190,17 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Override
     @Transactional
-    public boolean updateReservation(String UserID, Reservation reservation, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
+    public Reservation updateReservation(String UserID, Reservation reservation, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
         try {
             ReservationMongo rp = reservationRepository.findById(reservationId).get();
             rp.setChildName(reservation.getChildName());
+            rp.setChildCf(reservation.getChildCf());
             rp.setDirection(reservation.getDirection());
             rp.setLineName(lineName);
             rp.setStopName(reservation.getStopName());
-            reservationRepository.save(rp);
-            return true;
+            rp.setPresent(reservation.isPresent());
+            ReservationMongo res=reservationRepository.save(rp);
+            return Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childCf(res.getChildCf()).stopName(res.getStopName()).direction(res.getDirection()).present(false).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
@@ -170,7 +221,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     public Reservation getReservation(String UserID, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
         try {
             ReservationMongo rm = reservationRepository.findById(reservationId).get();
-            return Reservation.builder().childName(rm.getChildName()).direction(rm.getDirection()).stopName(rm.getStopName()).build();
+            return Reservation.builder().id(rm.getId().toString()).childName(rm.getChildName()).childCf(rm.getChildCf()).direction(rm.getDirection()).stopName(rm.getStopName()).present(rm.isPresent()).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
@@ -370,5 +421,40 @@ public class DatabaseService implements DatabaseServiceInterface {
         return false;
     }
 
+    //TO-DO Move to Utils
+    private Line lineMongoToLine(LineMongo lineMongo)
+    {
+        ArrayList<PediStop> out = new ArrayList<>();
+        for (PediStopMongo p : lineMongo.getOutboundStops())
+            out.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude()));
+        // out.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
+        ArrayList<PediStop> ret = new ArrayList<>();
+        for (PediStopMongo p : lineMongo.getReturnStops())
+            ret.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude()));
+        // ret.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
+        return new Line(lineMongo.getName(), out, ret, lineMongo.getSubscribedChildren());
+    }
+    private boolean isParentorAdmin(String UserID, List<String > roles, Child child)
+    {
+        //TO-DO: Check transactionality needing
+        User u = userRepository.findByUsername(UserID);
+        boolean find = false;
+        if(!roles.contains(Roles.prefix + Roles.ADMIN) && !roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN)  )
+        {
+            for (Child c : u.getChildren()) {
 
+                if (c.getCF().equals(child.getCF())) {
+                    find = true;
+                    break;
+                }
+
+            }
+            if (!find) {
+                return false;
+            }
+            return true;
+        }
+        return true;
+        //
+    }
 }

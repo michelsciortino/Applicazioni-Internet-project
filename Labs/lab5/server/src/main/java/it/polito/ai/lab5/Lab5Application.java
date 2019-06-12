@@ -56,9 +56,9 @@ public class Lab5Application implements CommandLineRunner {
     public void run(String[] args) throws Exception {
 
         if (!credentials.findByUsername("user@mail.com").isPresent())
-            this.credentials.save(new Credential(this.passwordEncoder.encode("password"), "user@mail.com", Arrays.asList(Roles.USER)));
+            this.credentials.save(new Credential(this.passwordEncoder.encode("password"), "user@mail.com", Arrays.asList(Roles.prefix + Roles.USER)));
         if (!credentials.findByUsername("admin@mail.com").isPresent())
-            this.credentials.save(new Credential(this.passwordEncoder.encode("password"), "admin@mail.com", Arrays.asList(Roles.USER, Roles.ADMIN, Roles.SYSTEM_ADMIN)));
+            this.credentials.save(new Credential(this.passwordEncoder.encode("password"), "admin@mail.com", Arrays.asList(Roles.prefix + Roles.USER, Roles.prefix + Roles.ADMIN, Roles.prefix + Roles.SYSTEM_ADMIN)));
 
         for (String arg : args) {
             if (arg.startsWith("--files=")) {

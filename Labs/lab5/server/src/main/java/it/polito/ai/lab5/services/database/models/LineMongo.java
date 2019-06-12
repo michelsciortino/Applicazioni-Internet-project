@@ -17,16 +17,19 @@ public class LineMongo {
     private String name;
     private ArrayList<PediStopMongo> outboundStops;
     private ArrayList<PediStopMongo> returnStops;
+    private ArrayList<Child> subscribedChildren;
 
     public LineMongo() {
         outboundStops = new ArrayList<>();
         returnStops = new ArrayList<>();
+        subscribedChildren  = new ArrayList<>();
     }
 
     public LineMongo(String name, ArrayList<PediStopMongo> outboundStops, ArrayList<PediStopMongo> returnStops) {
         this.name = name;
         this.outboundStops = outboundStops;
         this.returnStops = returnStops;
+        this.subscribedChildren  =  new ArrayList<>();
     }
 }
 

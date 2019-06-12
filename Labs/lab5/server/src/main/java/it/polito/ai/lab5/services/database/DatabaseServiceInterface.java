@@ -4,16 +4,12 @@ package it.polito.ai.lab5.services.database;
 import it.polito.ai.lab5.controllers.models.LineReservations;
 import it.polito.ai.lab5.controllers.models.Reservation;
 import it.polito.ai.lab5.files.json.Line;
-import it.polito.ai.lab5.services.database.models.Credential;
-import it.polito.ai.lab5.services.database.models.ReservationMongo;
-import it.polito.ai.lab5.services.database.models.Token;
-import it.polito.ai.lab5.services.database.models.User;
+import it.polito.ai.lab5.services.database.models.*;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.net.UnknownServiceException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,9 +22,11 @@ public interface DatabaseServiceInterface {
 
     LineReservations getLineReservations(String lineName, LocalDate date) throws UnknownServiceException;
 
-    Reservation addReservation(String UserID, Reservation reservation, String lineName, LocalDate date) throws UnknownServiceException;
+    Line addSubscriber(String UserID, Child child, String lineName, List<String> roles) throws UnknownServiceException;
 
-    boolean updateReservation(String UserID, Reservation reservation, String lineName, LocalDate date, String reservationId) throws UnknownServiceException;
+    Reservation addReservation(List<String> roles, String UserID, Reservation reservation, String lineName, LocalDate date) throws UnknownServiceException;
+
+    Reservation updateReservation(String UserID, Reservation reservation, String lineName, LocalDate date, String reservationId) throws UnknownServiceException;
 
     boolean deleteReservation(String UserID, String lineName, LocalDate date, String reservationId) throws UnknownServiceException;
 

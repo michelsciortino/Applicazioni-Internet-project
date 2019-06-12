@@ -20,10 +20,12 @@ public class ReservationMongo {
 
     private String userID;
     private String childName;
+    private String childCf;
     private String lineName;
     private String stopName;
     private String direction;
     private LocalDate data;
+    private boolean present;
 }
 
 
