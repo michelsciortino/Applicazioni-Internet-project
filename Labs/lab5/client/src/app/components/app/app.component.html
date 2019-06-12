@@ -1,5 +1,9 @@
 <mat-toolbar color="primary" class="mat-elevation-z6">
   <a mat-button [routerLink]="['/']">Pedibus</a>
+  <span class="fill"></span>
+  <a *ngIf="!isUserLogged" mat-button [routerLink]="['/login']">Login</a>
+  <a *ngIf="!isUserLogged" mat-button [routerLink]="['/register']">Registration</a>
+  <a *ngIf="isUserLogged" mat-button [routerLink]="['/logout']">Logout</a>
 </mat-toolbar>
 
 <div id="content" class="main-content">
