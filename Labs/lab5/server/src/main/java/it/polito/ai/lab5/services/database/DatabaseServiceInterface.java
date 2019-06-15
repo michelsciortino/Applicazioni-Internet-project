@@ -18,6 +18,8 @@ public interface DatabaseServiceInterface {
 
     Collection<String> getLinesNames() throws UnknownServiceException;
 
+    Collection<Line> getLines() throws UnknownServiceException;
+
     Line getLine(String lineName) throws UnknownServiceException;
 
     LineReservations getLineReservations(String lineName, LocalDate date) throws UnknownServiceException;

@@ -16,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 import sun.rmi.runtime.Log;
 
@@ -39,21 +40,30 @@ public class MainRestController {
     }
 
     @RequestMapping(value = "/lines", method = RequestMethod.GET)
-    public Collection<String> getLines() {
+    public ResponseEntity getLines() {
         try {
-            return database.getLinesNames();
+            return ok(database.getLines());
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/lines_names", method = RequestMethod.GET)
+    public ResponseEntity getLines_names() {
+        try {
+            return ok(database.getLinesNames());
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @RequestMapping(value = "/lines/{line_name}", method = RequestMethod.GET)
-    public Line getLine(@PathVariable String line_name) {
+    public ResponseEntity getLine(@PathVariable String line_name) {
         try {
             Line line = database.getLine(line_name);
             if (line == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Line not found.");
-            return line;
+            return ok(line);
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -114,7 +124,7 @@ public class MainRestController {
     }
 
     @RequestMapping(value = "/reservations/{line_name}/{date}/{reservation_id}", method = RequestMethod.GET)
-    public Reservation getReservation(@PathVariable String line_name,
+    public ResponseEntity getReservation(@PathVariable String line_name,
                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date,
                                       @PathVariable String reservation_id, @AuthenticationPrincipal Credential credential) {
         try {
@@ -122,15 +132,15 @@ public class MainRestController {
 
             if (credential.getRoles().contains(Roles.prefix + Roles.SYSTEM_ADMIN) ||
                     credential.getRoles().contains(Roles.prefix + Roles.ADMIN)) {
-                return database.getReservation(credential.getUsername(), line_name, date, reservation_id);
+                return ok(database.getReservation(credential.getUsername(), line_name, date, reservation_id));
             } else if (credential.getRoles().contains(Roles.prefix + Roles.USER)) {
                 ReservationMongo reservation = database.getReservationMongo(credential.getUsername(), line_name, date, reservation_id);
                 if (credential.getId().equals(reservation.getUserID()))
-                    return database.getReservation(credential.getUsername(), line_name, date, reservation_id);
+                    return ok(database.getReservation(credential.getUsername(), line_name, date, reservation_id));
                 else
-                    return null;
+                    return new ResponseEntity<>("No permission for this reservation..", HttpStatus.BAD_REQUEST);
             }
-            return database.getReservation(credential.getUsername(), line_name, date, reservation_id);
+            return ok(database.getReservation(credential.getUsername(), line_name, date, reservation_id));
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
