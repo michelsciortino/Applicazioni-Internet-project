@@ -1,0 +1,27 @@
+{
+  "name": "Coccinelle_felici",
+  "outboundStops": [
+    {
+      "name": "stop1",
+      "latitude": 12,
+      "longitude": 24
+    },
+    {
+      "name": "stop2",
+      "latitude": 13,
+      "longitude": 24
+    }
+  ],
+  "returnStops": [
+    {
+      "name": "stop2",
+      "latitude": 13,
+      "longitude": 24
+    },
+    {
+      "name": "stop1",
+      "latitude": 12,
+      "longitude": 24
+    }
+  ]
+}
