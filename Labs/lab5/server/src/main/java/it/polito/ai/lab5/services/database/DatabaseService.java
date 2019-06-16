@@ -42,11 +42,11 @@ public class DatabaseService implements DatabaseServiceInterface {
         try {
             ArrayList<PediStopMongo> outboundStops = new ArrayList<>();
             for (PediStop p : line.outboundStops)
-                outboundStops.add(new PediStopMongo(p.longitude, p.latitude, p.name));
+                outboundStops.add(new PediStopMongo(p.longitude, p.latitude, p.name, p.time));
 
             ArrayList<PediStopMongo> returnStops = new ArrayList<>();
             for (PediStop p : line.returnStops)
-                returnStops.add(new PediStopMongo(p.longitude, p.latitude, p.name));
+                returnStops.add(new PediStopMongo(p.longitude, p.latitude, p.name, p.time));
 
             LineMongo lineMongo = new LineMongo(line.name, outboundStops, returnStops);
             lineRepository.save(lineMongo);
@@ -152,9 +152,9 @@ public class DatabaseService implements DatabaseServiceInterface {
                     return lineMongoToLine(lm);
                 }
                 else
-                    {
-                        throw new UnknownServiceException("Child already subscribed!");
-                    }
+                {
+                    throw new UnknownServiceException("Child already subscribed!");
+                }
             } else
                 throw new ServiceNotFoundException();
         } catch (Exception e)
@@ -439,11 +439,11 @@ public class DatabaseService implements DatabaseServiceInterface {
     {
         ArrayList<PediStop> out = new ArrayList<>();
         for (PediStopMongo p : lineMongo.getOutboundStops())
-            out.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude()));
+            out.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude(), p.getTime()));
         // out.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
         ArrayList<PediStop> ret = new ArrayList<>();
         for (PediStopMongo p : lineMongo.getReturnStops())
-            ret.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude()));
+            ret.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude(),  p.getTime()));
         // ret.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
         return new Line(lineMongo.getName(), out, ret, lineMongo.getSubscribedChildren());
     }
