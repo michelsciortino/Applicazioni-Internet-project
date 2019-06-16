@@ -24,6 +24,8 @@ public interface DatabaseServiceInterface {
 
     LineReservations getLineReservations(String lineName, LocalDate date) throws UnknownServiceException;
 
+    //LineReservations getLineReservationsNames(String lineName, LocalDate date) throws UnknownServiceException;
+
     Line addSubscriber(String UserID, Child child, String lineName, List<String> roles) throws UnknownServiceException;
 
     Reservation addReservation(List<String> roles, String UserID, Reservation reservation, String lineName, LocalDate date) throws UnknownServiceException;

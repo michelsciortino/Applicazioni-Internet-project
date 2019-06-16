@@ -17,7 +17,7 @@ public class LineMongo {
     private String name;
     private ArrayList<PediStopMongo> outboundStops;
     private ArrayList<PediStopMongo> returnStops;
-    private ArrayList<Child> subscribedChildren;
+    private ArrayList<LineSubscribedChild> subscribedChildren;
 
     public LineMongo() {
         outboundStops = new ArrayList<>();

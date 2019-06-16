@@ -9,6 +9,6 @@ import java.util.Map;
 @Builder
 @Data
 public class LineReservations {
-    private Map<String, Collection<String>> outwardStopsReservations;
-    private Map<String, Collection<String>> backStopsReservations;
+    private Map<String, Collection<Reservation>> outwardStopsReservations;
+    private Map<String, Collection<Reservation>> backStopsReservations;
 }

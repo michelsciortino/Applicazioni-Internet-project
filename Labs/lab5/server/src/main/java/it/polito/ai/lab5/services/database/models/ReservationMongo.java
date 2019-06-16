@@ -21,6 +21,8 @@ public class ReservationMongo {
 
     private String userID;
     private String childName;
+    private String childSurname;
+
     private String childCf;
     private String lineName;
     private String stopName;

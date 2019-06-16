@@ -140,7 +140,7 @@ public class Lab5Application implements CommandLineRunner {
                     u1.setLines(linelist1);
                     database.insertUser(u1);
 
-                    Reservation r1 = new Reservation(null, child1.getName(), child1.getCF(), u1.getUsername(), l1.getOutboundStops().get(2).name, DirectionType.OUTWARD, false);
+                    Reservation r1 = new Reservation(null, child1.getSurname(), child1.getName(), child1.getCF(), u1.getUsername(), l1.getOutboundStops().get(2).name, DirectionType.OUTWARD, false);
 
 
                     database.addSubscriber(u1.getUsername(), child1, l1.getName(), c1.getRoles());

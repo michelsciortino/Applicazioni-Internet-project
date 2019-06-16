@@ -4,10 +4,7 @@ import it.polito.ai.lab5.controllers.models.LineReservations;
 import it.polito.ai.lab5.controllers.models.Reservation;
 import it.polito.ai.lab5.files.json.Line;
 import it.polito.ai.lab5.services.database.DatabaseServiceInterface;
-import it.polito.ai.lab5.services.database.models.Child;
-import it.polito.ai.lab5.services.database.models.Credential;
-import it.polito.ai.lab5.services.database.models.ReservationMongo;
-import it.polito.ai.lab5.services.database.models.Roles;
+import it.polito.ai.lab5.services.database.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -148,12 +145,12 @@ public class MainRestController {
 
     @RequestMapping(value = "/lines/{line_name}/subscribers", method = RequestMethod.POST)
     public ResponseEntity postSubscriber(@PathVariable String line_name,
-                                          @RequestBody Child child, @AuthenticationPrincipal Credential credential) {
+                                         @RequestBody LineSubscribedChild child, @AuthenticationPrincipal Credential credential) {
         try {
-            String userid = credential.getUsername();
+
             List<String> roles = credential.getRoles();
 
-            Line line = database.addSubscriber(userid, child, line_name, roles);
+            Line line = database.addSubscriber(child.getParentId(), child.getChild(), line_name, roles);
             if (line == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Line not found.");
             return ok(line);
