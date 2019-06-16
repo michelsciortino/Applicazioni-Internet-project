@@ -1,10 +1,14 @@
 package it.polito.ai.lab5;
 
+import it.polito.ai.lab5.controllers.models.Reservation;
 import it.polito.ai.lab5.files.LinesDeserializer;
 import it.polito.ai.lab5.files.json.Line;
+import it.polito.ai.lab5.files.json.PediStop;
 import it.polito.ai.lab5.services.database.DatabaseServiceInterface;
+import it.polito.ai.lab5.services.database.models.Child;
 import it.polito.ai.lab5.services.database.models.Credential;
 import it.polito.ai.lab5.services.database.models.Roles;
+import it.polito.ai.lab5.services.database.models.User;
 import it.polito.ai.lab5.services.database.repositories.CredentialRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,6 +74,79 @@ public class Lab5Application implements CommandLineRunner {
             } else if (arg.startsWith("--folder=")) {
                 config.setFolderName(arg);
                 InsertLineFromFileInFolder(config.getFolderName());
+            }
+            else if(arg.startsWith("--test="))
+            {
+                String[] splitted = arg.split("=");
+                int repetitions = Integer.parseInt(splitted[1]);
+
+                for(int i=0; i<repetitions; i++ )
+                {
+                Child child1 = new Child();
+                child1.setCF("cf" +  new Integer(i).toString());
+                child1.setName("c" + new Integer(i).toString());
+                child1.setSurname("c" + new Integer(i).toString());
+
+                Child child2 = new Child();
+                child2.setCF("cf" + new Integer(i+1).toString());
+                child2.setName("c" + new Integer(i+1).toString());
+                child2.setSurname("c" + new Integer(i+1).toString());
+
+
+                Child zerochild = new Child();
+                zerochild.setCF("Zerocf");
+                zerochild.setName("Zerochild");
+                zerochild.setSurname("Zerochild");
+
+                List<Child> children1 = new ArrayList<>();
+                children1.add(child1);
+                children1.add(child2);
+                children1.add(zerochild);
+
+                Credential c1 = new Credential("password" , "u" + new Integer(i).toString() + "@mail.com", Arrays.asList(Roles.prefix + Roles.USER));
+                c1 = database.insertCredential(c1.getUsername(), c1.getPassword(), c1.getRoles());
+                PediStop p1 = new PediStop("ps1", (float) 1, (float) 1);
+                PediStop p2 = new PediStop("ps2", (float) 2, (float) 2);
+                PediStop p3 = new PediStop("ps3", (float) 3, (float) 3);
+                PediStop p4 = new PediStop("ps4", (float) 4, (float) 4);
+                ArrayList<PediStop> outboundStops = new ArrayList<>();
+                outboundStops.add(p1);
+                outboundStops.add(p2);
+                outboundStops.add(p3);
+                outboundStops.add(p4);
+                ArrayList<PediStop> returnStops = new ArrayList<>();
+                returnStops.add(p4);
+                returnStops.add(p3);
+                returnStops.add(p1);
+
+                Line l1 = new Line("l" + new Integer(i).toString(), outboundStops, returnStops, new ArrayList<Child>()) ;
+                database.insertLine(l1);
+
+                List<String> linelist1 = new ArrayList<>();
+                linelist1.add(l1.getName());
+
+
+                User u1 = new User();
+                u1.setCredential(c1);
+                u1.setUsername(c1.getUsername());
+                u1.setName("User" + new Integer(i).toString());
+                u1.setSurname("User" + new Integer(i).toString());
+                u1.setChildren(children1);
+                u1.setLines(linelist1);
+                database.insertUser(u1);
+
+                Reservation r1= new Reservation(null, child1.getName(), child1.getCF(), l1.getOutboundStops().get(2).name , "outbound", false);
+
+
+
+
+
+                database.addSubscriber(u1.getUsername(), child1, l1.getName(), c1.getRoles() );
+
+                database.addSubscriber(u1.getUsername(), zerochild, l1.getName(), c1.getRoles() );
+                database.addReservation(u1.getCredential().getRoles(), u1.getUsername(), r1, l1.getName(), LocalDate.now());
+                }
+
             }
         }
     }
