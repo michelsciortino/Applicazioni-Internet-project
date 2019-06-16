@@ -177,7 +177,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 for (Child c : children)
                 {
 
-                    if(c.getCF() == reservation.getChildCf())
+                    if(c.getCF().equals(reservation.getChildCf()))
                     {
                         flag = true;
                         break;

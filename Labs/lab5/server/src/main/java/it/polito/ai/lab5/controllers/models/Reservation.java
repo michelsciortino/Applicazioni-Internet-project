@@ -20,6 +20,15 @@ public class Reservation {
     private String stopName;
     @NotNull
     private String direction;
-
+    @NotNull
     private boolean present;
+
+    public Reservation(@Nullable String id, @NotNull String childName, @NotNull String childCf, @NotNull String stopName, @NotNull String direction, @NotNull boolean present) {
+        this.id = null;
+        this.childName = childName;
+        this.childCf = childCf;
+        this.stopName = stopName;
+        this.direction = direction;
+        this.present = present;
+    }
 }
