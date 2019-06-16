@@ -101,11 +101,12 @@ public class DatabaseService implements DatabaseServiceInterface {
 
             Map<String, Collection<String>> outwardStopsReservations = new HashMap<>();
             Map<String, Collection<String>> backStopsReservations = new HashMap<>();
-
+            Date d = convertLocalDateTOMongoDate(date);
             for (PediStopMongo s : lineMongo.getOutboundStops()) {
                 List<String> names = new ArrayList<>();
                 try {
-                    for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.OUTWARD, date, lineName))
+
+                    for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.OUTWARD, d, lineName))
                         names.add(r.getChildName());
                     if (!names.isEmpty())
                         outwardStopsReservations.put(s.getName(), names);
@@ -116,7 +117,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             for (PediStopMongo s : lineMongo.getReturnStops()) {
                 List<String> names = new ArrayList<>();
                 try {
-                    for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.RETURN, date, lineName))
+                    for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.RETURN, d, lineName))
                         names.add(r.getChildName());
                     if (!names.isEmpty())
                         backStopsReservations.put(s.getName(), names);
@@ -191,8 +192,8 @@ public class DatabaseService implements DatabaseServiceInterface {
             }
             ReservationMongo res;
             if (lineRepository.findLineByName(lineName) != null) {
-                res = reservationRepository.save(ReservationMongo.builder().childName(reservation.getChildName()).childCf(reservation.getChildCf()).direction(reservation.getDirection()).stopName(reservation.getStopName()).data(date).userID(UserID).lineName(lineName).present(false).build());
-                return Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childCf(res.getChildCf()).stopName(res.getStopName()).direction(res.getDirection()).present(false).build();
+                res = reservationRepository.save(ReservationMongo.builder().childName(reservation.getChildName()).childCf(reservation.getChildCf()).direction(reservation.getDirection()).stopName(reservation.getStopName()).data(convertLocalDateTOMongoDate(date)).userID(UserID).lineName(lineName).present(false).build());
+                return Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childCf(res.getChildCf()).parentUsername(UserID).stopName(res.getStopName()).direction(res.getDirection()).present(false).build();
             } else
                 throw new ServiceNotFoundException();
         } catch (Exception e) {
@@ -205,15 +206,17 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Transactional
     public Reservation updateReservation(String UserID, Reservation reservation, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
         try {
+
             ReservationMongo rp = reservationRepository.findById(reservationId).get();
             rp.setChildName(reservation.getChildName());
             rp.setChildCf(reservation.getChildCf());
             rp.setDirection(reservation.getDirection());
             rp.setLineName(lineName);
             rp.setStopName(reservation.getStopName());
+            rp.setData(convertLocalDateTOMongoDate(date));
             rp.setPresent(reservation.isPresent());
             ReservationMongo res=reservationRepository.save(rp);
-            return Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childCf(res.getChildCf()).stopName(res.getStopName()).direction(res.getDirection()).present(false).build();
+            return Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childCf(res.getChildCf()).parentUsername(UserID).stopName(res.getStopName()).direction(res.getDirection()).present(false).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
@@ -234,7 +237,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     public Reservation getReservation(String UserID, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
         try {
             ReservationMongo rm = reservationRepository.findById(reservationId).get();
-            return Reservation.builder().id(rm.getId().toString()).childName(rm.getChildName()).childCf(rm.getChildCf()).direction(rm.getDirection()).stopName(rm.getStopName()).present(rm.isPresent()).build();
+            return Reservation.builder().id(rm.getId().toString()).childName(rm.getChildName()).childCf(rm.getChildCf()).parentUsername(UserID).direction(rm.getDirection()).stopName(rm.getStopName()).present(rm.isPresent()).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
@@ -469,5 +472,14 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         return true;
         //
+    }
+
+    private Date convertLocalDateTOMongoDate(LocalDate date)
+    {
+        GregorianCalendar gc = new GregorianCalendar(date.getYear(), date.getMonth().getValue() - 1, date.getDayOfMonth());
+        gc.setTimeZone(TimeZone.getTimeZone("GMT"));
+        Date d = gc.getTime();
+        return d;
+
     }
 }

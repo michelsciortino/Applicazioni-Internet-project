@@ -17,16 +17,19 @@ public class Reservation {
     @NotNull
     private String childCf;
     @NotNull
+    private String parentUsername;
+    @NotNull
     private String stopName;
     @NotNull
     private String direction;
     @NotNull
     private boolean present;
 
-    public Reservation(@Nullable String id, @NotNull String childName, @NotNull String childCf, @NotNull String stopName, @NotNull String direction, @NotNull boolean present) {
+    public Reservation(@Nullable String id, @NotNull String childName, @NotNull String childCf, @NotNull  String parentUsername, @NotNull String stopName, @NotNull String direction, @NotNull boolean present) {
         this.id = null;
         this.childName = childName;
         this.childCf = childCf;
+        this.parentUsername = parentUsername;
         this.stopName = stopName;
         this.direction = direction;
         this.present = present;

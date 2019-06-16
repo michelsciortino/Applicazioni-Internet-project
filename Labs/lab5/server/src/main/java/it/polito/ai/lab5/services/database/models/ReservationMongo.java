@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Document(collection = "reservations")
 @Data
@@ -24,7 +25,7 @@ public class ReservationMongo {
     private String lineName;
     private String stopName;
     private String direction;
-    private LocalDate data;
+    private Date data;
     private boolean present;
 }
 

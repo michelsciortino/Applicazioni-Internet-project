@@ -87,7 +87,7 @@ public class MainRestController {
                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date,
                                           @RequestBody @Valid Reservation reservation, @AuthenticationPrincipal Credential credential) {
         try {
-            Reservation reservationAdd = database.addReservation( credential.getRoles(), credential.getUsername(), reservation, line_name, date);
+            Reservation reservationAdd = database.addReservation( credential.getRoles(), reservation.getParentUsername(), reservation, line_name, date);
             if (reservationAdd == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Line not found.");
             return ok(reservationAdd);
@@ -102,7 +102,7 @@ public class MainRestController {
                                   @PathVariable String reservation_id,
                                   @RequestBody Reservation updatedReservation,  @AuthenticationPrincipal Credential credential) {
         try {
-            Reservation result = database.updateReservation( credential.getUsername(), updatedReservation, line_name, date, reservation_id);
+            Reservation result = database.updateReservation( updatedReservation.getParentUsername(), updatedReservation, line_name, date, reservation_id);
             return ok(result);
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
