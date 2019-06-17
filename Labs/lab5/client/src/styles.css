@@ -1,4 +1,28 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+.mat-paginator-range-label {
+    display: none;
+}
+
+.text-align-left {
+    text-align: left;
+}
+
+.flex {
+    display: flex;
+}
+
+.inline {
+    display: inline;
+}
+
+.block {
+    display: block;
+}
+
+.mat-paginator.inline {
+    display: inline;
+}
+
 body {
     margin: 0px;
 }
@@ -17,6 +41,10 @@ body {
     width: 100%;
 }
 
+.mat-card.inline-block {
+    display: inline-block;
+}
+
 .main-content {
     margin: 16px;
 }
@@ -27,9 +55,9 @@ body {
 }
 
 .compact-card {
-    max-width: 400px;
     align-content: center;
     align-self: center;
+    margin: auto;
 }
 
 .align-center {
@@ -40,6 +68,7 @@ body {
 
 .centered {
     margin: auto;
+    text-align: center;
 }
 
 ul li {
@@ -85,7 +114,7 @@ ul {
     position: relative;
 }
 
-.line.container::after {
+.ride.container::after {
     content: '';
     position: absolute;
     width: 16px;
@@ -109,4 +138,56 @@ ul {
 .content {
     padding: 8px 0px 0px 16px;
     position: relative;
+}
+
+.margin8 {
+    margin: 8px;
+}
+
+.margin-top-24 {
+    margin-top: 24px;
+}
+
+.margin-bottom-24 {
+    margin-bottom: 24px;
+}
+
+.margin-left-24 {
+    margin-left: 24px;
+}
+
+.margin-right-24 {
+    margin-right: 24px;
+}
+
+.margin-top-16 {
+    margin-top: 16px;
+}
+
+.margin-bottom-16 {
+    margin-bottom: 16px;
+}
+
+.margin-left-16 {
+    margin-left: 16px;
+}
+
+.margin-right-16 {
+    margin-right: 16px;
+}
+
+.margin-top-0 {
+    margin-top: 0;
+}
+
+.margin-bottom-0 {
+    margin-bottom: 0;
+}
+
+.margin-left-0 {
+    margin-left: 0;
+}
+
+.margin-right-0 {
+    margin-right: 0;
 }

@@ -1,0 +1,65 @@
+<div class="centered">
+    <mat-card class="line-card inline-block text-align-left" *ngIf="lines && lines.length>0" flex="50">
+        <mat-card-content>
+            <div>
+                <!-- line selection -->
+                <mat-form-field class="margin8 margin-bottom-0">
+                    <mat-label>Line</mat-label>
+                    <mat-select [(ngModel)]="selectedLine" *ngIf="lines" (selectionChange)="onRideSelected()">
+                        <mat-option [value]="" disabled>Seleziona Linea</mat-option>
+                        <mat-option *ngFor="let line of lines, let index" [value]="index">{{line?.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Way selection -->
+                <mat-form-field class="margin8 margin-bottom-0">
+                    <mat-label>Direzione</mat-label>
+                    <mat-select *ngIf="ways" [(ngModel)]="way" (selectionChange)="onRideSelected()">
+                        <mat-option *ngFor="let way of ways" [value]="way">{{way.text}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Date selection -->
+                <mat-form-field class="margin8 margin-bottom-0">
+                    <mat-label>Data</mat-label>
+                    <input matInput [matDatepicker]="picker" [(ngModel)]="date" (dateChange)="onRideSelected()">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker [startAt]="date"></mat-datepicker>
+                </mat-form-field>
+
+                <!--<mat-paginator class="inline margin8" [hidePageSize]=true id="paginator" (page)="onDateSelected($event)" [length]="nPages" [pageSize]="1" [pageSizeOptions]="[1]"></mat-paginator>-->
+            </div>
+            <!-- stops -->
+            <div class="margin8 margin-bottom-16 timeline" *ngIf="ride">
+                <div class="ride container right" *ngFor="let stop of ride.stops">
+                    <div class="content">
+                        <div mat-line>
+                            {{stop.time}} {{stop.name}}
+                        </div>
+                        <ul mat-line>
+                            <!-- reservatios -->
+                            <li *ngFor="let reservation of stop.reservations; last as isLast">
+                                <span [ngClass]="{'present':reservation.present}" (click)="setChildPresence(selectedLine,way,reservation)">
+                                    {{reservation.childName}}
+                                    {{reservation.childSurname}}</span>
+                                <span *ngIf="!isLast">, </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="unsubscribedChildren" class="margin8 margin-top-24">
+                <span>Bambini non prenotati:</span>
+                <ul id="unsubscribedChildren" mat-line>
+                    <li *ngFor="let child of unsubscribedChildren; last as isLast">
+                        <span *ngIf="!child.subscribed" (click)="setChildPresence(selectedLine,way,child)">
+                            {{child?.childName}}
+                            {{child?.childSurname}}</span>
+                        <span *ngIf="!isLast&&!child.subscribed">, </span>
+                    </li>
+                </ul>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

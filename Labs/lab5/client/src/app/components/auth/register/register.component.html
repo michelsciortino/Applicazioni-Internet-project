@@ -1,19 +1,22 @@
 <form [formGroup]="form" (ngSubmit)="register()">
-  <mat-form-field>
-    <input matInput type="email" placeholder="Mail" formControlName="mail" required>
-    <mat-error *ngIf="!form.controls['mail'].valid"> Please isert a correct mail address</mat-error>
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput type="password" placeholder="Password" formControlName="password" required>
-    <mat-error *ngIf="!form.controls['password'].valid"> Insert a valid password</mat-error>
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput type="password" placeholder="Repeat password" formControlName="password2" required>
-    <mat-error *ngIf="!form.controls['password2'].valid"> Insert a valid password</mat-error>
-  </mat-form-field>
-  <div class="form-error">
-    <mat-error *ngIf="form.hasError('passowordsNotEqual')"> The passwords do not corrispond</mat-error>
-  </div>
-  <mat-spinner [style.display]="showSpinner? 'block' : 'none'"></mat-spinner>
-  <button [disabled]="!form.valid" mat-raised-button color="primary" type="submit">Register</button>
+    <mat-form-field>
+        <input matInput type="email" placeholder="Mail" formControlName="mail" required>
+        <mat-error *ngIf="!form.controls['mail'].valid"> Please isert a correct mail address</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput type="password" placeholder="Password" formControlName="password" required>
+        <mat-error *ngIf="!form.controls['password'].valid"> Insert a valid password</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput type="password" placeholder="Repeat password" formControlName="password2" required>
+        <mat-error *ngIf="!form.controls['password2'].valid"> Insert a valid password</mat-error>
+    </mat-form-field>
+    <div class="form-error">
+        <mat-error *ngIf="form.hasError('passowordsNotEqual')"> The passwords do not corrispond</mat-error>
+    </div>
+    <mat-spinner [style.display]="showSpinner? 'block' : 'none'"></mat-spinner>
+    <div class="form-error">
+        <mat-error *ngIf="hasError">{{registrationError}}</mat-error>
+    </div>
+    <button [disabled]="!form.valid" mat-raised-button color="primary" type="submit">Register</button>
 </form>

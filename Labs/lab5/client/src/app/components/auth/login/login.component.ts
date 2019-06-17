@@ -31,7 +31,8 @@ export class LoginComponent implements OnInit {
       this.auth.login(this.form.value).subscribe(
         () => {
           this.showSpinner = false;
-          this.router.navigate(['/home']);
+          this.invalidCredentials=false;
+          this.router.navigate(['/']);
         },
         (error: HttpErrorResponse) => {
           this.showSpinner = false;
