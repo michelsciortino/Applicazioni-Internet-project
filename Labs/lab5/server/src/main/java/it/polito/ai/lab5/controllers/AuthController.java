@@ -1,7 +1,7 @@
 package it.polito.ai.lab5.controllers;
 
-import it.polito.ai.lab5.controllers.models.LoginRequest;
 import it.polito.ai.lab5.controllers.models.ChangePasswordRequest;
+import it.polito.ai.lab5.controllers.models.LoginRequest;
 import it.polito.ai.lab5.controllers.models.RegistrationRequest;
 import it.polito.ai.lab5.security.JwtTokenProvider;
 import it.polito.ai.lab5.services.database.DatabaseServiceInterface;
@@ -52,7 +52,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequest data ) {
+    public ResponseEntity login(@RequestBody LoginRequest data) {
         try {
             String mail = data.getMail();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(mail, data.getPassword()));

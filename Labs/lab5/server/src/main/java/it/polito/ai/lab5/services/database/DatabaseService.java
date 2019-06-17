@@ -87,7 +87,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     public Line getLine(String lineName) throws UnknownServiceException {
         try {
             LineMongo lineMongo = lineRepository.findLineByName(lineName);
-            if (lineMongo==null)
+            if (lineMongo == null)
                 return null;
             else
                 return lineMongoToLine(lineMongo);
@@ -97,44 +97,44 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
-/*
-    @Override
-    public LineReservations getLineReservationsNames(String lineName, LocalDate date) throws UnknownServiceException {
-        try {
-            LineMongo lineMongo = lineRepository.findLineByName(lineName);
+    /*
+        @Override
+        public LineReservations getLineReservationsNames(String lineName, LocalDate date) throws UnknownServiceException {
+            try {
+                LineMongo lineMongo = lineRepository.findLineByName(lineName);
 
-            Map<String, Collection<String>> outwardStopsReservations = new HashMap<>();
-            Map<String, Collection<String>> backStopsReservations = new HashMap<>();
-            Date d = convertLocalDateTOMongoDate(date);
-            for (PediStopMongo s : lineMongo.getOutboundStops()) {
-                List<String> names = new ArrayList<>();
-                try {
+                Map<String, Collection<String>> outwardStopsReservations = new HashMap<>();
+                Map<String, Collection<String>> backStopsReservations = new HashMap<>();
+                Date d = convertLocalDateTOMongoDate(date);
+                for (PediStopMongo s : lineMongo.getOutboundStops()) {
+                    List<String> names = new ArrayList<>();
+                    try {
 
-                    for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.OUTWARD, d, lineName))
-                        names.add(r.getChildName());
-                    if (!names.isEmpty())
-                        outwardStopsReservations.put(s.getName(), names);
-                } catch (Exception e) {
-                    System.out.println(e);
+                        for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.OUTWARD, d, lineName))
+                            names.add(r.getChildName());
+                        if (!names.isEmpty())
+                            outwardStopsReservations.put(s.getName(), names);
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
                 }
-            }
-            for (PediStopMongo s : lineMongo.getReturnStops()) {
-                List<String> names = new ArrayList<>();
-                try {
-                    for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.RETURN, d, lineName))
-                        names.add(r.getChildName());
-                    if (!names.isEmpty())
-                        backStopsReservations.put(s.getName(), names);
-                } catch (Exception e) {
-                    System.out.println(e);
+                for (PediStopMongo s : lineMongo.getReturnStops()) {
+                    List<String> names = new ArrayList<>();
+                    try {
+                        for (ReservationMongo r : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.RETURN, d, lineName))
+                            names.add(r.getChildName());
+                        if (!names.isEmpty())
+                            backStopsReservations.put(s.getName(), names);
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
                 }
+                return LineReservations.builder().backStopsReservations(backStopsReservations).outwardStopsReservations(outwardStopsReservations).build();
+            } catch (Exception e) {
+                throw new UnknownServiceException(e.getMessage());
             }
-            return LineReservations.builder().backStopsReservations(backStopsReservations).outwardStopsReservations(outwardStopsReservations).build();
-        } catch (Exception e) {
-            throw new UnknownServiceException(e.getMessage());
         }
-    }
-*/
+    */
     @Override
     public LineReservations getLineReservations(String lineName, LocalDate date) throws UnknownServiceException {
         try {
@@ -148,7 +148,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 try {
 
                     for (ReservationMongo res : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.OUTWARD, d, lineName))
-                        listRes.add(Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childSurname(res.getChildSurname()).childCf(res.getChildCf()).parentUsername(res.getUserID()).stopName(res.getStopName()).direction(res.getDirection()).present(false).build());
+                        listRes.add(Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childSurname(res.getChildSurname()).childCf(res.getChildCf()).parentUsername(res.getUserID()).stopName(res.getStopName()).direction(res.getDirection()).present(res.isPresent()).build());
                     outwardStopsReservations.put(s.getName(), listRes);
                 } catch (Exception e) {
                     System.out.println(e);
@@ -158,7 +158,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 List<Reservation> listRes = new ArrayList<>();
                 try {
                     for (ReservationMongo res : reservationRepository.getReservationMongoByStopNameAndDirectionAndData(s.getName(), DirectionType.RETURN, d, lineName))
-                        listRes.add(Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childSurname(res.getChildSurname()).childCf(res.getChildCf()).parentUsername(res.getUserID()).stopName(res.getStopName()).direction(res.getDirection()).present(false).build());
+                        listRes.add(Reservation.builder().id(res.getId().toString()).childName(res.getChildName()).childSurname(res.getChildSurname()).childCf(res.getChildCf()).parentUsername(res.getUserID()).stopName(res.getStopName()).direction(res.getDirection()).present(res.isPresent()).build());
 
                     backStopsReservations.put(s.getName(), listRes);
                 } catch (Exception e) {
@@ -175,11 +175,11 @@ public class DatabaseService implements DatabaseServiceInterface {
     public Reservation getReservationByLineNameStopNameDateDirectionChildCf(String lineName, LocalDate localDate, String childCf, String direction, String stopName) throws UnknownServiceException {
         try {
             Date date = Date.from(localDate.atStartOfDay(ZoneOffset.UTC).toInstant());
-            ReservationMongo reservationMongo = reservationRepository.getReservationMongoByStopNameAndDirectionAndDataAndLineNameAndChildCf(stopName,direction,date,lineName,childCf);
-            if (reservationMongo==null)
+            ReservationMongo reservationMongo = reservationRepository.getReservationMongoByStopNameAndDirectionAndDataAndLineNameAndChildCf(stopName, direction, date, lineName, childCf);
+            if (reservationMongo == null)
                 return null;
             else
-                return Reservation.builder().id(reservationMongo.getId().toString()).childName(reservationMongo.getChildName()).childSurname(reservationMongo.getChildSurname()).childCf(reservationMongo.getChildCf()).parentUsername(reservationMongo.getUserID()).stopName(reservationMongo.getStopName()).direction(reservationMongo.getDirection()).present(false).build();
+                return Reservation.builder().id(reservationMongo.getId().toString()).childName(reservationMongo.getChildName()).childSurname(reservationMongo.getChildSurname()).childCf(reservationMongo.getChildCf()).parentUsername(reservationMongo.getUserID()).stopName(reservationMongo.getStopName()).direction(reservationMongo.getDirection()).present(reservationMongo.isPresent()).build();
             //return Line.builder().name(lineMongo.getName()).outboundStops(out).returnStops(ret).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
@@ -188,36 +188,28 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Override
     @Transactional
-    public Line addSubscriber(String UserID, Child child, String lineName, List<String> roles) throws UnknownServiceException
-    {
-        try
-        {
-            if(!isParentorAdmin(UserID, roles, child))
-            {
+    public Line addSubscriber(String UserID, Child child, String lineName, List<String> roles) throws UnknownServiceException {
+        try {
+            if (!isParentorAdmin(UserID, roles, child)) {
                 throw new UnknownServiceException("You can subscribe your children only!");
             }
             LineMongo lm;
             lm = lineRepository.findLineByName(lineName);
-            if (lm != null)
-            {
+            if (lm != null) {
                 LineSubscribedChild lsc = new LineSubscribedChild();
                 lsc.setChild(child);
                 lsc.setParentId(UserID);
-                if(!lm.getSubscribedChildren().contains(lsc))
-                {
+                if (!lm.getSubscribedChildren().contains(lsc)) {
 
                     lm.getSubscribedChildren().add(lsc);
                     lineRepository.save(lm);
                     return lineMongoToLine(lm);
-                }
-                else
-                {
+                } else {
                     throw new UnknownServiceException("Child already subscribed!");
                 }
             } else
                 throw new ServiceNotFoundException();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
 
@@ -227,23 +219,19 @@ public class DatabaseService implements DatabaseServiceInterface {
     public Reservation addReservation(List<String> roles, String UserID, Reservation reservation, String lineName, LocalDate date) throws UnknownServiceException {
         try {
 
-            if (!roles.contains(Roles.prefix + Roles.ADMIN)||!roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN))
-            {
-                User u= getUserByUsername(UserID);
+            if (!roles.contains(Roles.prefix + Roles.ADMIN) || !roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN)) {
+                User u = getUserByUsername(UserID);
                 List<Child> children = u.getChildren();
                 Child child;
-                boolean flag= false;
-                for (Child c : children)
-                {
+                boolean flag = false;
+                for (Child c : children) {
 
-                    if(c.getCF().equals(reservation.getChildCf()))
-                    {
+                    if (c.getCF().equals(reservation.getChildCf())) {
                         flag = true;
                         break;
                     }
                 }
-                if(!flag)
-                {
+                if (!flag) {
                     throw new UnknownServiceException("You can subscribe your children only!");
                 }
 
@@ -257,14 +245,12 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
-
     }
 
     @Override
     @Transactional
     public Reservation updateReservation(String UserID, Reservation reservation, String lineName, LocalDate date, String reservationId) throws UnknownServiceException {
         try {
-
             ReservationMongo rp = reservationRepository.findById(reservationId).get();
             rp.setChildName(reservation.getChildName());
             rp.setChildSurname(reservation.getChildSurname());
@@ -274,8 +260,8 @@ public class DatabaseService implements DatabaseServiceInterface {
             rp.setStopName(reservation.getStopName());
             rp.setData(convertLocalDateTOMongoDate(date));
             rp.setPresent(reservation.isPresent());
-            ReservationMongo res=reservationRepository.save(rp);
-            return Reservation.builder().id(res.getId().toString()).childSurname(res.getChildSurname()).childName(res.getChildName()).childCf(res.getChildCf()).parentUsername(UserID).stopName(res.getStopName()).direction(res.getDirection()).present(reservation.isPresent()).build();
+            ReservationMongo res = reservationRepository.save(rp);
+            return Reservation.builder().id(res.getId().toString()).childSurname(res.getChildSurname()).childName(res.getChildName()).childCf(res.getChildCf()).parentUsername(UserID).stopName(res.getStopName()).direction(res.getDirection()).present(res.isPresent()).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }
@@ -497,31 +483,28 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     //TO-DO Move to Utils
-    private Line lineMongoToLine(LineMongo lineMongo)
-    {
+    private Line lineMongoToLine(LineMongo lineMongo) {
         ArrayList<PediStop> out = new ArrayList<>();
         for (PediStopMongo p : lineMongo.getOutboundStops())
             out.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude(), p.getTime()));
         // out.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
         ArrayList<PediStop> ret = new ArrayList<>();
         for (PediStopMongo p : lineMongo.getReturnStops())
-            ret.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude(),  p.getTime()));
+            ret.add(new PediStop(p.getName(), p.getLatitude(), p.getLongitude(), p.getTime()));
         // ret.add(PediStop.builder().name(p.getName()).latitude(p.getLatitude()).longitude(p.getLongitude()).build());
-        List<LineSubscribedChild> templist =lineMongo.getSubscribedChildren();
+        List<LineSubscribedChild> templist = lineMongo.getSubscribedChildren();
         ArrayList<Child> children = new ArrayList<>();
-        for (LineSubscribedChild l : templist)
-        {
+        for (LineSubscribedChild l : templist) {
             children.add(l.getChild());
         }
         return new Line(lineMongo.getName(), out, ret, lineMongo.getSubscribedChildren());
     }
-    private boolean isParentorAdmin(String UserID, List<String > roles, Child child)
-    {
+
+    private boolean isParentorAdmin(String UserID, List<String> roles, Child child) {
         //TO-DO: Check transactionality needing
         User u = userRepository.findByUsername(UserID);
         boolean find = false;
-        if(!roles.contains(Roles.prefix + Roles.ADMIN) && !roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN)  )
-        {
+        if (!roles.contains(Roles.prefix + Roles.ADMIN) && !roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN)) {
             for (Child c : u.getChildren()) {
 
                 if (c.getCF().equals(child.getCF())) {
@@ -530,17 +513,13 @@ public class DatabaseService implements DatabaseServiceInterface {
                 }
 
             }
-            if (!find) {
-                return false;
-            }
-            return true;
+            return find;
         }
         return true;
         //
     }
 
-    private Date convertLocalDateTOMongoDate(LocalDate date)
-    {
+    private Date convertLocalDateTOMongoDate(LocalDate date) {
         GregorianCalendar gc = new GregorianCalendar(date.getYear(), date.getMonth().getValue() - 1, date.getDayOfMonth());
         gc.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date d = gc.getTime();

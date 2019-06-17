@@ -4,26 +4,22 @@ import it.polito.ai.lab5.controllers.models.LineReservations;
 import it.polito.ai.lab5.controllers.models.Reservation;
 import it.polito.ai.lab5.files.json.Line;
 import it.polito.ai.lab5.services.database.DatabaseServiceInterface;
-import it.polito.ai.lab5.services.database.models.*;
+import it.polito.ai.lab5.services.database.models.Credential;
+import it.polito.ai.lab5.services.database.models.LineSubscribedChild;
+import it.polito.ai.lab5.services.database.models.ReservationMongo;
+import it.polito.ai.lab5.services.database.models.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
-import sun.rmi.runtime.Log;
 
 import javax.validation.Valid;
-import java.io.OutputStream;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static org.springframework.http.ResponseEntity.ok;
 
 @CrossOrigin
@@ -68,7 +64,7 @@ public class MainRestController {
 
     @RequestMapping(value = "/reservations/{line_name}/{date}", method = RequestMethod.GET)
     public ResponseEntity getReservations(@PathVariable String line_name,
-                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date) {
+                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date) {
         try {
             LineReservations reservations = database.getLineReservations(line_name, date);
             if (reservations == null)
@@ -84,7 +80,7 @@ public class MainRestController {
                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date,
                                           @RequestBody @Valid Reservation reservation, @AuthenticationPrincipal Credential credential) {
         try {
-            Reservation reservationAdd = database.addReservation( credential.getRoles(), reservation.getParentUsername(), reservation, line_name, date);
+            Reservation reservationAdd = database.addReservation(credential.getRoles(), reservation.getParentUsername(), reservation, line_name, date);
             if (reservationAdd == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Line not found.");
             return ok(reservationAdd);
@@ -95,11 +91,11 @@ public class MainRestController {
 
     @RequestMapping(value = "/reservations/{line_name}/{date}/{reservation_id}", method = RequestMethod.PUT)
     public ResponseEntity updateReservation(@PathVariable String line_name,
-                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date,
-                                  @PathVariable String reservation_id,
-                                  @RequestBody Reservation updatedReservation,  @AuthenticationPrincipal Credential credential) {
+                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date,
+                                            @PathVariable String reservation_id,
+                                            @RequestBody Reservation updatedReservation, @AuthenticationPrincipal Credential credential) {
         try {
-            Reservation result = database.updateReservation( updatedReservation.getParentUsername(), updatedReservation, line_name, date, reservation_id);
+            Reservation result = database.updateReservation(updatedReservation.getParentUsername(), updatedReservation, line_name, date, reservation_id);
             return ok(result);
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -109,7 +105,7 @@ public class MainRestController {
     @RequestMapping(value = "/reservations/{line_name}/{date}/{reservation_id}", method = RequestMethod.DELETE)
     public void deleteReservation(@PathVariable String line_name,
                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date,
-                                  @PathVariable String reservation_id,  @AuthenticationPrincipal Credential credential) {
+                                  @PathVariable String reservation_id, @AuthenticationPrincipal Credential credential) {
         boolean result;
         try {
             result = database.deleteReservation(credential.getUsername(), line_name, date, reservation_id);
@@ -122,8 +118,8 @@ public class MainRestController {
 
     @RequestMapping(value = "/reservations/{line_name}/{date}/{reservation_id}", method = RequestMethod.GET)
     public ResponseEntity getReservation(@PathVariable String line_name,
-                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date,
-                                      @PathVariable String reservation_id, @AuthenticationPrincipal Credential credential) {
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate date,
+                                         @PathVariable String reservation_id, @AuthenticationPrincipal Credential credential) {
         try {
             //TO-DO insert parent and roles  and move contro in db service;
 
@@ -158,6 +154,7 @@ public class MainRestController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @RequestMapping(value = "/lines/{line_name}/subscribers", method = RequestMethod.GET)
     public ResponseEntity getSubscriber(@PathVariable String line_name) {
         try {

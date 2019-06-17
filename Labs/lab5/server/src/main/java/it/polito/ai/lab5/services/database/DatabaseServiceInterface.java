@@ -1,7 +1,6 @@
 package it.polito.ai.lab5.services.database;
 
 
-import it.polito.ai.lab5.controllers.models.DirectionType;
 import it.polito.ai.lab5.controllers.models.LineReservations;
 import it.polito.ai.lab5.controllers.models.Reservation;
 import it.polito.ai.lab5.files.json.Line;
