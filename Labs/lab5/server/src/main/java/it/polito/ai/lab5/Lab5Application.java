@@ -6,10 +6,7 @@ import it.polito.ai.lab5.files.LinesDeserializer;
 import it.polito.ai.lab5.files.json.Line;
 import it.polito.ai.lab5.files.json.PediStop;
 import it.polito.ai.lab5.services.database.DatabaseServiceInterface;
-import it.polito.ai.lab5.services.database.models.Child;
-import it.polito.ai.lab5.services.database.models.Credential;
-import it.polito.ai.lab5.services.database.models.Roles;
-import it.polito.ai.lab5.services.database.models.User;
+import it.polito.ai.lab5.services.database.models.*;
 import it.polito.ai.lab5.services.database.repositories.CredentialRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +121,7 @@ public class Lab5Application implements CommandLineRunner {
                     returnStops.add(p5);
                     returnStops.add(p6);
                     returnStops.add(p7);
-                    Line l1 = new Line("l" + new Integer(i).toString(), outboundStops, returnStops, new ArrayList<Child>());
+                    Line l1 = new Line("l" + new Integer(i).toString(), outboundStops, returnStops, new ArrayList<LineSubscribedChild>());
                     database.insertLine(l1);
 
                     List<String> linelist1 = new ArrayList<>();

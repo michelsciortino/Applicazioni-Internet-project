@@ -494,7 +494,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         {
             children.add(l.getChild());
         }
-        return new Line(lineMongo.getName(), out, ret, children);
+        return new Line(lineMongo.getName(), out, ret, lineMongo.getSubscribedChildren());
     }
     private boolean isParentorAdmin(String UserID, List<String > roles, Child child)
     {
