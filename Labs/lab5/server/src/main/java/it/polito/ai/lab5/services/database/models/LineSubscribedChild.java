@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class LineSubscribedChild{
-    private Child child;
-    private String parentId;
+    public Child child;
+    public String parentId;
 }

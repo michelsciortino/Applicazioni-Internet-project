@@ -1,0 +1,151 @@
+{
+  "reservations": [
+    {
+      "username": "rossi@mail.com",
+      "childName": "Benedetta",
+      "childSurname": "Rossi",
+      "childCf": "BNDRSS01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Piazza Mellano",
+      "direction": "outward",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "bianchi@mail.com",
+      "childName": "Aurora",
+      "childSurname": "Bianchi",
+      "childCf": "ARRBNC01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Piazza Mellano",
+      "direction": "outward",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "primo@mail.com",
+      "childName": "Chanel",
+      "childSurname": "Primo",
+      "childCf": "CHNPRM01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Via primo Alpini",
+      "direction": "outward",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "bruno@mail.com",
+      "childName": "Matteo",
+      "childSurname": "Bruno",
+      "childCf": "MTTBRN01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Via primo Alpini",
+      "direction": "outward",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "secondo@mail.com",
+      "childName": "Sara",
+      "childSurname": "Secondo",
+      "childCf": "SRASCN01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Via Vigo",
+      "direction": "outward",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    },{
+      "username": "youssef@mail.com",
+      "childName": "Iaia",
+      "childSurname": "Youssef",
+      "childCf": "IAIYSS01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Piazza XXV Aprile",
+      "direction": "outward",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "verdi@mail.com",
+      "childName": "Claudia",
+      "childSurname": "Verdi",
+      "childCf": "CLDVRD01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Piazza XXV Aprile",
+      "direction": "outward",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    },
+
+
+
+    {
+      "username": "rossi@mail.com",
+      "childName": "Benedetta",
+      "childSurname": "Rossi",
+      "childCf": "BNDRSS01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Piazza Mellano",
+      "direction": "return",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "bianchi@mail.com",
+      "childName": "Aurora",
+      "childSurname": "Bianchi",
+      "childCf": "ARRBNC01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Piazza Mellano",
+      "direction": "return",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "primo@mail.com",
+      "childName": "Chanel",
+      "childSurname": "Primo",
+      "childCf": "CHNPRM01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Via primo Alpini",
+      "direction": "return",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "bruno@mail.com",
+      "childName": "Matteo",
+      "childSurname": "Bruno",
+      "childCf": "MTTBRN01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Via primo Alpini",
+      "direction": "return",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "secondo@mail.com",
+      "childName": "Sara",
+      "childSurname": "Secondo",
+      "childCf": "SRASCN01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Via Vigo",
+      "direction": "return",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    },{
+      "username": "youssef@mail.com",
+      "childName": "Iaia",
+      "childSurname": "Youssef",
+      "childCf": "IAIYSS01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Piazza XXV Aprile",
+      "direction": "return",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }, {
+      "username": "verdi@mail.com",
+      "childName": "Claudia",
+      "childSurname": "Verdi",
+      "childCf": "CLDVRD01C25B919P",
+      "lineName": "Bruchi_cantanti",
+      "stopName": "Piazza XXV Aprile",
+      "direction": "return",
+      "data": "2019-06-17T00:00:00.000Z",
+      "present": false
+    }
+
+  ]
+
+}

@@ -15,4 +15,6 @@ public interface ReservationRepository extends MongoRepository<ReservationMongo,
     List<ReservationMongo> getReservationByStopNameAndDirection(String stopName, String direction, LocalDate data, String lineName);
 
     List<ReservationMongo> getReservationMongoByStopNameAndDirectionAndData(String stopName, String direction, Date data, String lineName);
+
+    ReservationMongo getReservationMongoByStopNameAndDirectionAndDataAndLineNameAndChildCf(String stopName, String direction, Date data, String lineName, String childCf);
 }

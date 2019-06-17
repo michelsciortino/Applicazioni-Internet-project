@@ -1,6 +1,7 @@
 package it.polito.ai.lab5.services.database;
 
 
+import it.polito.ai.lab5.controllers.models.DirectionType;
 import it.polito.ai.lab5.controllers.models.LineReservations;
 import it.polito.ai.lab5.controllers.models.Reservation;
 import it.polito.ai.lab5.files.json.Line;
@@ -25,6 +26,8 @@ public interface DatabaseServiceInterface {
     LineReservations getLineReservations(String lineName, LocalDate date) throws UnknownServiceException;
 
     //LineReservations getLineReservationsNames(String lineName, LocalDate date) throws UnknownServiceException;
+
+    Reservation getReservationByLineNameStopNameDateDirectionChildCf(String lineName, LocalDate date, String childCf, String direction, String stopName) throws UnknownServiceException;
 
     Line addSubscriber(String UserID, Child child, String lineName, List<String> roles) throws UnknownServiceException;
 

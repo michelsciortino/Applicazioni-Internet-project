@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.management.ServiceNotFoundException;
 import java.net.UnknownServiceException;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Service
@@ -86,7 +87,10 @@ public class DatabaseService implements DatabaseServiceInterface {
     public Line getLine(String lineName) throws UnknownServiceException {
         try {
             LineMongo lineMongo = lineRepository.findLineByName(lineName);
-            return lineMongoToLine(lineMongo);
+            if (lineMongo==null)
+                return null;
+            else
+                return lineMongoToLine(lineMongo);
             //return Line.builder().name(lineMongo.getName()).outboundStops(out).returnStops(ret).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
@@ -162,6 +166,21 @@ public class DatabaseService implements DatabaseServiceInterface {
                 }
             }
             return LineReservations.builder().backStopsReservations(backStopsReservations).outwardStopsReservations(outwardStopsReservations).build();
+        } catch (Exception e) {
+            throw new UnknownServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Reservation getReservationByLineNameStopNameDateDirectionChildCf(String lineName, LocalDate localDate, String childCf, String direction, String stopName) throws UnknownServiceException {
+        try {
+            Date date = Date.from(localDate.atStartOfDay(ZoneOffset.UTC).toInstant());
+            ReservationMongo reservationMongo = reservationRepository.getReservationMongoByStopNameAndDirectionAndDataAndLineNameAndChildCf(stopName,direction,date,lineName,childCf);
+            if (reservationMongo==null)
+                return null;
+            else
+                return Reservation.builder().id(reservationMongo.getId().toString()).childName(reservationMongo.getChildName()).childSurname(reservationMongo.getChildSurname()).childCf(reservationMongo.getChildCf()).parentUsername(reservationMongo.getUserID()).stopName(reservationMongo.getStopName()).direction(reservationMongo.getDirection()).present(false).build();
+            //return Line.builder().name(lineMongo.getName()).outboundStops(out).returnStops(ret).build();
         } catch (Exception e) {
             throw new UnknownServiceException(e.getMessage());
         }

@@ -2,26 +2,66 @@
   "name": "Bruchi_cantanti",
   "outboundStops": [
     {
-      "name": "stop1",
+      "name": "Piazza Mellano",
       "latitude": 12,
-      "longitude": 24
+      "longitude": 24,
+      "time": "10:44"
     },
     {
-      "name": "stop2",
+      "name": "Via primo Alpini",
       "latitude": 13,
-      "longitude": 24
+      "longitude": 24,
+      "time": "10:49"
+    },
+    {
+      "name": "Via Vigo",
+      "latitude": 12,
+      "longitude": 24,
+      "time": "10:54"
+    },
+    {
+      "name": "Piazza XXV Aprile",
+      "latitude": 13,
+      "longitude": 24,
+      "time": "10:59"
+    },
+    {
+      "name": "Scuola",
+      "latitude": 13,
+      "longitude": 24,
+      "time": "11:04"
     }
   ],
   "returnStops": [
     {
-      "name": "stop2",
+      "name": "Scuola",
       "latitude": 13,
-      "longitude": 24
+      "longitude": 24,
+      "time": "16:54"
     },
     {
-      "name": "stop1",
+      "name": "Piazza XXV Aprile",
       "latitude": 12,
-      "longitude": 24
+      "longitude": 24,
+      "time": "16:59"
+    },
+    {
+      "name": "Via Vigo",
+      "latitude": 12,
+      "longitude": 24,
+      "time": "17:04"
+    },
+    {
+      "name": "Via primo Alpini",
+      "latitude": 13,
+      "longitude": 24,
+      "time": "17:09"
+    },
+    {
+      "name": "Piazza Mellano",
+      "latitude": 12,
+      "longitude": 24,
+      "time": "17:14"
     }
   ]
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class Child {
-    private String name;
-    private String surname;
-    private String CF;
+    public String name;
+    public String surname;
+    public String CF;
 }
