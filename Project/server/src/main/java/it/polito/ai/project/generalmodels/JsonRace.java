@@ -17,7 +17,7 @@ public class JsonRace {
     @Size(min = 2, max = 30)
     private String lineName;
     private DirectionType direction;
-    @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @NotNull
     private Date data;
 

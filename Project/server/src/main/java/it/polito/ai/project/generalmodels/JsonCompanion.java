@@ -1,7 +1,6 @@
 package it.polito.ai.project.generalmodels;
 
 import it.polito.ai.project.services.database.models.CompanionState;
-import it.polito.ai.project.services.database.models.User;
 import lombok.Data;
 import org.springframework.boot.jackson.JsonComponent;
 

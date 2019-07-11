@@ -10,11 +10,11 @@ public class JsonPassenger {
     private boolean isReserved;
     private boolean isPresent;
 
-    public JsonPassenger()
-    {
-        isReserved=false;
-        isPresent=false;
+    public JsonPassenger() {
+        isReserved = false;
+        isPresent = false;
     }
+
     public JsonPassenger(JsonChild childDetails, boolean isReserved, boolean isPresent) {
         this.childDetails = childDetails;
         this.isReserved = isReserved;

@@ -22,7 +22,7 @@ public class JsonPediStop {
     @DecimalMax(value = "90.0", inclusive = true)
     private BigDecimal latitude;
     @Min(0)
-    private long delayinmillis;
+    private long delayInMillis;
 
     public JsonPediStop() {
     }
@@ -31,7 +31,7 @@ public class JsonPediStop {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.delayinmillis = delayinmillis;
+        this.delayInMillis = delayInMillis;
     }
 }
 
