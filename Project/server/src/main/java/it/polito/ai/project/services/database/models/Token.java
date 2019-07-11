@@ -18,7 +18,7 @@ public class Token {
 
     private long tokenid;
 
-    private String confirmationToken;
+    private String token;
 
     private Date createdDate;
 
@@ -26,14 +26,13 @@ public class Token {
 
     private ScopeToken scope;
 
-    @DBRef
-    private UserCredentials credential;
+    private String username;
 
-    public Token(UserCredentials credential, ScopeToken scope) {
-        this.credential = credential;
+    public Token(String username, ScopeToken scope) {
+        this.username = username;
         createdDate = new Date();
         expirationDate = new Date(System.currentTimeMillis() + 3600 * 1000); //1h validity
-        confirmationToken = UUID.randomUUID().toString();
+        token = UUID.randomUUID().toString();
         this.scope = scope;
     }
 

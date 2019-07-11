@@ -4,5 +4,5 @@ import it.polito.ai.project.services.database.models.Token;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface TokenRepository extends MongoRepository<Token, String> {
-    Token findByConfirmationToken(String confirmationToken);
+    Token findByToken(String token);
 }
