@@ -14,4 +14,11 @@ public class Child {
     public String CF;
 
     private String parentId;
+
+    public Child(@Size(min = 2, max = 30) String name, @Size(min = 2, max = 30) String surname, @Size(min = 16, max = 16) String CF, String parentId) {
+        this.name = name;
+        this.surname = surname;
+        this.CF = CF;
+        this.parentId = parentId;
+    }
 }

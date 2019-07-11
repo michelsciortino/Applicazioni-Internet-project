@@ -18,7 +18,7 @@ public class Race {
     //compound key
     private String lineName;
     private DirectionType direction;
-    @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private Date data;
 
     private List<Passenger> passengers;

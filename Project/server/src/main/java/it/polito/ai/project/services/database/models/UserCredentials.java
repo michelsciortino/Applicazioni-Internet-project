@@ -20,10 +20,6 @@ import static java.util.stream.Collectors.toList;
 @Data
 public class UserCredentials implements UserDetails {
 
-    boolean enable = true;
-    boolean credentialsNotExpired = true;
-    boolean accountNotLocked = true;
-    boolean accountNotExpired = true;
     @Id
     private String id;
     @NotNull
@@ -34,6 +30,11 @@ public class UserCredentials implements UserDetails {
     private String password;
     @NotNull
     private List<String> roles = new ArrayList<>();
+
+    boolean enable = true;
+    boolean credentialsNotExpired = true;
+    boolean accountNotLocked = true;
+    boolean accountNotExpired = true;
 
     public UserCredentials() {
     }

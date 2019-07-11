@@ -35,7 +35,7 @@ public class Line {
         admins = new ArrayList<>();
     }
 
-    public Line(String name,  @NotNull ArrayList<PediStop> outwardStops, @NotNull ArrayList<PediStop> returnStops,@NotNull List<String> admins) {
+    public Line(String name, @NotNull ArrayList<PediStop> outwardStops, @NotNull ArrayList<PediStop> returnStops, @NotNull List<String> admins) {
         this.name = name;
         this.outwardStops = outwardStops;
         this.returnStops = returnStops;
