@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,7 @@ public class Race {
     //compound key
     private String lineName;
     private DirectionType direction;
+    @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm")
     private Date data;
 
     private List<Passenger> passengers;

@@ -38,13 +38,14 @@ public class UserCredentials implements UserDetails {
     public UserCredentials() {
     }
 
-    public UserCredentials(String password, String username, List<String> roles) {
-        this.password = password;
+
+    public UserCredentials(@NotNull @Email String username, @NotNull String password, @NotNull List<String> roles) {
         this.username = username;
+        this.password = password;
         this.roles = roles;
     }
 
-    public UserCredentials(String id, @NotNull String password, @NotNull String username, boolean enable, boolean credentialsExpired, boolean accountLocked, boolean accountExpired, List<String> roles) {
+    public UserCredentials(String id, @NotNull String password, @NotNull @Email String username, boolean enable, boolean credentialsExpired, boolean accountLocked, boolean accountExpired, List<String> roles) {
         this.id = id;
         this.password = password;
         this.username = username;

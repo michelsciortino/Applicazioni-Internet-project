@@ -1,46 +1,41 @@
-package it.polito.ai.project.services.database.models;
+package it.polito.ai.project.generalmodels;
 
+import it.polito.ai.project.services.database.models.PediStop;
 import lombok.Data;
 import org.bson.types.ObjectId;
+import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "lines")
+@JsonComponent
 @Data
-public class Line {
-    @Id
-    private ObjectId id;
+public class JsonLine {
 
     @Indexed(unique = true)
+    @Size(min = 1, max = 30)
     private String name;
 
-    @NotNull
-    private List<PediStop> outwardStops;
-    @NotNull
-    private List<PediStop> returnStops;
-    private List<Child> subscribedChildren;
-    // TO-DO gestire inserimento e cancellazione nuovi admin
-    @NotNull
+    private List<JsonPediStop> outwardStops;
+    private List<JsonPediStop> returnStops;
+    private List<JsonChild> subscribedChildren;
     private List<String> admins;
-
-    public Line() {
+    public JsonLine() {
         outwardStops = new ArrayList<>();
         returnStops = new ArrayList<>();
         subscribedChildren = new ArrayList<>();
         admins = new ArrayList<>();
     }
 
-    public Line(String name,  @NotNull ArrayList<PediStop> outwardStops, @NotNull ArrayList<PediStop> returnStops,@NotNull List<String> admins) {
+    public JsonLine( @Size(min = 2, max = 30) String name, List<JsonPediStop> outwardStops, List<JsonPediStop> returnStops, List<String> admins) {
         this.name = name;
         this.outwardStops = outwardStops;
         this.returnStops = returnStops;
         this.admins = admins;
         this.subscribedChildren = new ArrayList<>();
-    }
 
+    }
 }
