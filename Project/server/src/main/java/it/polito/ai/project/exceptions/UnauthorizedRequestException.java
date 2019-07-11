@@ -8,12 +8,15 @@ public class UnauthorizedRequestException extends RuntimeException {
     public UnauthorizedRequestException() {
         super();
     }
+
     public UnauthorizedRequestException(String message, Throwable cause) {
         super(message, cause);
     }
+
     public UnauthorizedRequestException(String message) {
         super(message);
     }
+
     public UnauthorizedRequestException(Throwable cause) {
         super(cause);
     }
