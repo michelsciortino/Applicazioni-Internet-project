@@ -1,7 +1,6 @@
 package it.polito.ai.project.generalmodels;
 
 import lombok.Data;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -10,8 +9,6 @@ import java.util.List;
 @Data
 public class ClientLine {
 
-
-    @Indexed(unique = true)
     @Size(min = 1, max = 30)
     private String name;
     @NotNull

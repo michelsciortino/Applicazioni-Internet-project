@@ -1,7 +1,6 @@
 package it.polito.ai.project.generalmodels;
 
 import lombok.Data;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -11,7 +10,6 @@ import java.util.List;
 @Data
 public class ClientUserCredentials {
     @NotNull
-    @Indexed(unique = true)
     @Email
     private String username;
 

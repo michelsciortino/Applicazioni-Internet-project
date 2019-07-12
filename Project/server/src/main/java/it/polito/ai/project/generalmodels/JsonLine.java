@@ -2,7 +2,6 @@ package it.polito.ai.project.generalmodels;
 
 import lombok.Data;
 import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.List;
 @Data
 public class JsonLine {
 
-    @Indexed(unique = true)
     @Size(min = 1, max = 30)
     private String name;
 
