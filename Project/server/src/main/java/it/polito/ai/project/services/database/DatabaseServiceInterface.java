@@ -1,11 +1,13 @@
 package it.polito.ai.project.services.database;
 
 import it.polito.ai.project.exceptions.InternalServerErrorException;
-import it.polito.ai.project.generalmodels.ClientChild;
-import it.polito.ai.project.generalmodels.ClientLine;
-import it.polito.ai.project.generalmodels.ClientUserCredentials;
-import it.polito.ai.project.generalmodels.JsonLine;
+import it.polito.ai.project.generalmodels.*;
+import it.polito.ai.project.services.database.models.Line;
+import it.polito.ai.project.services.database.models.Token;
+import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.net.UnknownServiceException;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,9 +24,44 @@ public interface DatabaseServiceInterface {
 
     void deleteCredentials(ClientUserCredentials credential);
 
+    //---------------------------------------------------###Token###--------------------------------------------------//
+
+    void insertToken(Token token);
+
+    void deleteToken(Token token);
+
+    //---------------------------------------------------###User###---------------------------------------------------//
+
+    Page<ClientUser> getUsers(int pageNumber);
+
+    ClientUser getUser(String id);
+
+    ClientUser getUserByUsername(String username);
+
+    ClientUser insertUser(ClientUser user);
+
+    void updateUser(ClientUser user);
+    //--------------------------------------------------###Admin###---------------------------------------------------//
+
+    public void makeLineAdmin(String performerUsername, String targetUsername, String line);
+
+    public void removeLineAdmin(String performerUsername, String targetUsername, String line);
+
+    //------------------------------------------------###Companion###-------------------------------------------------//
+
+    void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
+
+    void stateCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
+
+    void makeCompanion(String performerUsername, String targetUsername);
+
+    void removeCompanion(ClientCompanion clientCompanion, String performerUsername);
+
     //---------------------------------------------------###Line###---------------------------------------------------//
 
     void insertLine(JsonLine line) throws InternalServerErrorException;
+
+    void updateLine(Line line);
 
     Collection<String> getLinesNames();
 
@@ -33,7 +70,6 @@ public interface DatabaseServiceInterface {
     ClientLine addChildToLine(String UserID, ClientChild child, String lineName, List<String> roles);
 
     //---------------------------------------------------###Race###---------------------------------------------------//
-
 
 
 }
