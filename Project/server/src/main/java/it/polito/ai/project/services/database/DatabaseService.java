@@ -7,7 +7,6 @@ import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.models.*;
 import it.polito.ai.project.services.database.repositories.*;
-import javafx.scene.paint.Stop;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,8 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.management.relation.Role;
-import java.net.UnknownServiceException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -62,7 +59,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         try {
             if (!userCredentialsRepository.findByUsername(username).isPresent()) {
                 UserCredentials u = userCredentialsRepository.save(new UserCredentials(this.passwordEncoder.encode(password), username, roles));
-                return new ClientUserCredentials(u.getUsername(), u.getRoles(), u.isEnable(), u.isCredentialsNotExpired(), u.isAccountNotLocked(), u.isAccountNotExpired());
+                return userCredentialsToClientUserCredentials(u);
             }
         } catch (Exception e) {
             throw new InternalServerErrorException();
@@ -82,7 +79,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     public ClientUserCredentials getCredentials(String username) {
         try {
             UserCredentials u = userCredentialsRepository.findByUsername(username).get();
-            return new ClientUserCredentials(u.getUsername(), u.getRoles(), u.isEnable(), u.isCredentialsNotExpired(), u.isAccountNotLocked(), u.isAccountNotExpired());
+            return userCredentialsToClientUserCredentials(u);
         } catch (NoSuchElementException e1) {
             throw new ResourceNotFoundException();
         } catch (Exception e) {
@@ -170,19 +167,24 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
-
-    public ClientUserCredentials userCredentialsToClientUserCredentials(UserCredentials uc)
-    {
+    /**
+     * Function to convert UserCredentials to ClientUserCredentials
+     *
+     * @param uc UserCredentials to convert
+     * @return ClientUserCredentials converted
+     */
+    private ClientUserCredentials userCredentialsToClientUserCredentials(UserCredentials uc) {
         return new ClientUserCredentials(uc.getUsername(), uc.getRoles(), uc.isEnable(), uc.isCredentialsNotExpired(), uc.isAccountNotLocked(), uc.isAccountNotExpired());
     }
+
     //---------------------------------------------------###Token###--------------------------------------------------//
+
     /**
      * Function to save selected Token
      *
      * @param token token to save
      * @throws InternalServerErrorException
      */
-
     @Override
     public void insertToken(Token token) {
         try {
@@ -207,11 +209,9 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
-
     //---------------------------------------------------###User###---------------------------------------------------//
 
-
-    //TO-DO checkare se funge
+    //TODO checkare se funge
 
     /**
      * Function to get all Users paged
@@ -239,7 +239,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     /**
      * Function to get User by Id
      *
-     * @param id: user id
+     * @param id user id
      * @return ClientUser: requested user
      * @throws InternalServerErrorException
      * @throws ResourceNotFoundException
@@ -262,7 +262,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     /**
      * Function to get User by Username
      *
-     * @param username: user username
+     * @param username user username
      * @return ClientUser: requested user
      * @throws InternalServerErrorException
      * @throws ResourceNotFoundException
@@ -302,13 +302,12 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new InternalServerErrorException();
         }
         throw new BadRequestException();
-
     }
 
     /**
      * Function to update User
      *
-     * @param user: user to update
+     * @param user user to update
      * @throws InternalServerErrorException
      * @throws ResourceNotFoundException
      */
@@ -332,55 +331,60 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new InternalServerErrorException();
         }
         throw new ResourceNotFoundException();
-
     }
 
     /**
      * Function to convert User to ClientUser
      *
-     * @param p: user to convert
+     * @param p user to convert
      * @return ClientUser: converted client user
      */
-    public ClientUser userToClientUser(User p) {
+    private ClientUser userToClientUser(User p) {
         return new ClientUser(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), p.getChildren(), p.getLines(), p.getNotifications());
     }
 
     /**
      * Function to convert ClientUser to  User
      *
-     * @param p: ClientUser to convert
+     * @param p ClientUser to convert
      * @return User: converted user
      */
-    public User clientUserToUser(ClientUser p) {
+    private User clientUserToUser(ClientUser p) {
         return new User(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), p.getChildren(), p.getLines(), p.getNotifications());
     }
 
-    //---------------------------------------------------###Admin###---------------------------------------------------//
+    //---------------------------------------------------###Admin###--------------------------------------------------//
+
+    /**
+     * Function to make line Admin
+     *
+     * @param performerUsername user that perform operation
+     * @param targetUsername    user to make Admin
+     * @param line              line in which to add the admin
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     * @throws BadRequestException
+     */
     @Transactional
     @Override
-    public void makeLineAdmin(String performerUsername, String targetUsername, String line)
-    {
-
+    public void makeLineAdmin(String performerUsername, String targetUsername, String line) {
         Optional<UserCredentials> perfCredentials;
         Optional<User> performer;
         Optional<UserCredentials> targetCredentials;
         Optional<User> target;
         Optional<Line> mongoLine;
-        try
-        {
+
+        try {
             perfCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
             targetCredentials = userCredentialsRepository.findByUsername(targetUsername);
             target = userRepository.findByUsername(targetUsername);
             mongoLine = lineRepository.findLineByName(line);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-        // If one of line, performer, performerCredentials, target or targetCredentials misses
-        // Throw ResourceNotFound
-        if(!mongoLine.isPresent() || !perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
+        // If one of line, performer, performerCredentials, target or targetCredentials misses: Throw ResourceNotFound
+        if (!mongoLine.isPresent() || !perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
             throw new ResourceNotFoundException();
 
         List<String> performerLines = performer.get().getLines();
@@ -388,422 +392,359 @@ public class DatabaseService implements DatabaseServiceInterface {
         List<String> targetLines = target.get().getLines();
         List<String> targetRoles = targetCredentials.get().getRoles();
 
-        // If performer isn't the System_Admin or an Admin of the selected line
-        // Throw Unahuthorized
-        if(!isAdminOfLineOrSysAdmin(performerLines, performerRoles, line))
+        // If performer isn't the System_Admin or an Admin of the selected line: Throw Unahuthorized
+        if (!isAdminOfLineOrSysAdmin(performerLines, performerRoles, line))
             throw new UnauthorizedRequestException();
-        // If target is the System_Admin or an Admin of the selected line
-        // Throw BadRequest
-        if(isAdminOfLineOrSysAdmin(targetLines, targetRoles,line))
+
+        // If target is the System_Admin or an Admin of the selected line: Throw BadRequest
+        if (isAdminOfLineOrSysAdmin(targetLines, targetRoles, line))
             throw new BadRequestException();
 
-        //Adding line to User.lines
-        target.get().getLines().add(line);
-        //If target was a normal user before this action
-        //Add Admin in UserCredentials.roles
-        if(!isAdmin(targetRoles))
-        {
+        //If target was a normal user before this action: Add Admin in UserCredentials.roles
+        if (!isAdmin(targetRoles)) {
             targetCredentials.get().getRoles().add(Roles.prefix + Roles.ADMIN);
         }
 
-        //UpdateLine
+        // Adding line to User.lines
+        Objects.requireNonNull(target.get().getLines()).add(line);
+
+        // UpdateLine: Add user admin in line
         mongoLine.get().getAdmins().add(targetCredentials.get().getUsername());
         updateLine(mongoLine.get());
 
-        //save results
+        // Save results: update User modified before
         updateCredentials(userCredentialsToClientUserCredentials(targetCredentials.get()));
         updateUser(userToClientUser(target.get()));
-
-
     }
+
+    /**
+     * Function to remove line Admin
+     *
+     * @param performerUsername user that perform operation
+     * @param targetUsername    user to remove from Admin
+     * @param line              line in which to remove the admin
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     * @throws BadRequestException
+     */
     @Transactional
     @Override
-    public void removeLineAdmin(String performerUsername, String targetUsername, String line)
-    {
-
+    public void removeLineAdmin(String performerUsername, String targetUsername, String line) {
         Optional<UserCredentials> perfCredentials;
         Optional<User> performer;
         Optional<UserCredentials> targetCredentials;
         Optional<User> target;
         Optional<Line> mongoLine;
-        try
-        {
+
+        try {
             perfCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
             targetCredentials = userCredentialsRepository.findByUsername(targetUsername);
             target = userRepository.findByUsername(targetUsername);
             mongoLine = lineRepository.findLineByName(line);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new InternalServerErrorException();
         }
 
-        // If one of line, performer, performerCredentials, target or targetCredentials misses
-        // Throw ResourceNotFound
-
-        if(!mongoLine.isPresent() || !perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
+        // If one of line, performer, performerCredentials, target or targetCredentials misses: Throw ResourceNotFound
+        if (!mongoLine.isPresent() || !perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
             throw new ResourceNotFoundException();
 
         List<String> performerLines = performer.get().getLines();
         List<String> performerRoles = perfCredentials.get().getRoles();
         List<String> targetLines = target.get().getLines();
         List<String> targetRoles = targetCredentials.get().getRoles();
-        //If performer isn't the System_Admin or an Admin of the selected line
-        // Throw Unahuthorized
 
-        if(!isAdminOfLineOrSysAdmin(performerLines, performerRoles, line))
+        // If performer isn't the System_Admin or an Admin of the selected line: Throw Unahuthorized
+        if (!isAdminOfLineOrSysAdmin(performerLines, performerRoles, line))
             throw new UnauthorizedRequestException();
 
-        //If target isn't the System_Admin or an Admin of the selected line
-        // Throw Unahuthorized
-        if(!isAdminOfLine(targetLines, targetRoles,line))
+        // If target isn't the System_Admin or an Admin of the selected line: Throw BadRequest
+        if (!isAdminOfLine(targetLines, targetRoles, line))
             throw new BadRequestException();
 
-        //Update Line
+        // UpdateLine: remove user admin from line
         mongoLine.get().getAdmins().remove(targetCredentials.get().getUsername());
         updateLine(mongoLine.get());
 
-        //Removing line from User.lines
-        target.get().getLines().remove(line);
-        //Since an Admin without lines can exist we choose to don't remove ADMIN role
+        // Removing line from User.lines
+        Objects.requireNonNull(target.get().getLines()).remove(line);
+
+        // Since an Admin without lines can exist we choose to don't remove ADMIN role
         updateUser(userToClientUser(target.get()));
-
-
     }
 
-    //TO-DO: Andrea guardami!
-    //TO-DO Update Race
+    //TODO: DA VEDERE BENE.... NON MI PIACE TANTISSIMO, LA RIGUARDO IO
+    //TODO Update Race
     @Transactional
     @Override
-    public void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions)
-    {
+    public void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions) {
         Optional<UserCredentials> performerCredentials;
         Optional<Race> race;
-        List<Optional<UserCredentials>> comapanionsCredentials;
-        try {
-           performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
-            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getData(), clientRace.getLineName(), clientRace.getDirection().toString());
-            comapanionsCredentials = new ArrayList<>();
-        }
-        catch (Exception e)
-        {
-            throw new InternalServerErrorException();
-        }
-        if(!performerCredentials.isPresent() || !race.isPresent())
-            throw new ResourceNotFoundException();
         Optional<Line> line;
-        try{
-         line = lineRepository.findLineByName(race.get().getLineName());
-        }
-        catch (Exception e)
-        {
+        List<UserCredentials> companionsCredentials;
+        try {
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getData(), clientRace.getLineName(), clientRace.getDirection().toString());
+            companionsCredentials = new ArrayList<>();
+        } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-        if(! line.isPresent())
+        // If performer or race not found: Throw ResourceNotFound
+        if (!performerCredentials.isPresent() || !race.isPresent())
+            throw new ResourceNotFoundException();
+
+        try {
+            line = lineRepository.findLineByName(race.get().getLineName());
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        if (!line.isPresent())
             throw new ResourceNotFoundException();
 
         //reperisce le credenziali di tutti i companion e ne verifica il ruolo
-        for(String c : companions)
-        {
-            Optional<UserCredentials> temp;
-            try
-            {
-                temp = userCredentialsRepository.findByUsername(c);
-            }
-            catch (Exception e)
-            {
+        for (String c : companions) {
+            Optional<UserCredentials> userTemp;
+            try {
+                userTemp = userCredentialsRepository.findByUsername(c);
+            } catch (Exception e) {
                 throw new InternalServerErrorException();
             }
-
-            if(!temp.isPresent())
+            //TODO: da discutere!! se uno non è companion....
+            if (!userTemp.isPresent())
                 throw new ResourceNotFoundException();
-            comapanionsCredentials.add(temp);
-            if(!temp.get().getRoles().contains(Roles.prefix + Roles.COMPANION))
+            companionsCredentials.add(userTemp.get());
+            if (!userTemp.get().getRoles().contains(Roles.prefix + Roles.COMPANION))
                 throw new BadRequestException();
         }
 
         //Seleziona i companion richiesti dalla lista di companion della race
-        List<Companion> tempcomp = new ArrayList<>();
-        for(Companion c: race.get().getCompanions())
-        {
-            if(companions.contains(c.getUserDetails().getUsername()))
-            {
-                tempcomp.add(c);
+        List<Companion> tempCompanions = new ArrayList<>();
+        for (Companion c : race.get().getCompanions()) {
+            if (companions.contains(c.getUserDetails().getUsername())) {
+                tempCompanions.add(c);
             }
         }
 
         //Seleziona i Pedistop della race in esame
-        List<PediStop> tempstops = new ArrayList<>();
-        if(race.get().getDirection().equals(DirectionType.OUTWARD))
-            for (PediStop p : line.get().getOutwardStops())
-                tempstops.add(p);
+        List<PediStop> tempStops = new ArrayList<>();
+        if (race.get().getDirection().toString().equals(DirectionType.OUTWARD))
+            tempStops.addAll(line.get().getOutwardStops());
         else
-            for (PediStop p : line.get().getReturnStops())
-                tempstops.add(p);
+            tempStops.addAll(line.get().getReturnStops());
 
         // Crea una lista di liste in cui ogni elemento è la lista degli stop coperta da un singolo companion
-        List<Pair<String, List<PediStop>>>  companionstops = new ArrayList<>();
+        List<Pair<String, List<PediStop>>> companionStops = new ArrayList<>();
         List<PediStop> finalstops = new ArrayList<>();
-        for (Companion c : tempcomp)
-        {
+        for (Companion c : tempCompanions) {
             List<PediStop> temp = new ArrayList<>();
             boolean flag = false;
-            for(PediStop stop : tempstops)
-            {
-                if(c.getInitialStop().equals(stop.getName()))
+            for (PediStop stop : tempStops) {
+                if (c.getInitialStop().getName().equals(stop.getName()))
                     flag = true;
-                if(c.getFinalStop().equals(stop.getName()))
-                {
+                if (c.getFinalStop().getName().equals(stop.getName())) {
                     //solo in caso di ultimo companion aggiunge il final stop
-                    if(tempcomp.get(tempcomp.size()-1).getUserDetails().getName().equals(c.getUserDetails().getName()))
+                    if (tempCompanions.get(tempCompanions.size() - 1).getUserDetails().getName().equals(c.getUserDetails().getName()))
                         temp.add(stop);
 
                     break;
                 }
-                if(flag) temp.add(stop);
+                if (flag) temp.add(stop);
 
             }
             finalstops.addAll(temp);
-            companionstops.add(new Pair<>(c.getUserDetails().getName(), temp));
+            companionStops.add(new Pair<>(c.getUserDetails().getName(), temp));
         }
         //Verifica che non ci sia sovrapposizione tra gli stop dei companion selezionati
-        for(Pair<String,List<PediStop>> compstops: companionstops)
-        {
-            for(Pair<String,List<PediStop>> comp: companionstops)
-            {
-                if(!compstops.getKey().equals(comp.getKey()))
-                {
+        for (Pair<String, List<PediStop>> compstops : companionStops) {
+            for (Pair<String, List<PediStop>> comp : companionStops) {
+                if (!compstops.getKey().equals(comp.getKey())) {
                     List<PediStop> tempPedi = comp.getValue();
                     tempPedi.retainAll(compstops.getValue());
-                    if(!tempPedi.isEmpty())
-                    {
+                    if (!tempPedi.isEmpty()) {
                         throw new BadRequestException();
                     }
                 }
             }
         }
 
-        // se tempstops non è uguale a finalstops allora l'itinerario non è
-        //completamente coperto
+        // se tempstops non è uguale a finalstops allora l'itinerario non è completamente coperto
 
-        if(!tempstops.equals(finalstops))
+        if (!tempStops.equals(finalstops))
             throw new BadRequestException();
 
         //Vengono adesso Marcati i companions;
-        for(Pair<String, List<PediStop>> companionObj : companionstops);
-            //updateRace
-
-
-
-
+        for (Pair<String, List<PediStop>> companionObj : companionStops) ;
+        //TODO: updateRace
     }
-    public boolean isAdminOfLineOrSysAdmin(List<String> lines, List<String> roles, String line)
-    {
 
-        if(isSystemAdmin(roles)) return true;
+    private boolean isAdminOfLineOrSysAdmin(List<String> lines, List<String> roles, String line) {
+        if (isSystemAdmin(roles)) return true;
         return isAdminOfLine(lines, roles, line);
+    }
 
+    private boolean isAdminOfLine(List<String> lines, List<String> roles, String line) {
+        if (!isAdmin(roles)) return false;
+        return lines.contains(line);
     }
-    public boolean isAdminOfLine(List<String> lines, List<String> roles, String line)
-    {
 
-        if(!isAdmin(roles)) return false;
-        if(!lines.contains(line)) return false;
-        return true;
+    private boolean isAdmin(List<String> roles) {
+        return roles.contains(Roles.prefix + Roles.ADMIN);
     }
-    public boolean isAdmin(List<String> roles)
-    {
-        if(!roles.contains(Roles.prefix + Roles.ADMIN)) return false;
-        return true;
+
+    private boolean isSystemAdmin(List<String> roles) {
+        return roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN);
     }
-    public boolean isSystemAdmin(List<String> roles)
-    {
-        if(!roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN)) return false;
-        return true;
-    }
-    //---------------------------------------------------###Companion###---------------------------------------------------//
-    //TO-DO Update Race
+
+    //------------------------------------------------###Companion###-------------------------------------------------//
+    
+    //TODO Update Race
     @Transactional
     @Override
-    public void stateCompanionAvailability(ClientCompanion clientCompanion, String performerUsername, ClientRace clientRace)
-    {
-        Optional<Race> race ;
+    public void stateCompanionAvailability(ClientCompanion clientCompanion, String performerUsername, ClientRace clientRace) {
+        Optional<Race> race;
         Optional<UserCredentials> targetCredentials;
         Optional<UserCredentials> performerCredentials;
 
-        try
-        {
-        race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getData(), clientRace.getLineName(), clientRace.getDirection().toString());
-        targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
-        performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
-
-        }
-        catch (Exception e)
-        {
+        try {
+            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getData(), clientRace.getLineName(), clientRace.getDirection().toString());
+            targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-        //if race, targetCredentials or PerformCredentials aren't in db
-        //ResourceNotFound
-        if(!race.isPresent() || !targetCredentials.isPresent() || !performerCredentials.isPresent())
+        // If race, targetCredentials or PerformCredentials aren't in db: Throw ResourceNotFound
+        if (!race.isPresent() || !targetCredentials.isPresent() || !performerCredentials.isPresent())
             throw new ResourceNotFoundException();
-        //if the performer isn't the SysAdmin or the Companion
-        //UnauthorizedRequest
-        if(!isCompanion(performerCredentials.get().getRoles()) && !isSystemAdmin(performerCredentials.get().getRoles()))
+        // If the performer isn't the SysAdmin or the Companion: Throw UnauthorizedRequest
+        if (!isCompanion(performerCredentials.get().getRoles()) && !isSystemAdmin(performerCredentials.get().getRoles()))
             throw new UnauthorizedRequestException();
-        //if the target isn't a companion
-        //BadRequest
-        if(!isCompanion(targetCredentials.get().getRoles()))
+        // If the target isn't a companion: Throw BadRequest
+        if (!isCompanion(targetCredentials.get().getRoles()))
             throw new BadRequestException();
-        //if race companions already contains companion
-        //Bad Request
-        if(isCompanionOfRace(race.get().getCompanions(), targetCredentials.get().getRoles(), clientCompanionToCompanion((clientCompanion))))
-           throw new BadRequestException();
-        //if the performer is a Companion
-        //check if he is stating availability for himself
-        if(isCompanion(performerCredentials.get().getRoles()))
-        {
-            if(!performerCredentials.get().getUsername().equals(targetCredentials.get().getUsername()))
+        // If race companions already contains companion: Throw BadRequest
+        if (isCompanionOfRace(race.get().getCompanions(), targetCredentials.get().getRoles(), clientCompanionToCompanion((clientCompanion))))
+            throw new BadRequestException();
+
+        // If the performer is a Companion: check if he is stating availability for himself
+        if (isCompanion(performerCredentials.get().getRoles())) {
+            if (!performerCredentials.get().getUsername().equals(targetCredentials.get().getUsername()))
                 throw new UnauthorizedRequestException();
         }
 
         race.get().getCompanions().add(clientCompanionToCompanion(clientCompanion));
-        // call update race
-
+        //TODO call update race
 
     }
+
     @Transactional
     @Override
-    public void makeCompanion(String performerUsername, String targetUsername)
-    {
-
+    public void makeCompanion(String performerUsername, String targetUsername) {
         Optional<UserCredentials> perfCredentials;
         Optional<User> performer;
         Optional<UserCredentials> targetCredentials;
         Optional<User> target;
-        try
-        {
+
+        try {
             perfCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
             targetCredentials = userCredentialsRepository.findByUsername(targetUsername);
             target = userRepository.findByUsername(targetUsername);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-        // If one among line, performer, performerCredentials, target or targetCredentials misses
-        // Throw ResourceNotFound
-        if(!perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
+        // If one among line, performer, performerCredentials, target or targetCredentials misses: Throw ResourceNotFound
+        if (!perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
             throw new ResourceNotFoundException();
 
         List<String> performerRoles = perfCredentials.get().getRoles();
         List<String> targetRoles = targetCredentials.get().getRoles();
 
-        // If performer isn't the SysAdmin or an Admin
-        // Throw Unahuthorized
-        if(!isAdmin(performerRoles) || !isSystemAdmin(performerRoles))
+        // If performer isn't the SysAdmin or an Admin: Throw Unauthorized
+        if (!isAdmin(performerRoles) || !isSystemAdmin(performerRoles))
             throw new UnauthorizedRequestException();
-        // If target is already a Companion
-        // Throw BadRequest
-        if(isCompanion(targetRoles))
+        // If target is already a Companion: Throw BadRequest
+        if (isCompanion(targetRoles))
             throw new BadRequestException();
 
         targetCredentials.get().getRoles().add(Roles.prefix + Roles.COMPANION);
 
-        //save results
+        // Update Credentials: update user to companion
         updateCredentials(userCredentialsToClientUserCredentials(targetCredentials.get()));
 
-
+        //TODO: accompagnatore abbiamo detto che può fare tutte le linee vero? se no va messa la lista delle linee
     }
+
     @Transactional
     @Override
-    public void removeCompanion(ClientCompanion clientCompanion, String performerUsername)
-    {
+    public void removeCompanion(ClientCompanion clientCompanion, String performerUsername) {
 
         List<Race> races;
         Optional<UserCredentials> targetCredentials;
         Optional<User> target;
         Optional<UserCredentials> perfCredentials;
         Optional<User> performer;
-        try
-        {
+        try {
             perfCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
             targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
             target = userRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-        // If one among line, performer, performerCredentials, target or targetCredentials misses
-        // Throw ResourceNotFound
-        if(!perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
+        // If one among line, performer, performerCredentials, target or targetCredentials misses: Throw ResourceNotFound
+        if (!perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
             throw new ResourceNotFoundException();
 
         String pattern = "yyyy-MM-dd'T'HH:mm";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
         String stringDate = simpleDateFormat.format(new Date());
-        try
-        {
+        try {
             Date date = simpleDateFormat.parse(stringDate);
             races = raceRepository.findAllByCompanions(clientCompanionToCompanion(clientCompanion), date);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new InternalServerErrorException();
         }
 
         List<String> performerRoles = perfCredentials.get().getRoles();
         List<String> targetRoles = targetCredentials.get().getRoles();
 
-
-        // If target isn't a Companion
-        // Throw BadRequest
-        if(!isCompanion(targetRoles))
+        // If target isn't a Companion: Throw BadRequest
+        if (!isCompanion(targetRoles))
             throw new BadRequestException();
-
-        // If performer isn't the SysAdmin or an Admin
-        // Throw Unahuthorized
-        if(!isAdmin(performerRoles) || !isSystemAdmin(performerRoles))
+        // If performer isn't the SysAdmin or an Admin: Throw Unauthorized
+        if (!isAdmin(performerRoles) || !isSystemAdmin(performerRoles))
             throw new UnauthorizedRequestException();
 
-        if(!races.isEmpty())
-        {
-            for (Race r: races)
-            {
+        if (!races.isEmpty()) {
+            for (Race r : races) {
                 r.getCompanions().remove(clientCompanionToCompanion(clientCompanion));
-                //update race
+                //TODO: update future race
             }
-
         }
 
         targetCredentials.get().getRoles().remove(Roles.prefix + Roles.COMPANION);
 
-        //save results
+        // Update Credentials: update user to remove companion
         updateCredentials(userCredentialsToClientUserCredentials(targetCredentials.get()));
 
-
-    }
-    public boolean isCompanionOfRace(List<Companion> companions, List<String> roles, Companion companion)
-    {
-
-        if(!isCompanion(roles)) return false;
-        if(!companions.contains(companion)) return false;
-        return true;
+        //TODO: se non ci sono vincoli delle linee ok
     }
 
-    public boolean isCompanion(List<String> roles)
-    {
-        if(!roles.contains(Roles.prefix + Roles.COMPANION)) return false;
-        return true;
+    private boolean isCompanionOfRace(List<Companion> companions, List<String> roles, Companion companion) {
+        if (!isCompanion(roles)) return false;
+        return companions.contains(companion);
     }
-    public Companion clientCompanionToCompanion(ClientCompanion clientCompanion)
-    {
-        return new Companion(clientUserToUser(clientCompanion.getUserDetails()), clientPediStopToPediStop(clientCompanion.getInitialStop()) , clientPediStopToPediStop(clientCompanion.getFinalStop()), clientCompanion.getState());
+
+    private boolean isCompanion(List<String> roles) {
+        return roles.contains(Roles.prefix + Roles.COMPANION);
     }
+
+    private Companion clientCompanionToCompanion(ClientCompanion clientCompanion) {
+        return new Companion(clientUserToUser(clientCompanion.getUserDetails()), clientPediStopToPediStop(clientCompanion.getInitialStop()), clientPediStopToPediStop(clientCompanion.getFinalStop()), clientCompanion.getState());
+    }
+
     //---------------------------------------------------###Line###---------------------------------------------------//
 
     /**
@@ -852,13 +793,12 @@ public class DatabaseService implements DatabaseServiceInterface {
     public void updateLine(Line line) {
         Optional<Line> temp;
         try {
-             temp = lineRepository.findLineByName(line.getName());
-
+            temp = lineRepository.findLineByName(line.getName());
         } catch (Exception e) {
             //TO-DO check unique index Exception
             throw new InternalServerErrorException(e);
         }
-        if(!temp.isPresent())
+        if (!temp.isPresent())
             throw new ResourceNotFoundException();
 
         try {
@@ -870,8 +810,8 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
-    public boolean subscribeAdminAndSendMail(String username) {
-        //TO-DO: implementa insert user (admin)
+    private boolean subscribeAdminAndSendMail(String username) {
+        //TODO: implementa insert user (admin)
         return true;
     }
 
@@ -929,32 +869,30 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Transactional
     public ClientLine addChildToLine(String UserID, ClientChild child, String lineName, List<String> roles) {
         try {
-            Line l;
-            l = lineRepository.findLineByName(lineName).get();
+            Optional<Line> l = lineRepository.findLineByName(lineName);
+            if (!l.isPresent())
+                throw new ResourceNotFoundException();
 
             if (!roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN)) {
-                if (!l.getAdmins().contains(UserID))
+                if (!l.get().getAdmins().contains(UserID))
                     throw new UnauthorizedRequestException("Line Admins only can perform this operation");
             }
-            if (l != null) {
-                Child c = new Child(child.getName(), child.getSurname(), child.getCF(), child.getParentId());
+            Child c = new Child(child.getName(), child.getSurname(), child.getCF(), child.getParentId());
 
-                if (!l.getSubscribedChildren().contains(c)) {
+            if (!l.get().getSubscribedChildren().contains(c)) {
 
-                    l.getSubscribedChildren().add(c);
-                    lineRepository.save(l);
-                    return LineToClientLine(l);
-                } else {
-                    throw new BadRequestException();
-                }
-            } else
-                throw new ResourceNotFoundException();
+                l.get().getSubscribedChildren().add(c);
+                lineRepository.save(l.get());
+                return LineToClientLine(l.get());
+            } else {
+                throw new BadRequestException();
+            }
         } catch (Exception e) {
             throw new InternalServerErrorException(e);
         }
     }
 
-    //TO-DO Move to Utils
+    //TODO Move to Utils
 
     /**
      * Function to convert MongoDB Line into a ClientLine
@@ -971,18 +909,18 @@ public class DatabaseService implements DatabaseServiceInterface {
         for (PediStop p : lineMongo.getReturnStops())
             ret.add(new ClientPediStop(p.getName(), p.getLatitude(), p.getLongitude(), p.getDelayInMillis()));
 
-        List<ClientChild> clist = new ArrayList<>();
+        List<ClientChild> childList = new ArrayList<>();
         for (Child c : lineMongo.getSubscribedChildren()) {
             ClientChild cc = new ClientChild(c.getName(), c.getSurname(), c.getCF(), c.getParentId());
-            clist.add(cc);
+            childList.add(cc);
         }
-        return new ClientLine(lineMongo.getName(), out, ret, clist, lineMongo.getAdmins());
+        return new ClientLine(lineMongo.getName(), out, ret, childList, lineMongo.getAdmins());
     }
 
-    private PediStop clientPediStopToPediStop(ClientPediStop clientPediStop)
-    {
+    private PediStop clientPediStopToPediStop(ClientPediStop clientPediStop) {
         return new PediStop(clientPediStop.getName(), clientPediStop.getLongitude(), clientPediStop.getLatitude(), clientPediStop.getDelayInMillis());
     }
+
     //---------------------------------------------------###Race###---------------------------------------------------//
 
 }
