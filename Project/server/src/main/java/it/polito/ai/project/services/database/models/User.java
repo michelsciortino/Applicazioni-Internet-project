@@ -37,4 +37,14 @@ public class User {
 
     @Nullable
     private List<UserNotification> notifications;
+
+    public User(@Email @NotNull String username, @Size(min = 2, max = 30) @NotNull String name, @Size(min = 2, max = 30) @NotNull String surname, @Nullable List<String> contacts, @Nullable List<Child> children, @Nullable List<String> lines, @Nullable List<UserNotification> notifications) {
+        this.username = username;
+        this.name = name;
+        this.surname = surname;
+        this.contacts = contacts;
+        this.children = children;
+        this.lines = lines;
+        this.notifications = notifications;
+    }
 }

@@ -8,4 +8,11 @@ public class Companion {
     private PediStop initialStop;
     private PediStop finalStop;
     private CompanionState state;
+
+    public Companion(User userDetails, PediStop initialStop, PediStop finalStop, CompanionState state) {
+        this.userDetails = userDetails;
+        this.initialStop = initialStop;
+        this.finalStop = finalStop;
+        this.state = state;
+    }
 }
