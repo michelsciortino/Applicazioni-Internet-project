@@ -18,8 +18,8 @@ import { AttendancesComponent } from './components/attendances/attendances.compo
 
 import { LinesPaginatorIntl } from './modules/lines/linesPaginatorIntl.module'
 import { LinesPaginator } from './modules/lines/linesPaginator.module';
-import { OrderByName } from './Utils/OrderByPypes'
-import { TimeToString, DateToString } from './Utils/ToStringPipes'
+import { OrderByName } from './utils/OrderByPypes'
+import { TimeToString, DateToString } from './utils/ToStringPipes'
 import { MatPaginatorIntl, MatPaginator, MatPaginatorModule } from '@angular/material';
 
 
