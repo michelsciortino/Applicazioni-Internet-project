@@ -12,9 +12,17 @@ public class ClientRace {
     private String lineName;
     private DirectionType direction;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private Date data;
+    private Date date;
 
     private List<ClientPassenger> passengers;
 
     private List<ClientCompanion> companions;
+
+    public ClientRace(String lineName, DirectionType direction, Date date, List<ClientPassenger> passengers, List<ClientCompanion> companions) {
+        this.lineName = lineName;
+        this.direction = direction;
+        this.date = date;
+        this.passengers = passengers;
+        this.companions = companions;
+    }
 }

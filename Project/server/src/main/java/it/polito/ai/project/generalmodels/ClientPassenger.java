@@ -9,4 +9,9 @@ public class ClientPassenger {
         private boolean isReserved;
         private boolean isPresent;
 
+        public ClientPassenger(Child childDetails, boolean isReserved, boolean isPresent) {
+                this.childDetails = childDetails;
+                this.isReserved = isReserved;
+                this.isPresent = isPresent;
+        }
 }
