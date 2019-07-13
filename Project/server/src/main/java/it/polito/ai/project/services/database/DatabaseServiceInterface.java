@@ -5,10 +5,9 @@ import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.models.Line;
 import it.polito.ai.project.services.database.models.Token;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.net.UnknownServiceException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public interface DatabaseServiceInterface {
@@ -41,17 +40,28 @@ public interface DatabaseServiceInterface {
     ClientUser insertUser(ClientUser user);
 
     void updateUser(ClientUser user);
+    //-------------------------------------------------###Parent###---------------------------------------------------//
+
+    void reserveChildren(ClientRace client, List<ClientPassenger> p);
     //--------------------------------------------------###Admin###---------------------------------------------------//
 
-    public void makeLineAdmin(String performerUsername, String targetUsername, String line);
+    void makeLineAdmin(String performerUsername, String targetUsername, String line);
 
-    public void removeLineAdmin(String performerUsername, String targetUsername, String line);
+    void removeLineAdmin(String performerUsername, String targetUsername, String line);
 
     //------------------------------------------------###Companion###-------------------------------------------------//
 
     void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
 
+    void unselectCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
+
+    void confirmCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
+
     void stateCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
+
+    void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
+
+    void takeChildren(ClientRace client, List<ClientPassenger> p);
 
     void makeCompanion(String performerUsername, String targetUsername);
 
@@ -70,6 +80,18 @@ public interface DatabaseServiceInterface {
     ClientLine addChildToLine(String UserID, ClientChild child, String lineName, List<String> roles);
 
     //---------------------------------------------------###Race###---------------------------------------------------//
+
+    ClientRace insertRace(ClientRace clientRace, String performerUsername);
+
+    Collection<ClientRace> getRaces();
+
+    ClientRace getRace(ClientRace clientRace);
+
+    Collection<ClientRace> getRacesByDateAndLine(Date date, String lineName);
+
+    void updateRace(ClientRace clientRace, String performerUsername);
+
+    void deleteRace(ClientRace clientRace);
 
 
 }

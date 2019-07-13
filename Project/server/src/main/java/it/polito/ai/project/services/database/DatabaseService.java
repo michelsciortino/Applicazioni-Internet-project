@@ -7,7 +7,6 @@ import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.models.*;
 import it.polito.ai.project.services.database.repositories.*;
-import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -229,8 +228,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             for (User p : userRepository.findAll(pageable))
                 usersList.add(userToClientUser(p));
 
-            Page<ClientUser> finalPage = new PageImpl<>(usersList);
-            return finalPage;
+            return new PageImpl<>(usersList);
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
@@ -333,6 +331,11 @@ public class DatabaseService implements DatabaseServiceInterface {
         throw new ResourceNotFoundException();
     }
 
+    @Override
+    public void reserveChildren(ClientRace client, List<ClientPassenger> p) {
+
+    }
+
     /**
      * Function to convert User to ClientUser
      *
@@ -430,11 +433,12 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Transactional
     @Override
     public void removeLineAdmin(String performerUsername, String targetUsername, String line) {
+        Optional<User> target;
+        Optional<Line> mongoLine;
         Optional<UserCredentials> perfCredentials;
         Optional<User> performer;
         Optional<UserCredentials> targetCredentials;
-        Optional<User> target;
-        Optional<Line> mongoLine;
+
 
         try {
             perfCredentials = userCredentialsRepository.findByUsername(performerUsername);
@@ -450,17 +454,13 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!mongoLine.isPresent() || !perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
             throw new ResourceNotFoundException();
 
-        List<String> performerLines = performer.get().getLines();
-        List<String> performerRoles = perfCredentials.get().getRoles();
-        List<String> targetLines = target.get().getLines();
-        List<String> targetRoles = targetCredentials.get().getRoles();
 
         // If performer isn't the System_Admin or an Admin of the selected line: Throw Unahuthorized
-        if (!isAdminOfLineOrSysAdmin(performerLines, performerRoles, line))
+        if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), perfCredentials.get().getRoles(), line))
             throw new UnauthorizedRequestException();
 
         // If target isn't the System_Admin or an Admin of the selected line: Throw BadRequest
-        if (!isAdminOfLine(targetLines, targetRoles, line))
+        if (!isAdminOfLine(target.get().getLines(), targetCredentials.get().getRoles(), line))
             throw new BadRequestException();
 
         // UpdateLine: remove user admin from line
@@ -474,19 +474,17 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateUser(userToClientUser(target.get()));
     }
 
-    //TODO: DA VEDERE BENE.... NON MI PIACE TANTISSIMO, LA RIGUARDO IO
-    //TODO Update Race
+
     @Transactional
     @Override
     public void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions) {
         Optional<UserCredentials> performerCredentials;
         Optional<Race> race;
         Optional<Line> line;
-        List<UserCredentials> companionsCredentials;
+
         try {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
-            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getData(), clientRace.getLineName(), clientRace.getDirection().toString());
-            companionsCredentials = new ArrayList<>();
+            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection().toString());
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
@@ -510,72 +508,75 @@ public class DatabaseService implements DatabaseServiceInterface {
             } catch (Exception e) {
                 throw new InternalServerErrorException();
             }
-            //TODO: da discutere!! se uno non è companion....
+
             if (!userTemp.isPresent())
                 throw new ResourceNotFoundException();
-            companionsCredentials.add(userTemp.get());
             if (!userTemp.get().getRoles().contains(Roles.prefix + Roles.COMPANION))
                 throw new BadRequestException();
         }
 
         //Seleziona i companion richiesti dalla lista di companion della race
-        List<Companion> tempCompanions = new ArrayList<>();
+        List<Companion> selectedCompanions = new ArrayList<>();
         for (Companion c : race.get().getCompanions()) {
             if (companions.contains(c.getUserDetails().getUsername())) {
-                tempCompanions.add(c);
+                selectedCompanions.add(c);
             }
         }
-
-        //Seleziona i Pedistop della race in esame
-        List<PediStop> tempStops = new ArrayList<>();
-        if (race.get().getDirection().toString().equals(DirectionType.OUTWARD))
-            tempStops.addAll(line.get().getOutwardStops());
-        else
-            tempStops.addAll(line.get().getReturnStops());
-
-        // Crea una lista di liste in cui ogni elemento è la lista degli stop coperta da un singolo companion
-        List<Pair<String, List<PediStop>>> companionStops = new ArrayList<>();
-        List<PediStop> finalstops = new ArrayList<>();
-        for (Companion c : tempCompanions) {
-            List<PediStop> temp = new ArrayList<>();
-            boolean flag = false;
-            for (PediStop stop : tempStops) {
-                if (c.getInitialStop().getName().equals(stop.getName()))
-                    flag = true;
-                if (c.getFinalStop().getName().equals(stop.getName())) {
-                    //solo in caso di ultimo companion aggiunge il final stop
-                    if (tempCompanions.get(tempCompanions.size() - 1).getUserDetails().getName().equals(c.getUserDetails().getName()))
-                        temp.add(stop);
-
-                    break;
-                }
-                if (flag) temp.add(stop);
-
-            }
-            finalstops.addAll(temp);
-            companionStops.add(new Pair<>(c.getUserDetails().getName(), temp));
-        }
-        //Verifica che non ci sia sovrapposizione tra gli stop dei companion selezionati
-        for (Pair<String, List<PediStop>> compstops : companionStops) {
-            for (Pair<String, List<PediStop>> comp : companionStops) {
-                if (!compstops.getKey().equals(comp.getKey())) {
-                    List<PediStop> tempPedi = comp.getValue();
-                    tempPedi.retainAll(compstops.getValue());
-                    if (!tempPedi.isEmpty()) {
-                        throw new BadRequestException();
-                    }
-                }
-            }
-        }
-
-        // se tempstops non è uguale a finalstops allora l'itinerario non è completamente coperto
-
-        if (!tempStops.equals(finalstops))
+        //Se hanno dimensioni differenti almeno uno dei companion indicati dal client non è un companion della race
+        if (selectedCompanions.size() != companions.size())
             throw new BadRequestException();
 
-        //Vengono adesso Marcati i companions;
-        for (Pair<String, List<PediStop>> companionObj : companionStops) ;
-        //TODO: updateRace
+
+        // Crea una mappa con chiave PediStopName e valore booleano che indica se la fermata è coperta
+        Map<PediStop, Boolean> coveragestopsMap = new HashMap<>();
+
+        if (race.get().getDirection().toString().equals(DirectionType.OUTWARD.toString())) {
+            for (PediStop p : line.get().getOutwardStops())
+                coveragestopsMap.put(p, false);
+
+
+        } else
+            for (PediStop p : line.get().getReturnStops())
+                coveragestopsMap.put(p, false);
+
+
+        for (Companion c : selectedCompanions) {
+            boolean flag = false;
+            for (Map.Entry<PediStop, Boolean> element : coveragestopsMap.entrySet()) {
+                if (element.getKey().getName().equals(c.getInitialStop().getName()))
+                    flag = true;
+
+                if (flag)
+                    coveragestopsMap.put(element.getKey(), true);
+
+                if (element.getKey().getName().equals(c.getFinalStop().getName()))
+                    break;
+            }
+
+        }
+
+        // se coverage contiene un false non si ha la copertura completa
+        if (coveragestopsMap.containsValue(false))
+            throw new BadRequestException();
+
+        for (Companion selectedc : selectedCompanions) {
+            for (Companion c : race.get().getCompanions())
+                if (selectedc.getUserDetails().getName().equals(c.getUserDetails().getName()))
+                    race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.CHOSEN);
+
+        }
+
+        updateRace(raceToClientRace(race.get()), performerUsername);
+    }
+
+    @Override
+    public void unselectCompanion(String performerUsername, ClientRace clientRace, List<String> companions) {
+
+    }
+
+    @Override
+    public void confirmCompanion(String performerUsername, ClientRace clientRace, List<String> companions) {
+
     }
 
     private boolean isAdminOfLineOrSysAdmin(List<String> lines, List<String> roles, String line) {
@@ -597,7 +598,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     //------------------------------------------------###Companion###-------------------------------------------------//
-    
+
     //TODO Update Race
     @Transactional
     @Override
@@ -607,7 +608,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<UserCredentials> performerCredentials;
 
         try {
-            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getData(), clientRace.getLineName(), clientRace.getDirection().toString());
+            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection().toString());
             targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
         } catch (Exception e) {
@@ -632,8 +633,21 @@ public class DatabaseService implements DatabaseServiceInterface {
                 throw new UnauthorizedRequestException();
         }
 
+
+        clientCompanion.setState(CompanionState.AVAILABLE);
         race.get().getCompanions().add(clientCompanionToCompanion(clientCompanion));
+        ClientRace finalRace = raceToClientRace(race.get());
         //TODO call update race
+        updateRace(clientRace, performerUsername);
+    }
+
+    @Override
+    public void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace) {
+
+    }
+
+    @Override
+    public void takeChildren(ClientRace client, List<ClientPassenger> p) {
 
     }
 
@@ -743,6 +757,26 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     private Companion clientCompanionToCompanion(ClientCompanion clientCompanion) {
         return new Companion(clientUserToUser(clientCompanion.getUserDetails()), clientPediStopToPediStop(clientCompanion.getInitialStop()), clientPediStopToPediStop(clientCompanion.getFinalStop()), clientCompanion.getState());
+    }
+
+    private ClientCompanion companionToClientCompanion(Companion companion) {
+        return new ClientCompanion(userToClientUser(companion.getUserDetails()), pediStopClientToPediStop(companion.getInitialStop()), pediStopClientToPediStop(companion.getFinalStop()), companion.getState());
+    }
+
+    private List<ClientCompanion> companionsToClientCompanions(List<Companion> companions) {
+        List<ClientCompanion> clientCompanions = new ArrayList<>();
+        for (Companion companion : companions) {
+            clientCompanions.add(companionToClientCompanion(companion));
+        }
+        return clientCompanions;
+    }
+
+    private List<Companion> clientCompanionsToCompanions(List<ClientCompanion> clientCompanions) {
+        List<Companion> companions = new ArrayList<>();
+        for (ClientCompanion companion : clientCompanions) {
+            companions.add(clientCompanionToCompanion(companion));
+        }
+        return companions;
     }
 
     //---------------------------------------------------###Line###---------------------------------------------------//
@@ -921,6 +955,160 @@ public class DatabaseService implements DatabaseServiceInterface {
         return new PediStop(clientPediStop.getName(), clientPediStop.getLongitude(), clientPediStop.getLatitude(), clientPediStop.getDelayInMillis());
     }
 
+    private ClientPediStop pediStopClientToPediStop(PediStop pediStop) {
+        return new ClientPediStop(pediStop.getName(), pediStop.getLongitude(), pediStop.getLatitude(), pediStop.getDelayInMillis());
+    }
+
     //---------------------------------------------------###Race###---------------------------------------------------//
 
+    /**
+     * Function to insert new race
+     *
+     * @param clientRace:        race to insert
+     * @param performerUsername: performer username
+     * @throws BadRequestException
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     * @throws UnauthorizedRequestException
+     */
+    @Override
+    @Transactional
+    public ClientRace insertRace(ClientRace clientRace, String performerUsername) {
+        Optional<UserCredentials> performerCredentials;
+        Optional<User> performer;
+        Optional<Line> targetLine;
+        Date today = Calendar.getInstance().getTime();
+        if (today.before(clientRace.getDate()))
+            throw new BadRequestException();
+        try {
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            targetLine = lineRepository.findLineByName(clientRace.getLineName());
+            performer = userRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        if (!targetLine.isPresent() || !performerCredentials.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+        if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
+            throw new UnauthorizedRequestException();
+
+        clientRace.getPassengers().clear();
+        clientRace.getCompanions().clear();
+        Race race = clientRaceToRace(clientRace);
+        try {
+            raceRepository.save(race);
+
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        return clientRace;
+    }
+
+    /**
+     * Function to get all races in DB as Race collection
+     *
+     * @return Collection of races
+     * @throws InternalServerErrorException
+     */
+    @Override
+    public Collection<ClientRace> getRaces() {
+        try {
+            List<Race> races = raceRepository.findAll();
+            List<ClientRace> clientRaces = new ArrayList<>();
+            for (Race raceMongo : races)
+                clientRaces.add(raceToClientRace(raceMongo));
+            return clientRaces;
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e);
+        }
+    }
+
+    @Override
+    public ClientRace getRace(ClientRace clientRace) {
+        return null;
+    }
+
+    @Override
+    public Collection<ClientRace> getRacesByDateAndLine(Date date, String lineName) {
+        return null;
+    }
+
+    /**
+     * Function to insert new race
+     *
+     * @param clientRace:        race to insert
+     * @param performerUsername: performer username
+     * @throws BadRequestException
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     * @throws UnauthorizedRequestException
+     */
+    @Override
+    @Transactional
+    public void updateRace(ClientRace clientRace, String performerUsername) {
+        Optional<UserCredentials> performerCredentials;
+        Optional<Line> targetLine;
+        Optional<Race> targetRace;
+        Date today = Calendar.getInstance().getTime();
+        Optional<User> performer;
+        if (today.before(clientRace.getDate()))
+            throw new BadRequestException();
+        try {
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            performer = userRepository.findByUsername(performerUsername);
+            targetLine = lineRepository.findLineByName(clientRace.getLineName());
+            targetRace = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection().toString());
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        if (!targetLine.isPresent() || !performer.isPresent() || !performerCredentials.isPresent() || !targetRace.isPresent())
+            throw new ResourceNotFoundException();
+
+
+        Race race = clientRaceToRace(clientRace);
+        try {
+            raceRepository.save(race);
+
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+
+    }
+
+    @Override
+    public void deleteRace(ClientRace clientRace) {
+
+    }
+
+    public Race clientRaceToRace(ClientRace clientRace) {
+        return new Race(clientRace.getLineName(), clientRace.getDirection(), clientRace.getDate(), clientPassengersToPassengers(clientRace.getPassengers()), clientCompanionsToCompanions(clientRace.getCompanions()));
+    }
+
+    public ClientRace raceToClientRace(Race race) {
+        return new ClientRace(race.getLineName(), race.getDirection(), race.getDate(), passengersToClientPassengers(race.getPassengers()), companionsToClientCompanions(race.getCompanions()));
+    }
+
+    public ClientPassenger passengerToClientPassenger(Passenger passenger) {
+        return new ClientPassenger(passenger.getChildDetails(), passenger.isReserved(), passenger.isPresent());
+    }
+
+    public Passenger clientPassengerToPassenger(ClientPassenger clientPassenger) {
+        return new Passenger(clientPassenger.getChildDetails(), clientPassenger.isReserved(), clientPassenger.isPresent());
+    }
+
+    public List<ClientPassenger> passengersToClientPassengers(List<Passenger> passengers) {
+        List<ClientPassenger> clientPassengers = new ArrayList<>();
+        for (Passenger p : passengers) {
+            clientPassengers.add(passengerToClientPassenger(p));
+        }
+        return clientPassengers;
+    }
+
+    public List<Passenger> clientPassengersToPassengers(List<ClientPassenger> clientPassengers) {
+        List<Passenger> passengers = new ArrayList<>();
+        for (ClientPassenger p : clientPassengers) {
+            passengers.add(clientPassengerToPassenger(p));
+        }
+        return passengers;
+    }
 }
