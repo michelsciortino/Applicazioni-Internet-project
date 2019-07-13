@@ -29,6 +29,6 @@ public class EmailSenderService {
         message.setTo(mail.getTo());
         message.setFrom(mail.getFrom());
 
-        javaMailSender.send(message);
+        sendEmail(message);
     }
 }
