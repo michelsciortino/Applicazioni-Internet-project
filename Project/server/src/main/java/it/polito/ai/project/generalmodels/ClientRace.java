@@ -1,4 +1,5 @@
 package it.polito.ai.project.generalmodels;
+
 import it.polito.ai.project.services.database.models.DirectionType;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
