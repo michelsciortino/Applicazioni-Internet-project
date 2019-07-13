@@ -14,7 +14,7 @@ import java.util.List;
 @Document(collection = "races")
 @Data
 @Builder
-@CompoundIndex(def = "{'lineName':1, 'direction':1, 'data':1}", unique = true, name = "raceIndex")
+@CompoundIndex(def = "{'lineName':1, 'direction':1, 'date':1}", unique = true, name = "raceIndex")
 public class Race {
     @Id
     private String id;
@@ -22,9 +22,17 @@ public class Race {
     private String lineName;
     private DirectionType direction;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private Date data;
+    private Date date;
 
     private List<Passenger> passengers;
 
     private List<Companion> companions;
+
+    public Race(String lineName, DirectionType direction, Date date, List<Passenger> passengers, List<Companion> companions) {
+        this.lineName = lineName;
+        this.direction = direction;
+        this.date = date;
+        this.passengers = passengers;
+        this.companions = companions;
+    }
 }
