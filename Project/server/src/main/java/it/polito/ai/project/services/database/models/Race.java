@@ -1,6 +1,5 @@
 package it.polito.ai.project.services.database.models;
 
-import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -10,10 +9,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 import java.util.List;
 
-
 @Document(collection = "races")
 @Data
-@Builder
 @CompoundIndex(def = "{'lineName':1, 'direction':1, 'date':1}", unique = true, name = "raceIndex")
 public class Race {
     @Id

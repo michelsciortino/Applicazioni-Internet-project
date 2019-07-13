@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -486,7 +485,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         try {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
-            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection().toString());
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
             performer = userRepository.findByUsername(performerUsername);
         } catch (Exception e) {
             throw new InternalServerErrorException();
@@ -496,7 +495,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new ResourceNotFoundException();
 
         //if performer isn't an Admin or LineAdmin; Throw UnauthorizedRequestException
-        if(!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
+        if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
             throw new UnauthorizedRequestException();
 
         try {
@@ -531,7 +530,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 throw new BadRequestException();
             if (companions.contains(c.getUserDetails().getUsername())) {
                 //if the state of the selected companion isn't Available: Throw BadRequestException
-                if(!c.getState().equals(CompanionState.AVAILABLE))
+                if (!c.getState().equals(CompanionState.AVAILABLE))
                     throw new BadRequestException();
                 selectedCompanions.add(c);
             }
@@ -592,7 +591,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<User> performer;
         try {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
-            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection().toString());
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
             performer = userRepository.findByUsername(performerUsername);
             line = lineRepository.findLineByName(race.get().getLineName());
         } catch (Exception e) {
@@ -603,9 +602,8 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new ResourceNotFoundException();
 
         //if performer isn't an Admin or LineAdmin; Throw UnauthorizedRequestException
-        if(!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
+        if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
             throw new UnauthorizedRequestException();
-
 
 
         List<Companion> selectedCompanions = new ArrayList<>();
@@ -656,7 +654,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<UserCredentials> performerCredentials;
 
         try {
-            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection().toString());
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
             targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
         } catch (Exception e) {
@@ -682,7 +680,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         // Can't be available for locked race
         for (Companion c : race.get().getCompanions())
-            if(c.getState().equals(CompanionState.CONFIRMED))
+            if (c.getState().equals(CompanionState.CONFIRMED))
                 throw new BadRequestException();
 
         clientCompanion.setState(CompanionState.AVAILABLE);
@@ -1108,7 +1106,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
             targetLine = lineRepository.findLineByName(clientRace.getLineName());
-            targetRace = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection().toString());
+            targetRace = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
