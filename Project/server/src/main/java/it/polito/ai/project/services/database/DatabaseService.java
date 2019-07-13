@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -479,18 +480,24 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Override
     public void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions) {
         Optional<UserCredentials> performerCredentials;
+        Optional<User> performer;
         Optional<Race> race;
         Optional<Line> line;
 
         try {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
             race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection().toString());
+            performer = userRepository.findByUsername(performerUsername);
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
         // If performer or race not found: Throw ResourceNotFound
-        if (!performerCredentials.isPresent() || !race.isPresent())
+        if (!performerCredentials.isPresent() || !race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
+
+        //if performer isn't an Admin or LineAdmin; Throw UnauthorizedRequestException
+        if(!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
+            throw new UnauthorizedRequestException();
 
         try {
             line = lineRepository.findLineByName(race.get().getLineName());
@@ -499,6 +506,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         if (!line.isPresent())
             throw new ResourceNotFoundException();
+
 
         //reperisce le credenziali di tutti i companion e ne verifica il ruolo
         for (String c : companions) {
@@ -515,19 +523,26 @@ public class DatabaseService implements DatabaseServiceInterface {
                 throw new BadRequestException();
         }
 
-        //Seleziona i companion richiesti dalla lista di companion della race
+        //Select  required companion from race.Companions
         List<Companion> selectedCompanions = new ArrayList<>();
         for (Companion c : race.get().getCompanions()) {
+            //If a companion with the stauts confirmed is present the race is locked
+            if (c.getState().equals(CompanionState.CONFIRMED))
+                throw new BadRequestException();
             if (companions.contains(c.getUserDetails().getUsername())) {
+                //if the state of the selected companion isn't Available: Throw BadRequestException
+                if(!c.getState().equals(CompanionState.AVAILABLE))
+                    throw new BadRequestException();
                 selectedCompanions.add(c);
             }
         }
-        //Se hanno dimensioni differenti almeno uno dei companion indicati dal client non è un companion della race
+
+        //If dimension differs client has requested at least one not in race companion
         if (selectedCompanions.size() != companions.size())
             throw new BadRequestException();
 
 
-        // Crea una mappa con chiave PediStopName e valore booleano che indica se la fermata è coperta
+        // Create Map with PediStop type key and boolean value which marks a stop as covered if true
         Map<PediStop, Boolean> coveragestopsMap = new HashMap<>();
 
         if (race.get().getDirection().toString().equals(DirectionType.OUTWARD.toString())) {
@@ -555,7 +570,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         }
 
-        // se coverage contiene un false non si ha la copertura completa
+        // if map contains a false there's no complete coverage
         if (coveragestopsMap.containsValue(false))
             throw new BadRequestException();
 
@@ -570,8 +585,41 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public void unselectCompanion(String performerUsername, ClientRace clientRace, List<String> companions) {
+    public void unselectCompanions(String performerUsername, ClientRace clientRace) {
+        Optional<UserCredentials> performerCredentials;
+        Optional<Race> race;
+        Optional<Line> line;
+        Optional<User> performer;
+        try {
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            race = raceRepository.findRaceByDataAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection().toString());
+            performer = userRepository.findByUsername(performerUsername);
+            line = lineRepository.findLineByName(race.get().getLineName());
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If performer, line or race not found: Throw ResourceNotFound
+        if (!performerCredentials.isPresent() || !race.isPresent() || !line.isPresent())
+            throw new ResourceNotFoundException();
 
+        //if performer isn't an Admin or LineAdmin; Throw UnauthorizedRequestException
+        if(!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
+            throw new UnauthorizedRequestException();
+
+
+
+        List<Companion> selectedCompanions = new ArrayList<>();
+        for (Companion c : race.get().getCompanions()) {
+            //If a companion with the stauts confirmed is present the race is locked
+            if (c.getState().equals(CompanionState.CONFIRMED))
+                throw new BadRequestException();
+            //Unselect all Chosen Companion
+            if (c.getState().equals(CompanionState.CHOSEN))
+                race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
+        }
+
+
+        updateRace(raceToClientRace(race.get()), performerUsername);
     }
 
     @Override
@@ -632,7 +680,10 @@ public class DatabaseService implements DatabaseServiceInterface {
             if (!performerCredentials.get().getUsername().equals(targetCredentials.get().getUsername()))
                 throw new UnauthorizedRequestException();
         }
-
+        // Can't be available for locked race
+        for (Companion c : race.get().getCompanions())
+            if(c.getState().equals(CompanionState.CONFIRMED))
+                throw new BadRequestException();
 
         clientCompanion.setState(CompanionState.AVAILABLE);
         race.get().getCompanions().add(clientCompanionToCompanion(clientCompanion));

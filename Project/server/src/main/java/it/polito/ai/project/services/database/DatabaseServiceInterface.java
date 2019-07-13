@@ -53,7 +53,8 @@ public interface DatabaseServiceInterface {
 
     void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
 
-    void unselectCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
+    void unselectCompanions(String performerUsername, ClientRace clientRace);
+
 
     void confirmCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
 
