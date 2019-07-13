@@ -15,7 +15,7 @@ public interface DatabaseServiceInterface {
 
     ClientUserCredentials insertCredentials(String username, String password, List<String> role);
 
-    ClientUserCredentials getCredentials(String id);
+    ClientUserCredentials getCredentials(String username);
 
     void modifyUserPassword(ClientUserCredentials credential, String password);
 
