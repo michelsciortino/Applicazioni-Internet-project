@@ -55,8 +55,7 @@ public interface DatabaseServiceInterface {
 
     void unselectCompanions(String performerUsername, ClientRace clientRace);
 
-
-    void confirmCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
+    void confirmCompanion(String performerUsername, ClientRace clientRace, String companions);
 
     void stateCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
 

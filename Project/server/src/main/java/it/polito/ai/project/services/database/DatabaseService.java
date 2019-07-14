@@ -7,6 +7,9 @@ import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.models.*;
 import it.polito.ai.project.services.database.repositories.*;
+import it.polito.ai.project.services.email.EmailConfiguration;
+import it.polito.ai.project.services.email.EmailSenderService;
+import it.polito.ai.project.services.email.models.Mail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,15 +31,17 @@ public class DatabaseService implements DatabaseServiceInterface {
     private final UserCredentialsRepository userCredentialsRepository;
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
+    private final EmailSenderService emailSenderService;
 
     @Autowired
-    public DatabaseService(PasswordEncoder passwordEncoder, LineRepository lineRepository, RaceRepository raceRepository, UserCredentialsRepository userCredentialsRepository, TokenRepository tokenRepository, UserRepository userRepository) {
+    public DatabaseService(PasswordEncoder passwordEncoder, LineRepository lineRepository, RaceRepository raceRepository, UserCredentialsRepository userCredentialsRepository, TokenRepository tokenRepository, UserRepository userRepository, EmailSenderService emailSenderService) {
         this.passwordEncoder = passwordEncoder;
         this.lineRepository = lineRepository;
         this.raceRepository = raceRepository;
         this.userCredentialsRepository = userCredentialsRepository;
         this.tokenRepository = tokenRepository;
         this.userRepository = userRepository;
+        this.emailSenderService = emailSenderService;
     }
 
 
@@ -439,7 +444,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<User> performer;
         Optional<UserCredentials> targetCredentials;
 
-
         try {
             perfCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
@@ -474,7 +478,17 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateUser(userToClientUser(target.get()));
     }
 
-
+    /**
+     * Function to select companion in race, this function change companion state for a race in CHOSEN
+     *
+     * @param performerUsername user that perform operation
+     * @param clientRace        race in witch select companion
+     * @param companions        list of companion chosen
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     * @throws BadRequestException
+     * @throws UnauthorizedRequestException
+     */
     @Transactional
     @Override
     public void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions) {
@@ -494,7 +508,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!performerCredentials.isPresent() || !race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
 
-        //if performer isn't an Admin or LineAdmin; Throw UnauthorizedRequestException
+        // if performer isn't an Admin or LineAdmin: Throw UnauthorizedRequestException
         if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
             throw new UnauthorizedRequestException();
 
@@ -506,8 +520,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!line.isPresent())
             throw new ResourceNotFoundException();
 
-
-        //reperisce le credenziali di tutti i companion e ne verifica il ruolo
+        // Take credentials for each companion and check if contains roles COMPANION
         for (String c : companions) {
             Optional<UserCredentials> userTemp;
             try {
@@ -515,137 +528,206 @@ public class DatabaseService implements DatabaseServiceInterface {
             } catch (Exception e) {
                 throw new InternalServerErrorException();
             }
-
             if (!userTemp.isPresent())
                 throw new ResourceNotFoundException();
             if (!userTemp.get().getRoles().contains(Roles.prefix + Roles.COMPANION))
                 throw new BadRequestException();
         }
 
-        //Select  required companion from race.Companions
+        // Select required companion from race.Companions
         List<Companion> selectedCompanions = new ArrayList<>();
         for (Companion c : race.get().getCompanions()) {
-            //If a companion with the stauts confirmed is present the race is locked
+            // If a companion with the status confirmed is present the race is locked
             if (c.getState().equals(CompanionState.CONFIRMED))
                 throw new BadRequestException();
             if (companions.contains(c.getUserDetails().getUsername())) {
-                //if the state of the selected companion isn't Available: Throw BadRequestException
+                // If the state of the selected companion isn't Available: Throw BadRequestException
                 if (!c.getState().equals(CompanionState.AVAILABLE))
                     throw new BadRequestException();
                 selectedCompanions.add(c);
             }
         }
 
-        //If dimension differs client has requested at least one not in race companion
+        // If dimension differs client has requested at least one not in race companion
         if (selectedCompanions.size() != companions.size())
             throw new BadRequestException();
 
-
         // Create Map with PediStop type key and boolean value which marks a stop as covered if true
-        Map<PediStop, Boolean> coveragestopsMap = new HashMap<>();
-
+        Map<PediStop, Boolean> coverageStopsMap = new HashMap<>();
         if (race.get().getDirection().toString().equals(DirectionType.OUTWARD.toString())) {
             for (PediStop p : line.get().getOutwardStops())
-                coveragestopsMap.put(p, false);
-
-
+                coverageStopsMap.put(p, false);
         } else
             for (PediStop p : line.get().getReturnStops())
-                coveragestopsMap.put(p, false);
-
-
+                coverageStopsMap.put(p, false);
         for (Companion c : selectedCompanions) {
             boolean flag = false;
-            for (Map.Entry<PediStop, Boolean> element : coveragestopsMap.entrySet()) {
+            for (Map.Entry<PediStop, Boolean> element : coverageStopsMap.entrySet()) {
                 if (element.getKey().getName().equals(c.getInitialStop().getName()))
                     flag = true;
-
                 if (flag)
-                    coveragestopsMap.put(element.getKey(), true);
-
+                    coverageStopsMap.put(element.getKey(), true);
                 if (element.getKey().getName().equals(c.getFinalStop().getName()))
                     break;
             }
-
         }
 
-        // if map contains a false there's no complete coverage
-        if (coveragestopsMap.containsValue(false))
+        // If map contains a false the coverage is incomplete
+        if (coverageStopsMap.containsValue(false))
             throw new BadRequestException();
 
-        for (Companion selectedc : selectedCompanions) {
+        // Set CompanionState to CHOSEN
+        for (Companion selectedC : selectedCompanions) {
             for (Companion c : race.get().getCompanions())
-                if (selectedc.getUserDetails().getName().equals(c.getUserDetails().getName()))
+                if (selectedC.getUserDetails().getName().equals(c.getUserDetails().getName()))
                     race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.CHOSEN);
-
         }
-
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
 
+    /**
+     * Function to unselect companion in Race, this function change companion state for a race in AVAILABLE
+     *
+     * @param performerUsername user that perform operation
+     * @param clientRace        race in witch unselect companion
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     * @throws BadRequestException
+     * @throws UnauthorizedRequestException
+     */
     @Override
+    @Transactional
     public void unselectCompanions(String performerUsername, ClientRace clientRace) {
         Optional<UserCredentials> performerCredentials;
         Optional<Race> race;
         Optional<Line> line;
         Optional<User> performer;
         try {
-            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
             race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
-            performer = userRepository.findByUsername(performerUsername);
-            line = lineRepository.findLineByName(race.get().getLineName());
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-        // If performer, line or race not found: Throw ResourceNotFound
-        if (!performerCredentials.isPresent() || !race.isPresent() || !line.isPresent())
+        // If race not found: Throw ResourceNotFound
+        if (!race.isPresent())
+            throw new ResourceNotFoundException();
+        try {
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            line = lineRepository.findLineByName(race.get().getLineName());
+            performer = userRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If performer, line not found: Throw ResourceNotFound
+        if (!performerCredentials.isPresent() || !line.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
 
-        //if performer isn't an Admin or LineAdmin; Throw UnauthorizedRequestException
+        // If performer isn't an Admin or LineAdmin: Throw UnauthorizedRequestException
         if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
             throw new UnauthorizedRequestException();
 
-
-        List<Companion> selectedCompanions = new ArrayList<>();
         for (Companion c : race.get().getCompanions()) {
-            //If a companion with the stauts confirmed is present the race is locked
+            // If a companion with the status confirmed is present the race is locked
             if (c.getState().equals(CompanionState.CONFIRMED))
                 throw new BadRequestException();
-            //Unselect all Chosen Companion
+            // Unselect all Chosen Companion
             if (c.getState().equals(CompanionState.CHOSEN))
                 race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
         }
-
-
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
 
+    /**
+     * Function to confirm round in Race, this function change companion state for a race in CONFIRMED
+     *
+     * @param performerUsername user that perform operation
+     * @param clientRace        race in witch confirm round
+     * @param companion         companion to confirm
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     * @throws BadRequestException
+     * @throws UnauthorizedRequestException
+     */
     @Override
-    public void confirmCompanion(String performerUsername, ClientRace clientRace, List<String> companions) {
+    @Transactional
+    public void confirmCompanion(String performerUsername, ClientRace clientRace, String companion) {
+        Optional<UserCredentials> performerCredentials;
+        Optional<Race> race;
+        Optional<User> performer;
+        try {
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            performer = userRepository.findByUsername(performerUsername);
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If performer, race not found: Throw ResourceNotFound
+        if (!performerCredentials.isPresent() || !race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
 
+        // If performer isn't a Companion: Throw UnauthorizedRequestException
+        if (!performerCredentials.get().getRoles().contains(Roles.prefix + Roles.COMPANION))
+            throw new UnauthorizedRequestException();
+
+        // Set state CONFIRMED
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getUsername().equals(companion))
+                // If state is not CHOSEN: Throw BadRequest
+                if (c.getState().equals(CompanionState.CHOSEN))
+                    race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.CONFIRMED);
+                else
+                    throw new BadRequestException();
+        }
+        updateRace(raceToClientRace(race.get()), performerUsername);
     }
 
+    /**
+     * Function to check if user is SysAdmin or is Admin of current line
+     *
+     * @param lines list of managed lines
+     * @param roles list of roles
+     * @param line  line to check
+     * @return boolean: true if manage current line  or is SysAdmin, otherwise return false
+     */
     private boolean isAdminOfLineOrSysAdmin(List<String> lines, List<String> roles, String line) {
         if (isSystemAdmin(roles)) return true;
         return isAdminOfLine(lines, roles, line);
     }
 
+    /**
+     * Function to check if user is Admin of current line
+     *
+     * @param lines list of managed lines
+     * @param roles list of roles
+     * @param line  line to check
+     * @return boolean: true if manage current line, otherwise return false and if is not Admin
+     */
     private boolean isAdminOfLine(List<String> lines, List<String> roles, String line) {
         if (!isAdmin(roles)) return false;
         return lines.contains(line);
     }
 
+    /**
+     * Function to check if user is Admin
+     *
+     * @param roles list of roles
+     * @return boolean: true if user is Admin, otherwise return false
+     */
     private boolean isAdmin(List<String> roles) {
         return roles.contains(Roles.prefix + Roles.ADMIN);
     }
 
+    /**
+     * Function to check if user is SysAdmin
+     *
+     * @param roles list of roles
+     * @return boolean: true if user is SysAdmin, otherwise return false
+     */
     private boolean isSystemAdmin(List<String> roles) {
         return roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN);
     }
 
     //------------------------------------------------###Companion###-------------------------------------------------//
 
-    //TODO Update Race
     @Transactional
     @Override
     public void stateCompanionAvailability(ClientCompanion clientCompanion, String performerUsername, ClientRace clientRace) {
@@ -686,7 +768,8 @@ public class DatabaseService implements DatabaseServiceInterface {
         clientCompanion.setState(CompanionState.AVAILABLE);
         race.get().getCompanions().add(clientCompanionToCompanion(clientCompanion));
         ClientRace finalRace = raceToClientRace(race.get());
-        //TODO call update race
+
+        //TODO: non deve essere finalRace al posto di clientRace????
         updateRace(clientRace, performerUsername);
     }
 
@@ -850,7 +933,8 @@ public class DatabaseService implements DatabaseServiceInterface {
             for (String a : line.getAdmins()) {
                 Optional<UserCredentials> res = userCredentialsRepository.findByUsername(a);
                 if (!res.isPresent()) {
-                    subscribeAdminAndSendMail(a);
+                    //TODO: da fare.... ma dobbiamo aspettare che confermi la mail prima di fare qualcosa?
+                    subscribeAdminAndSendMail(a, Arrays.asList(Roles.prefix + Roles.USER, Roles.prefix + Roles.ADMIN));
                 } else if (!res.get().getRoles().contains(Roles.prefix + Roles.ADMIN)) {
                     res.get().getRoles().add(Roles.prefix + Roles.ADMIN);
                     userCredentialsRepository.save(res.get());
@@ -893,9 +977,29 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
-    private boolean subscribeAdminAndSendMail(String username) {
+    //TODO: non sono convinto di farlo qua!!
+    private void subscribeAdminAndSendMail(String username, List<String> roles) {
         //TODO: implementa insert user (admin)
-        return true;
+        ClientUserCredentials clientUserCredentials = null;
+        Token token = null;
+        try {
+            clientUserCredentials = insertCredentials(username, "", roles);
+            token = new Token(clientUserCredentials.getUsername(), ScopeToken.CONFIRM);
+            insertToken(token);
+            Mail mail = new Mail();
+            mail.setFrom(EmailConfiguration.FROM);
+            mail.setTo(clientUserCredentials.getUsername());
+            mail.setSubject("Complete Registration for Pedibus!");
+            mail.setContent("To confirm your account, please click here :" + EmailConfiguration.BASE_URL + "/confirm?token=" + token.getToken());
+
+            //link print in console not send with email for test
+            System.out.println(mail);
+            emailSenderService.sendSimpleMail(mail);
+        } catch (Exception e) {
+            deleteCredentials(clientUserCredentials);
+            tokenRepository.delete(token);
+            throw new InternalServerErrorException();
+        }
     }
 
     /**
@@ -974,8 +1078,6 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new InternalServerErrorException(e);
         }
     }
-
-    //TODO Move to Utils
 
     /**
      * Function to convert MongoDB Line into a ClientLine
@@ -1083,9 +1185,9 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     /**
-     * Function to insert new race
+     * Function to update race
      *
-     * @param clientRace:        race to insert
+     * @param clientRace:        race to update
      * @param performerUsername: performer username
      * @throws BadRequestException
      * @throws InternalServerErrorException
@@ -1113,15 +1215,12 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!targetLine.isPresent() || !performer.isPresent() || !performerCredentials.isPresent() || !targetRace.isPresent())
             throw new ResourceNotFoundException();
 
-
         Race race = clientRaceToRace(clientRace);
         try {
             raceRepository.save(race);
-
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-
     }
 
     @Override
@@ -1129,23 +1228,23 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     }
 
-    public Race clientRaceToRace(ClientRace clientRace) {
+    private Race clientRaceToRace(ClientRace clientRace) {
         return new Race(clientRace.getLineName(), clientRace.getDirection(), clientRace.getDate(), clientPassengersToPassengers(clientRace.getPassengers()), clientCompanionsToCompanions(clientRace.getCompanions()));
     }
 
-    public ClientRace raceToClientRace(Race race) {
+    private ClientRace raceToClientRace(Race race) {
         return new ClientRace(race.getLineName(), race.getDirection(), race.getDate(), passengersToClientPassengers(race.getPassengers()), companionsToClientCompanions(race.getCompanions()));
     }
 
-    public ClientPassenger passengerToClientPassenger(Passenger passenger) {
+    private ClientPassenger passengerToClientPassenger(Passenger passenger) {
         return new ClientPassenger(passenger.getChildDetails(), passenger.isReserved(), passenger.isPresent());
     }
 
-    public Passenger clientPassengerToPassenger(ClientPassenger clientPassenger) {
+    private Passenger clientPassengerToPassenger(ClientPassenger clientPassenger) {
         return new Passenger(clientPassenger.getChildDetails(), clientPassenger.isReserved(), clientPassenger.isPresent());
     }
 
-    public List<ClientPassenger> passengersToClientPassengers(List<Passenger> passengers) {
+    private List<ClientPassenger> passengersToClientPassengers(List<Passenger> passengers) {
         List<ClientPassenger> clientPassengers = new ArrayList<>();
         for (Passenger p : passengers) {
             clientPassengers.add(passengerToClientPassenger(p));
@@ -1153,7 +1252,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         return clientPassengers;
     }
 
-    public List<Passenger> clientPassengersToPassengers(List<ClientPassenger> clientPassengers) {
+    private List<Passenger> clientPassengersToPassengers(List<ClientPassenger> clientPassengers) {
         List<Passenger> passengers = new ArrayList<>();
         for (ClientPassenger p : clientPassengers) {
             passengers.add(clientPassengerToPassenger(p));
