@@ -1,8 +1,7 @@
-package it.polito.ai.project.services.database.models;
+package it.polito.ai.project.generalmodels;
 
-import lombok.Data;
+import it.polito.ai.project.services.database.models.NotificationsType;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Email;
@@ -10,10 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
-@Document(collection = "users_notifications")
-@Data
-public class UserNotification {
-    //TODO: da fare con estensioni se si riesce....
+public class ClientUserNotification {
     @Email
     @Id
     private String username;
@@ -28,7 +24,7 @@ public class UserNotification {
     @NotNull
     private Boolean isRead;
 
-    public UserNotification(@Email String username, @NotNull NotificationsType type, @NotNull Date date, @Nullable Object parameters, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
+    public ClientUserNotification(@Email String username, @NotNull NotificationsType type, @NotNull Date date, @Nullable Object parameters, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
         this.username = username;
         this.type = type;
         this.date = date;
