@@ -9,10 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.UUID;
 
-@Document(collection = "token")
+@Document(collection = "tokens")
 @Data
 public class Token {
-
     @Id
     private String id;
     @Indexed(unique = true)

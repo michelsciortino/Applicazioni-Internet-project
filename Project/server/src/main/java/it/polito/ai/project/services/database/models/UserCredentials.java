@@ -16,7 +16,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-@Document(collection = "user_credentials")
+@Document(collection = "users_credentials")
 @Data
 public class UserCredentials implements UserDetails {
 
@@ -38,7 +38,6 @@ public class UserCredentials implements UserDetails {
 
     public UserCredentials() {
     }
-
 
     public UserCredentials(@NotNull @Email String username, @NotNull String password, @NotNull List<String> roles) {
         this.username = username;
