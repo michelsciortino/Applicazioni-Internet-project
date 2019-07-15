@@ -31,16 +31,18 @@ public class DatabaseService implements DatabaseServiceInterface {
     private final UserCredentialsRepository userCredentialsRepository;
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
+    private final UserNotificationRepository userNotificationRepository;
     private final EmailSenderService emailSenderService;
 
     @Autowired
-    public DatabaseService(PasswordEncoder passwordEncoder, LineRepository lineRepository, RaceRepository raceRepository, UserCredentialsRepository userCredentialsRepository, TokenRepository tokenRepository, UserRepository userRepository, EmailSenderService emailSenderService) {
+    public DatabaseService(PasswordEncoder passwordEncoder, LineRepository lineRepository, RaceRepository raceRepository, UserCredentialsRepository userCredentialsRepository, TokenRepository tokenRepository, UserRepository userRepository, UserNotificationRepository userNotificationRepository, EmailSenderService emailSenderService) {
         this.passwordEncoder = passwordEncoder;
         this.lineRepository = lineRepository;
         this.raceRepository = raceRepository;
         this.userCredentialsRepository = userCredentialsRepository;
         this.tokenRepository = tokenRepository;
         this.userRepository = userRepository;
+        this.userNotificationRepository = userNotificationRepository;
         this.emailSenderService = emailSenderService;
     }
 
@@ -325,7 +327,6 @@ public class DatabaseService implements DatabaseServiceInterface {
                 u.get().setLines(user.getLines());
                 u.get().setChildren(user.getChildren());
                 u.get().setContacts(user.getContacts());
-                u.get().setNotifications(user.getNotifications());
 
                 userRepository.save(u.get());
                 return;
@@ -336,11 +337,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         throw new ResourceNotFoundException();
     }
 
-    @Override
-    public void reserveChildren(ClientRace client, List<ClientPassenger> p) {
-
-    }
-
     /**
      * Function to convert User to ClientUser
      *
@@ -348,7 +344,7 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @return ClientUser: converted client user
      */
     private ClientUser userToClientUser(User p) {
-        return new ClientUser(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), p.getChildren(), p.getLines(), p.getNotifications());
+        return new ClientUser(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), p.getChildren(), p.getLines());
     }
 
     /**
@@ -358,7 +354,35 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @return User: converted user
      */
     private User clientUserToUser(ClientUser p) {
-        return new User(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), p.getChildren(), p.getLines(), p.getNotifications());
+        return new User(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), p.getChildren(), p.getLines());
+    }
+
+    //----------------------------------------------###Notification###------------------------------------------------//
+
+    @Override
+    public Page<ClientUserNotification> getUserNotificationByUsername(int pageNumber, String username) {
+        try {
+            Pageable pageable = PageRequest.of(pageNumber, 10);
+
+            List<ClientUserNotification> usersNotificationList = new ArrayList<>();
+            for (UserNotification n : userNotificationRepository.findAllByUsername(pageable, username))
+                usersNotificationList.add(userNotificationToClientUserNotification(n));
+
+            return new PageImpl<>(usersNotificationList);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    private ClientUserNotification userNotificationToClientUserNotification(UserNotification n) {
+        return new ClientUserNotification(n.getUsername(), n.getType(), n.getDate(), n.getParameters(), n.getMessage(), n.getIsRead());
+    }
+
+    //-------------------------------------------------###Parent###---------------------------------------------------//
+
+    @Override
+    public void reserveChildren(ClientRace client, List<ClientPassenger> p) {
+
     }
 
     //---------------------------------------------------###Admin###--------------------------------------------------//
@@ -477,6 +501,8 @@ public class DatabaseService implements DatabaseServiceInterface {
         // Since an Admin without lines can exist we choose to don't remove ADMIN role
         updateUser(userToClientUser(target.get()));
     }
+
+    //TODO: da fare controllo se è già scelto per altre corse
 
     /**
      * Function to select companion in race, this function change companion state for a race in CHOSEN
@@ -664,6 +690,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!performerCredentials.isPresent() || !race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
 
+        //TODO: forse meglio se mettiamo gli accompagnatori limitati...
         // If performer isn't a Companion: Throw UnauthorizedRequestException
         if (!performerCredentials.get().getRoles().contains(Roles.prefix + Roles.COMPANION))
             throw new UnauthorizedRequestException();
@@ -676,6 +703,35 @@ public class DatabaseService implements DatabaseServiceInterface {
                     race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.CONFIRMED);
                 else
                     throw new BadRequestException();
+        }
+        updateRace(raceToClientRace(race.get()), performerUsername);
+    }
+
+    @Override
+    public void validCompanions(String performerUsername, ClientRace clientRace) {
+        Optional<UserCredentials> performerCredentials;
+        Optional<Race> race;
+        Optional<User> performer;
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            performer = userRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If performer, race not found: Throw ResourceNotFound
+        if (!performerCredentials.isPresent() || !performer.isPresent() || !race.isPresent())
+            throw new ResourceNotFoundException();
+
+        // If performer isn't an Admin or LineAdmin: Throw UnauthorizedRequestException
+        if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
+            throw new UnauthorizedRequestException();
+
+        //TODO: rifacciamo i controlli di copertura?
+        for (Companion c : race.get().getCompanions()) {
+            // Valid Companion: set state to VALIDATED
+            if (c.getState().equals(CompanionState.CONFIRMED))
+                race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.VALIDATED);
         }
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
@@ -773,11 +829,13 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateRace(clientRace, performerUsername);
     }
 
+    //TODO: da fare
     @Override
     public void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace) {
 
     }
 
+    //TODO: da fare
     @Override
     public void takeChildren(ClientRace client, List<ClientPassenger> p) {
 
@@ -1174,11 +1232,13 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
+    //TODO: da fare
     @Override
     public ClientRace getRace(ClientRace clientRace) {
         return null;
     }
 
+    //TODO: da fare
     @Override
     public Collection<ClientRace> getRacesByDateAndLine(Date date, String lineName) {
         return null;
@@ -1223,6 +1283,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
+    //TODO: da fare
     @Override
     public void deleteRace(ClientRace clientRace) {
 
@@ -1237,11 +1298,11 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private ClientPassenger passengerToClientPassenger(Passenger passenger) {
-        return new ClientPassenger(passenger.getChildDetails(), passenger.isReserved(), passenger.isPresent());
+        return new ClientPassenger(passenger.getChildDetails(), passenger.getStopReserved(), passenger.getStopTaken(), passenger.getStopDelivered(), passenger.isReserved(), passenger.getState());
     }
 
     private Passenger clientPassengerToPassenger(ClientPassenger clientPassenger) {
-        return new Passenger(clientPassenger.getChildDetails(), clientPassenger.isReserved(), clientPassenger.isPresent());
+        return new Passenger(clientPassenger.getChildDetails(), clientPassenger.getStopReserved(), clientPassenger.getStopTaken(), clientPassenger.getStopDelivered(), clientPassenger.isReserved(), clientPassenger.getState());
     }
 
     private List<ClientPassenger> passengersToClientPassengers(List<Passenger> passengers) {

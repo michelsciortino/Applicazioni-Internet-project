@@ -40,9 +40,15 @@ public interface DatabaseServiceInterface {
     ClientUser insertUser(ClientUser user);
 
     void updateUser(ClientUser user);
+
+    //----------------------------------------------###Notification###------------------------------------------------//
+
+    Page<ClientUserNotification> getUserNotificationByUsername(int pageNumber, String username);
+
     //-------------------------------------------------###Parent###---------------------------------------------------//
 
     void reserveChildren(ClientRace client, List<ClientPassenger> p);
+
     //--------------------------------------------------###Admin###---------------------------------------------------//
 
     void makeLineAdmin(String performerUsername, String targetUsername, String line);
@@ -56,6 +62,8 @@ public interface DatabaseServiceInterface {
     void unselectCompanions(String performerUsername, ClientRace clientRace);
 
     void confirmCompanion(String performerUsername, ClientRace clientRace, String companions);
+
+    void validCompanions(String performerUsername, ClientRace clientRace);
 
     void stateCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
 
