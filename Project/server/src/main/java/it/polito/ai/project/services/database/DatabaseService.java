@@ -15,10 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -379,7 +381,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     //-------------------------------------------------###Parent###---------------------------------------------------//
-
+    //TODO da fare
     @Override
     public void reserveChildren(ClientRace client, List<ClientPassenger> p) {
 
@@ -502,7 +504,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateUser(userToClientUser(target.get()));
     }
 
-    //TODO: da fare controllo se è già scelto per altre corse
 
     /**
      * Function to select companion in race, this function change companion state for a race in CHOSEN
@@ -587,6 +588,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             for (PediStop p : line.get().getReturnStops())
                 coverageStopsMap.put(p, false);
         for (Companion c : selectedCompanions) {
+
             boolean flag = false;
             for (Map.Entry<PediStop, Boolean> element : coverageStopsMap.entrySet()) {
                 if (element.getKey().getName().equals(c.getInitialStop().getName()))
@@ -602,8 +604,11 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (coverageStopsMap.containsValue(false))
             throw new BadRequestException();
 
+
         // Set CompanionState to CHOSEN
-        for (Companion selectedC : selectedCompanions) {
+        for (Companion selectedC : selectedCompanions)
+        {   if(!isCompanionStillAvailable(selectedC, line.get(), race.get()))
+                throw new BadRequestException();
             for (Companion c : race.get().getCompanions())
                 if (selectedC.getUserDetails().getName().equals(c.getUserDetails().getName()))
                     race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.CHOSEN);
@@ -727,13 +732,32 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
             throw new UnauthorizedRequestException();
 
-        //TODO: rifacciamo i controlli di copertura?
         for (Companion c : race.get().getCompanions()) {
             // Valid Companion: set state to VALIDATED
             if (c.getState().equals(CompanionState.CONFIRMED))
                 race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.VALIDATED);
         }
         updateRace(raceToClientRace(race.get()), performerUsername);
+    }
+
+    private boolean isCompanionStillAvailable(Companion companion, Line line, Race race)
+    {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        try {
+            date = formatter.parse(formatter.format(race.getDate()));
+        } catch (ParseException e) {
+            throw new InternalServerErrorException();
+        }
+        List<Race> otherRaces = raceRepository.findAllByCompanionsAndEqDate(companion, date);
+        for(Race r : otherRaces)
+        {
+            if(!r.getCompanions().contains(companion))
+                throw new InternalServerErrorException();
+            if(!r.getCompanions().get(r.getCompanions().indexOf(companion)).getState().equals(CompanionState.AVAILABLE))
+                return false;
+        }
+        return true;
     }
 
     /**
@@ -825,20 +849,55 @@ public class DatabaseService implements DatabaseServiceInterface {
         race.get().getCompanions().add(clientCompanionToCompanion(clientCompanion));
         ClientRace finalRace = raceToClientRace(race.get());
 
-        //TODO: non deve essere finalRace al posto di clientRace????
-        updateRace(clientRace, performerUsername);
+
+        updateRace(finalRace, performerUsername);
     }
 
     //TODO: da fare
     @Override
-    public void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace) {
+    public void removeCompanionAvailability(ClientCompanion clientCompanion, String performerUsername, ClientRace clientRace) {
 
     }
 
-    //TODO: da fare
     @Override
-    public void takeChildren(ClientRace client, List<ClientPassenger> p) {
+    public void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
+        Optional<Race> race;
+        Optional<UserCredentials> performer;
 
+        try{
+            race=raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(),clientRace.getLineName(),clientRace.getDirection());
+            performer=userCredentialsRepository.findByUsername(performerUsername);
+        }catch (Exception e){
+            throw new InternalServerErrorException();
+        }
+
+        if(!race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+
+        for (Companion c : race.get().getCompanions())
+        {
+            if(c.getUserDetails().getName().equals(performerUsername))
+                if(!isCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c)
+                    throw new BadRequestException();
+        }
+        int count = 0;
+        for(Passenger p : race.get().getPassengers())
+        {
+            for(ClientPassenger cp : clientPassengers) {
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
+                    {
+                        if (!p.getState().equals(PassengerState.NULL) || !p.getState().equals(PassengerState.ABSENT))
+                            throw new BadRequestException();
+                        count++;
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.TAKEN);
+                    }
+                }
+            }
+        }
+        if(count != clientPassengers.size())
+            throw new BadRequestException();
+
+        updateRace(raceToClientRace(race.get()), performerUsername);
     }
 
     @Transactional
@@ -876,7 +935,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         // Update Credentials: update user to companion
         updateCredentials(userCredentialsToClientUserCredentials(targetCredentials.get()));
 
-        //TODO: accompagnatore abbiamo detto che può fare tutte le linee vero? se no va messa la lista delle linee
     }
 
     @Transactional
@@ -925,6 +983,8 @@ public class DatabaseService implements DatabaseServiceInterface {
             for (Race r : races) {
                 r.getCompanions().remove(clientCompanionToCompanion(clientCompanion));
                 //TODO: update future race
+                updateRace(raceToClientRace(r),performerUsername);
+
             }
         }
 
@@ -1283,10 +1343,43 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
-    //TODO: da fare
-    @Override
-    public void deleteRace(ClientRace clientRace) {
+    /**
+     * Function to delete race
+     *
+     * @param clientRace:        race to delete
+     * @param performerUsername: performer username
+     * @throws BadRequestException
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     * @throws UnauthorizedRequestException
+     */
 
+    @Override
+    public void deleteRace(ClientRace clientRace, String performerUsername) {
+        Optional<UserCredentials> performerCredentials;
+        Optional<Line> targetLine;
+        Optional<Race> targetRace;
+        Date today = Calendar.getInstance().getTime();
+        Optional<User> performer;
+        if (today.before(clientRace.getDate()))
+            throw new BadRequestException();
+        try {
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            performer = userRepository.findByUsername(performerUsername);
+            targetLine = lineRepository.findLineByName(clientRace.getLineName());
+            targetRace = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        if (!targetLine.isPresent() || !performer.isPresent() || !performerCredentials.isPresent() || !targetRace.isPresent())
+            throw new ResourceNotFoundException();
+
+        Race race = clientRaceToRace(clientRace);
+        try {
+            raceRepository.delete(race);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
     }
 
     private Race clientRaceToRace(ClientRace clientRace) {

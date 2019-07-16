@@ -69,7 +69,7 @@ public interface DatabaseServiceInterface {
 
     void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
 
-    void takeChildren(ClientRace client, List<ClientPassenger> p);
+    void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
 
     void makeCompanion(String performerUsername, String targetUsername);
 
@@ -99,7 +99,7 @@ public interface DatabaseServiceInterface {
 
     void updateRace(ClientRace clientRace, String performerUsername);
 
-    void deleteRace(ClientRace clientRace);
+    void deleteRace(ClientRace clientRace, String performerUsername);
 
 
 }

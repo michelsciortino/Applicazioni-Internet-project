@@ -17,4 +17,6 @@ public interface RaceRepository extends MongoRepository<Race, String> {
 
     @Query("{'companion' : ?0, 'date':{$gt:?1}}")
     List<Race> findAllByCompanions(Companion companion, Date date);
+    @Query("{'companion' : ?0, 'date':{$eq:?1}}")
+    List<Race> findAllByCompanionsAndEqDate(Companion companion, Date date);
 }
