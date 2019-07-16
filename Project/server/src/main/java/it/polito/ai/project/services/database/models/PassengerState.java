@@ -4,5 +4,6 @@ public enum PassengerState {
     ABSENT,
     TAKEN,
     DELIVERED,
-    PRESENT
+    PRESENT,
+    NULL
 }

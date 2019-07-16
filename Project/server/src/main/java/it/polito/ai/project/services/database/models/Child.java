@@ -7,11 +7,11 @@ import javax.validation.constraints.Size;
 @Data
 public class Child {
     @Size(min = 2, max = 30)
-    public String name;
+    private String name;
     @Size(min = 2, max = 30)
-    public String surname;
+    private String surname;
     @Size(min = 16, max = 16)
-    public String CF;
+    private String CF;
 
     private String parentId;
 
