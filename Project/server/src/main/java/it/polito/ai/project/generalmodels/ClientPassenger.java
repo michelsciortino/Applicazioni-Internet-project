@@ -1,20 +1,18 @@
 package it.polito.ai.project.generalmodels;
 
-import it.polito.ai.project.services.database.models.Child;
 import it.polito.ai.project.services.database.models.PassengerState;
-import it.polito.ai.project.services.database.models.PediStop;
 import lombok.Data;
 
 @Data
 public class ClientPassenger {
-    private Child childDetails;
-    private PediStop stopReserved;
-    private PediStop stopTaken;
-    private PediStop stopDelivered;
+    private ClientChild childDetails;
+    private ClientPediStop stopReserved;
+    private ClientPediStop stopTaken;
+    private ClientPediStop stopDelivered;
     private boolean isReserved;
     private PassengerState state;
 
-    public ClientPassenger(Child childDetails, PediStop stopReserved, PediStop stopTaken, PediStop stopDelivered, boolean isReserved, PassengerState state) {
+    public ClientPassenger(ClientChild childDetails, ClientPediStop stopReserved, ClientPediStop stopTaken, ClientPediStop stopDelivered, boolean isReserved, PassengerState state) {
         this.childDetails = childDetails;
         this.stopReserved = stopReserved;
         this.stopTaken = stopTaken;

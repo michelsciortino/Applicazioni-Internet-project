@@ -1,6 +1,5 @@
 package it.polito.ai.project.generalmodels;
 
-import it.polito.ai.project.services.database.models.Child;
 import lombok.Data;
 import org.springframework.lang.Nullable;
 
@@ -26,11 +25,11 @@ public class ClientUser {
     @Nullable
     private List<String> contacts;
     @Nullable
-    private List<Child> children;
+    private List<ClientChild> children;
     @Nullable
     private List<String> lines;
 
-    public ClientUser(@Email @NotNull String username, @Size(min = 2, max = 30) @NotNull String name, @Size(min = 2, max = 30) @NotNull String surname, @Nullable List<String> contacts, @Nullable List<Child> children, @Nullable List<String> lines) {
+    public ClientUser(@Email @NotNull String username, @Size(min = 2, max = 30) @NotNull String name, @Size(min = 2, max = 30) @NotNull String surname, @Nullable List<String> contacts, @Nullable List<ClientChild> children, @Nullable List<String> lines) {
         this.username = username;
         this.name = name;
         this.surname = surname;
