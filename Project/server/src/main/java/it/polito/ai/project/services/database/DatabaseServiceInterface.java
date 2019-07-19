@@ -47,7 +47,7 @@ public interface DatabaseServiceInterface {
 
     //-------------------------------------------------###Parent###---------------------------------------------------//
 
-    void reserveChildren(ClientRace client, List<ClientPassenger> p);
+    void reserveChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> passengers);
 
     //--------------------------------------------------###Admin###---------------------------------------------------//
 
@@ -69,7 +69,11 @@ public interface DatabaseServiceInterface {
 
     void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
 
-    void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
+    void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop takePediStop);
+
+    void deliverChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop deliverPediStop);
+
+    void absentChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
 
     void makeCompanion(String performerUsername, String targetUsername);
 

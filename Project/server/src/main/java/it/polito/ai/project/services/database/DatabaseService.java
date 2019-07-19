@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.datetime.DateFormatter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -327,7 +326,12 @@ public class DatabaseService implements DatabaseServiceInterface {
                 u.get().setName(user.getName());
                 u.get().setSurname(user.getSurname());
                 u.get().setLines(user.getLines());
-                u.get().setChildren(user.getChildren());
+                List<Child> children = new ArrayList<>();
+                if (user.getChildren() != null) {
+                    for (ClientChild cc : user.getChildren())
+                        children.add(clientChildToChild(cc));
+                }
+                u.get().setChildren(children);
                 u.get().setContacts(user.getContacts());
 
                 userRepository.save(u.get());
@@ -346,7 +350,7 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @return ClientUser: converted client user
      */
     private ClientUser userToClientUser(User p) {
-        return new ClientUser(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), p.getChildren(), p.getLines());
+        return new ClientUser(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), childListToClientChildList(p.getChildren()), p.getLines());
     }
 
     /**
@@ -356,7 +360,33 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @return User: converted user
      */
     private User clientUserToUser(ClientUser p) {
-        return new User(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), p.getChildren(), p.getLines());
+        return new User(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), clientChildListToChildList(p.getChildren()), p.getLines());
+    }
+
+    /**
+     * Function to convert list of Child to list of ClientChild
+     *
+     * @param children List of children to convert
+     * @return List ClientChild: converted list
+     */
+    private List<ClientChild> childListToClientChildList(List<Child> children) {
+        List<ClientChild> clientChildren = new ArrayList<>();
+        for (Child c : children)
+            clientChildren.add(childToClientChild(c));
+        return clientChildren;
+    }
+
+    /**
+     * Function to convert list of ClientChild to list of Child
+     *
+     * @param clientChildren List of children to convert
+     * @return List Child: converted list
+     */
+    private List<Child> clientChildListToChildList(List<ClientChild> clientChildren) {
+        List<Child> children = new ArrayList<>();
+        for (ClientChild cc : clientChildren)
+            children.add(clientChildToChild(cc));
+        return children;
     }
 
     //----------------------------------------------###Notification###------------------------------------------------//
@@ -383,8 +413,44 @@ public class DatabaseService implements DatabaseServiceInterface {
     //-------------------------------------------------###Parent###---------------------------------------------------//
     //TODO da fare
     @Override
-    public void reserveChildren(ClientRace client, List<ClientPassenger> p) {
+    public void reserveChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
+        Optional<Race> race;
+        Optional<UserCredentials> performer;
+        // Take information from DB
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+            performer = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If race or performer is not present: Throw ResourceNotFound
+        if (!race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
 
+        // If performer user is not parent for children: Throw BadRequest
+        for (ClientPassenger c : clientPassengers) {
+            if (!c.getChildDetails().getParentId().equals(performerUsername) || !performer.get().getAuthorities().contains(Roles.prefix + Roles.USER))
+                throw new BadRequestException();
+        }
+        int count = 0;
+        for (Passenger p : race.get().getPassengers()) {
+            for (ClientPassenger cp : clientPassengers) {
+                // For each Passenger in list passed check if is in race
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
+                    {
+                        count++;
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.NULL);
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setStopReserved(clientPediStopToPediStop(cp.getStopReserved()));
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setReserved(true);
+                    }
+                }
+            }
+        }
+        // Check if all passenger in list passed are taken else Throw BadRequest
+        if (count != clientPassengers.size())
+            throw new BadRequestException();
+        // Update the race
+        updateRace(raceToClientRace(race.get()), performerUsername);
     }
 
     //---------------------------------------------------###Admin###--------------------------------------------------//
@@ -606,8 +672,8 @@ public class DatabaseService implements DatabaseServiceInterface {
 
 
         // Set CompanionState to CHOSEN
-        for (Companion selectedC : selectedCompanions)
-        {   if(!isCompanionStillAvailable(selectedC, line.get(), race.get()))
+        for (Companion selectedC : selectedCompanions) {
+            if (!isCompanionStillAvailable(selectedC, line.get(), race.get()))
                 throw new BadRequestException();
             for (Companion c : race.get().getCompanions())
                 if (selectedC.getUserDetails().getName().equals(c.getUserDetails().getName()))
@@ -740,8 +806,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
 
-    private boolean isCompanionStillAvailable(Companion companion, Line line, Race race)
-    {
+    private boolean isCompanionStillAvailable(Companion companion, Line line, Race race) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date;
         try {
@@ -750,11 +815,10 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new InternalServerErrorException();
         }
         List<Race> otherRaces = raceRepository.findAllByCompanionsAndEqDate(companion, date);
-        for(Race r : otherRaces)
-        {
-            if(!r.getCompanions().contains(companion))
+        for (Race r : otherRaces) {
+            if (!r.getCompanions().contains(companion))
                 throw new InternalServerErrorException();
-            if(!r.getCompanions().get(r.getCompanions().indexOf(companion)).getState().equals(CompanionState.AVAILABLE))
+            if (!r.getCompanions().get(r.getCompanions().indexOf(companion)).getState().equals(CompanionState.AVAILABLE))
                 return false;
         }
         return true;
@@ -849,7 +913,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         race.get().getCompanions().add(clientCompanionToCompanion(clientCompanion));
         ClientRace finalRace = raceToClientRace(race.get());
 
-
         updateRace(finalRace, performerUsername);
     }
 
@@ -860,43 +923,133 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
+    public void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop takePediStop) {
         Optional<Race> race;
         Optional<UserCredentials> performer;
-
-        try{
-            race=raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(),clientRace.getLineName(),clientRace.getDirection());
-            performer=userCredentialsRepository.findByUsername(performerUsername);
-        }catch (Exception e){
+        // Take information from DB
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+            performer = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-
-        if(!race.isPresent() || !performer.isPresent())
+        // If race or performer is not present: Throw ResourceNotFound
+        if (!race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
 
-        for (Companion c : race.get().getCompanions())
-        {
-            if(c.getUserDetails().getName().equals(performerUsername))
-                if(!isCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c)
+        // If performer user is not companion for this race: Throw BadRequest
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getName().equals(performerUsername))
+                if (!isCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
                     throw new BadRequestException();
         }
         int count = 0;
-        for(Passenger p : race.get().getPassengers())
-        {
-            for(ClientPassenger cp : clientPassengers) {
+        for (Passenger p : race.get().getPassengers()) {
+            for (ClientPassenger cp : clientPassengers) {
+                // For each Passenger in list passed check if is in race
                 if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
                     {
+                        // If state is not NULL or ABSENT: Throw BadRequest
                         if (!p.getState().equals(PassengerState.NULL) || !p.getState().equals(PassengerState.ABSENT))
                             throw new BadRequestException();
                         count++;
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.TAKEN);
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setStopTaken(clientPediStopToPediStop(takePediStop));
                     }
                 }
             }
         }
-        if(count != clientPassengers.size())
+        // Check if all passenger in list passed are taken else Throw BadRequest
+        if (count != clientPassengers.size())
             throw new BadRequestException();
+        // Update the race
+        updateRace(raceToClientRace(race.get()), performerUsername);
+    }
 
+    @Override
+    public void deliverChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop deliverPediStop) {
+        Optional<Race> race;
+        Optional<UserCredentials> performer;
+        // Take information from DB
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+            performer = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If race or performer is not present: Throw ResourceNotFound
+        if (!race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+
+        // If performer user is not companion for this race: Throw BadRequest
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getName().equals(performerUsername))
+                if (!isCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
+                    throw new BadRequestException();
+        }
+        int count = 0;
+        for (Passenger p : race.get().getPassengers()) {
+            for (ClientPassenger cp : clientPassengers) {
+                // For each Passenger in list passed check if is in race
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
+                    {
+                        // If state is not TAKEN: Throw BadRequest
+                        if (!p.getState().equals(PassengerState.TAKEN))
+                            throw new BadRequestException();
+                        count++;
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.DELIVERED);
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setStopDelivered(clientPediStopToPediStop(deliverPediStop));
+                    }
+                }
+            }
+        }
+        // Check if all passenger in list passed are taken else Throw BadRequest
+        if (count != clientPassengers.size())
+            throw new BadRequestException();
+        // Update the race
+        updateRace(raceToClientRace(race.get()), performerUsername);
+    }
+
+    @Override
+    public void absentChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
+        Optional<Race> race;
+        Optional<UserCredentials> performer;
+        // Take information from DB
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+            performer = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If race or performer is not present: Throw ResourceNotFound
+        if (!race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+
+        // If performer user is not companion for this race: Throw BadRequest
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getName().equals(performerUsername))
+                if (!isCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
+                    throw new BadRequestException();
+        }
+        int count = 0;
+        for (Passenger p : race.get().getPassengers()) {
+            for (ClientPassenger cp : clientPassengers) {
+                // For each Passenger in list passed check if is in race
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
+                    {
+                        // If state is not NULL or ABSENT: Throw BadRequest
+                        if (!p.getState().equals(PassengerState.NULL))
+                            throw new BadRequestException();
+                        count++;
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.ABSENT);
+                    }
+                }
+            }
+        }
+        // Check if all passenger in list passed are taken else Throw BadRequest
+        if (count != clientPassengers.size())
+            throw new BadRequestException();
+        // Update the race
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
 
@@ -983,7 +1136,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             for (Race r : races) {
                 r.getCompanions().remove(clientCompanionToCompanion(clientCompanion));
                 //TODO: update future race
-                updateRace(raceToClientRace(r),performerUsername);
+                updateRace(raceToClientRace(r), performerUsername);
 
             }
         }
@@ -1010,7 +1163,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private ClientCompanion companionToClientCompanion(Companion companion) {
-        return new ClientCompanion(userToClientUser(companion.getUserDetails()), pediStopClientToPediStop(companion.getInitialStop()), pediStopClientToPediStop(companion.getFinalStop()), companion.getState());
+        return new ClientCompanion(userToClientUser(companion.getUserDetails()), pediStopToClientPediStop(companion.getInitialStop()), pediStopToClientPediStop(companion.getFinalStop()), companion.getState());
     }
 
     private List<ClientCompanion> companionsToClientCompanions(List<Companion> companions) {
@@ -1224,7 +1377,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         return new PediStop(clientPediStop.getName(), clientPediStop.getLongitude(), clientPediStop.getLatitude(), clientPediStop.getDelayInMillis());
     }
 
-    private ClientPediStop pediStopClientToPediStop(PediStop pediStop) {
+    private ClientPediStop pediStopToClientPediStop(PediStop pediStop) {
         return new ClientPediStop(pediStop.getName(), pediStop.getLongitude(), pediStop.getLatitude(), pediStop.getDelayInMillis());
     }
 
@@ -1292,10 +1445,26 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
     }
 
-    //TODO: da fare
+    /**
+     * Function to get race
+     *
+     * @param clientRace: race to get
+     * @return ClientRace: race requested
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     */
     @Override
     public ClientRace getRace(ClientRace clientRace) {
-        return null;
+        Optional<Race> race;
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e);
+        }
+        if (race.isPresent())
+            return raceToClientRace(race.get());
+        else
+            throw new ResourceNotFoundException();
     }
 
     //TODO: da fare
@@ -1353,7 +1522,6 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @throws ResourceNotFoundException
      * @throws UnauthorizedRequestException
      */
-
     @Override
     public void deleteRace(ClientRace clientRace, String performerUsername) {
         Optional<UserCredentials> performerCredentials;
@@ -1391,11 +1559,11 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private ClientPassenger passengerToClientPassenger(Passenger passenger) {
-        return new ClientPassenger(passenger.getChildDetails(), passenger.getStopReserved(), passenger.getStopTaken(), passenger.getStopDelivered(), passenger.isReserved(), passenger.getState());
+        return new ClientPassenger(childToClientChild(passenger.getChildDetails()), pediStopToClientPediStop(passenger.getStopReserved()), pediStopToClientPediStop(passenger.getStopTaken()), pediStopToClientPediStop(passenger.getStopDelivered()), passenger.isReserved(), passenger.getState());
     }
 
     private Passenger clientPassengerToPassenger(ClientPassenger clientPassenger) {
-        return new Passenger(clientPassenger.getChildDetails(), clientPassenger.getStopReserved(), clientPassenger.getStopTaken(), clientPassenger.getStopDelivered(), clientPassenger.isReserved(), clientPassenger.getState());
+        return new Passenger(clientChildToChild(clientPassenger.getChildDetails()), clientPediStopToPediStop(clientPassenger.getStopReserved()), clientPediStopToPediStop(clientPassenger.getStopTaken()), clientPediStopToPediStop(clientPassenger.getStopDelivered()), clientPassenger.isReserved(), clientPassenger.getState());
     }
 
     private List<ClientPassenger> passengersToClientPassengers(List<Passenger> passengers) {
@@ -1412,5 +1580,13 @@ public class DatabaseService implements DatabaseServiceInterface {
             passengers.add(clientPassengerToPassenger(p));
         }
         return passengers;
+    }
+
+    private ClientChild childToClientChild(Child child) {
+        return new ClientChild(child.getName(), child.getSurname(), child.getCF(), child.getParentId());
+    }
+
+    private Child clientChildToChild(ClientChild clientChild) {
+        return new Child(clientChild.getName(), clientChild.getSurname(), clientChild.getCF(), clientChild.getParentId());
     }
 }
