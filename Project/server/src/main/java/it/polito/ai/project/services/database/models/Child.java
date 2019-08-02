@@ -15,10 +15,13 @@ public class Child {
 
     private String parentId;
 
-    public Child(@Size(min = 2, max = 30) String name, @Size(min = 2, max = 30) String surname, @Size(min = 16, max = 16) String CF, String parentId) {
+    private EntryState state;
+
+    public Child(@Size(min = 2, max = 30) String name, @Size(min = 2, max = 30) String surname, @Size(min = 16, max = 16) String CF, String parentId, EntryState state) {
         this.name = name;
         this.surname = surname;
         this.CF = CF;
         this.parentId = parentId;
+        this.state = state;
     }
 }

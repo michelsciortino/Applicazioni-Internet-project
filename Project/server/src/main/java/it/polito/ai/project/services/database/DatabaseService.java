@@ -350,6 +350,7 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @return ClientUser: converted client user
      */
     private ClientUser userToClientUser(User p) {
+        assert p.getChildren() != null;
         return new ClientUser(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), childListToClientChildList(p.getChildren()), p.getLines());
     }
 
@@ -360,6 +361,7 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @return User: converted user
      */
     private User clientUserToUser(ClientUser p) {
+        assert p.getChildren() != null;
         return new User(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), clientChildListToChildList(p.getChildren()), p.getLines());
     }
 
@@ -411,7 +413,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     //-------------------------------------------------###Parent###---------------------------------------------------//
-    //TODO da fare
+    //TODO controllare
     @Override
     public void reserveChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
         Optional<Race> race;
