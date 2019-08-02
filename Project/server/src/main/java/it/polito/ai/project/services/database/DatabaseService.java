@@ -1337,7 +1337,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 if (!l.get().getAdmins().contains(UserID))
                     throw new UnauthorizedRequestException("Line Admins only can perform this operation");
             }
-            Child c = new Child(child.getName(), child.getSurname(), child.getCF(), child.getParentId());
+            Child c = new Child(child.getName(), child.getSurname(), child.getCF(), child.getParentId(), EntryState.ISENABLE);
 
             if (!l.get().getSubscribedChildren().contains(c)) {
 
@@ -1589,6 +1589,6 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private Child clientChildToChild(ClientChild clientChild) {
-        return new Child(clientChild.getName(), clientChild.getSurname(), clientChild.getCF(), clientChild.getParentId());
+        return new Child(clientChild.getName(), clientChild.getSurname(), clientChild.getCF(), clientChild.getParentId(), EntryState.ISENABLE);
     }
 }
