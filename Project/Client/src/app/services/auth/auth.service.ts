@@ -3,6 +3,7 @@ import { Credentials } from '../../models/credentials';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 import { map, catchError } from 'rxjs/operators';
+import { ConfirmMail } from 'src/app/models/confirmMail';
 
 @Injectable()
 export class AuthService {
@@ -72,6 +73,28 @@ export class AuthService {
         const reqHeaders = new HttpHeaders({ ContentType: 'application/json' });
         return new Promise((resolve, reject) =>
             this.http.post(`${AuthService.authEndpoint}/recovery/reset`, { newPassword: password }, { headers: reqHeaders })
+                .subscribe(
+                    () => resolve(),
+                    (error) => {
+                        switch (error.status) {
+                            case 0:
+                                reject('Server unreachable');
+                                break;
+                            case 403:
+                                reject('Unauthorized');
+                                break;
+                            default:
+                                reject('Unknown error');
+                                break;
+                        }
+                    }
+                ));
+    }
+
+    public confirmMail(confirmMail: ConfirmMail) {
+        const reqHeaders = new HttpHeaders({ ContentType: 'application/json' });
+        return new Promise((resolve, reject) =>
+            this.http.post(`${AuthService.authEndpoint}/confirm`, confirmMail, { headers: reqHeaders })
                 .subscribe(
                     () => resolve(),
                     (error) => {

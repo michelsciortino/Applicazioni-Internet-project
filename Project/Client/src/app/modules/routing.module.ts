@@ -5,6 +5,7 @@ import { LoggedGuard, AuthGuard } from '../services/auth/auth.guard';
 import { RecoveryComponent } from '../components/authentication/recovery/recovery.component';
 import { LogoutComponent } from '../components/authentication/logout.component';
 import { PasswordResetComponent } from '../components/authentication/password.reset/password-reset.component';
+import { ConfirmComponent } from '../components/authentication/confirm/confirm.component';
 
 const routes: Routes = [
   // basic routes
@@ -22,6 +23,9 @@ const routes: Routes = [
         path: '', component: RecoveryComponent, canActivate: [LoggedGuard]
       }
     ]
+  },
+  {
+    path: 'auth/confirm', component: ConfirmComponent, canActivate: [LoggedGuard],
   },
   {
     path: 'auth/logout', component: LogoutComponent, canActivate: [AuthGuard]

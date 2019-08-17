@@ -14,10 +14,11 @@ import { RecoveryComponent } from './components/authentication/recovery/recovery
 import { LogoutComponent } from './components/authentication/logout.component';
 import { PasswordResetComponent } from './components/authentication/password.reset/password-reset.component';
 import { PasswordToggleDirective } from './directives/passwordToggle.directive';
+import { ConfirmComponent } from './components/authentication/confirm/confirm.component';
 
 @NgModule({
   declarations: [
-    AppComponent, LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent,
+    AppComponent, LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent,
     PasswordToggleDirective
   ],
   imports: [
