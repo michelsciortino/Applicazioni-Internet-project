@@ -2,6 +2,7 @@ package it.polito.ai.project.services.database;
 
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.generalmodels.*;
+import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.Line;
 import it.polito.ai.project.services.database.models.Token;
 import org.springframework.data.domain.Page;
@@ -55,19 +56,23 @@ public interface DatabaseServiceInterface {
 
     void removeLineAdmin(String performerUsername, String targetUsername, String line);
 
-    //------------------------------------------------###Companion###-------------------------------------------------//
+    void makeCompanion(String performerUsername, String targetUsername);
+
+    void removeCompanion( String performerUsername, ClientCompanion clientCompanion);
 
     void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
 
     void unselectCompanions(String performerUsername, ClientRace clientRace);
 
-    void confirmCompanion(String performerUsername, ClientRace clientRace, String companions);
-
     void validCompanions(String performerUsername, ClientRace clientRace);
+
+    //------------------------------------------------###Companion###-------------------------------------------------//
 
     void stateCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
 
     void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
+
+    void confirmChosenState(String performerUsername, ClientRace clientRace);
 
     void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop takePediStop);
 
@@ -75,17 +80,16 @@ public interface DatabaseServiceInterface {
 
     void absentChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
 
-    void makeCompanion(String performerUsername, String targetUsername);
-
-    void removeCompanion(ClientCompanion clientCompanion, String performerUsername);
 
     //---------------------------------------------------###Line###---------------------------------------------------//
 
     void insertLine(JsonLine line) throws InternalServerErrorException;
 
-    void updateLine(Line line);
+    ClientLine updateLine(ClientLine line);
 
     Collection<String> getLinesNames();
+
+    ClientLine getLinebyName(String line_name);
 
     Collection<ClientLine> getLines();
 
@@ -99,7 +103,18 @@ public interface DatabaseServiceInterface {
 
     ClientRace getRace(ClientRace clientRace);
 
+    Collection<ClientRace> getRacesByLine(String lineName);
+
     Collection<ClientRace> getRacesByDateAndLine(Date date, String lineName);
+
+    Collection<ClientRace> getRacesByLineAndDateInterval(String lineName, Date fromDate, Date toDate);
+
+    Collection<ClientRace> getRacesByLineAndDirection(String lineName, DirectionType direction);
+
+    Collection<ClientRace> getRacesByLineAndDateAndDirection(String lineName, Date date, DirectionType direction);
+
+    Collection<ClientRace> getRacesByLineAndDirectionAndDateInterval(String lineName, DirectionType direction, Date fromDate, Date toDate);
+
 
     void updateRace(ClientRace clientRace, String performerUsername);
 
