@@ -1,0 +1,183 @@
+CredentialController:
+
+@RequestMapping(value="", method = RequestMethod.POST)
+public ResponseEntity postUserCredentials(@RequestBody ClientUserCredentials clientUserCredentials)
+Return entity: ClientUserCredentials
+
+@RequestMapping(value="/[username]", method = RequestMethod.GET)
+public ResponseEntity getUserCredentials(@PathVariable String username)
+Return entity: ClientUserCredentials
+
+@RequestMapping(value="/[username]", method = RequestMethod.PUT)
+public ResponseEntity updateCredentials(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable String username, @RequestBody ClientUserCredentials newUserCredentials)
+Return: 200 ok
+
+@RequestMapping(value="/modifyPassword", method = RequestMethod.PUT)
+public ResponseEntity modifyPassword(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @RequestBody String password)
+Return: 200 ok
+
+@RequestMapping(value="/[username]", method = RequestMethod.DELETE)
+public ResponseEntity deleteCredentials(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable String username)
+Return: 200 ok
+--------------------------------------------------------------------------------------------------------
+User
+
+@RequestMapping(value="", method = RequestMethod.POST)
+public ResponseEntity postUsers(@RequestBody ClientUser clientUser)
+Return: ClientUser
+ 
+@RequestMapping(value="", method = RequestMethod.GET)
+public ResponseEntity getUsers(@RequestParam int pageNumber)
+Return: Page<ClientUser>
+
+@RequestMapping(value="[username]", method = RequestMethod.POST)
+public ResponseEntity getUser(@PathVariable String username)
+Return: ClientUser
+--------------------------------------------------------------------------------------------------------
+Parent
++++++++++++++++++++++++++++
+public class ReserveChildrenRequest {
+
+     private ClientRace clientRace;
+     private List<ClientPassenger> children;
+}
++++++++++++++++++++++++++++
+
+@RequestMapping(value="/reserveChildren", method = RequestMethod.PUT)
+public ResponseEntity reserveChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ReserveChildrenRequest reserveChildrenRequest)
+
+--------------------------------------------------------------------------------------------------------
+Companion
++++++++++++++++++++++++++++
+Request Entity:
+public class TakeorDeliverChildrenRequest {
+    private ClientRace clientRace;
+    private List<ClientPassenger> children;
+    //starting or arrival ClientPediStop;
+    private ClientPediStop pedistop;
+}
+
+public class StateOrRemoveCompanionAvailabilityRequest {
+    private ClientCompanion targetCompanion;
+    private ClientRace clientRace;
+}
+
+public class AbsentChildrenRequest {
+
+    private ClientRace clientRace;
+    private List<ClientPassenger> children;
+
+}
++++++++++++++++++++++++++++
+@RequestMapping(value="/makeCompanion", method = RequestMethod.PUT)
+public ResponseEntity makeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody String targetUsername)
+Return:200 ok
+
+@RequestMapping(value="/removeCompanion", method = RequestMethod.PUT)
+public ResponseEntity removeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientCompanion clientCompanion)
+Return:200 ok
+
+@RequestMapping(value="/takeChildren", method = RequestMethod.PUT)
+public ResponseEntity takeChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest takeChildrenRequest)
+Return:200 ok
+
+@RequestMapping(value="/deliverChildren", method = RequestMethod.PUT)
+public ResponseEntity deliverChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest deliverChildrenRequest)
+Return:200 ok
+
+@RequestMapping(value="/absentChildren", method = RequestMethod.PUT)
+public ResponseEntity absentChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody AbsentChildrenRequest absentChildrenRequest)
+Return:200 ok
+
+@RequestMapping(value="/stateAvailability", method = RequestMethod.PUT)
+public ResponseEntity stateAvailability(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody StateOrRemoveCompanionAvailabilityRequest stateRequest)
+Return:200 ok
+
+@RequestMapping(value="/removeAvailability", method = RequestMethod.PUT)
+public ResponseEntity removeAvailability(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody StateOrRemoveCompanionAvailabilityRequest stateRequest)
+Return:200 ok
+
+@RequestMapping(value="/confirmChosen", method = RequestMethod.PUT)
+public ResponseEntity confirmChosen(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
+Return:200 ok
+--------------------------------------------------------------------------------------------------------
+Admin
++++++++++++++++++++++++++++
+Request Entity:
+public class MakeOrRemoveAdminRequest {
+
+    String targetName;
+    String lineName;
+
+}
+public class AddChildToLineRequest {
+    ClientChild child;
+    String lineName;
+
+}
+
+public class SelectCompanionRequest {
+    private ClientRace clientRace;
+    private List<String> companions;
+}
++++++++++++++++++++++++++++
+ATTENZIONE! REMOVE admin rimuove l'admin dalla linea ma non gli toglie il ruolo di ADMIN; Make Admin prevede invece di aggiungere il ruolo ADMIN qualora l'utente non lo fosse ancora.
+
+@RequestMapping(value="/makeAdmin", method = RequestMethod.PUT)
+public ResponseEntity makeAdmin(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody MakeOrRemoveAdminRequest makeOrRemoveAdminRequest)
+Return:200 ok
+
+@RequestMapping(value="/removeAdmin", method = RequestMethod.PUT)
+public ResponseEntity removeAdmin(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody MakeOrRemoveAdminRequest makeOrRemoveAdminRequest)
+Return:200 ok
+
+@RequestMapping(value="/makeCompanion", method = RequestMethod.PUT)
+public ResponseEntity makeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody String targetUsername)
+Return:200 ok
+
+@RequestMapping(value="/removeCompanion", method = RequestMethod.PUT)
+public ResponseEntity removeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientCompanion clientCompanion)
+Return:200 ok
+
+@RequestMapping(value="/selectCompanions", method = RequestMethod.PUT)
+public ResponseEntity selectCompanions(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody SelectCompanionRequest selectCompanionRequest)
+Return:200 ok
+
+@RequestMapping(value="/unselectCompanions", method = RequestMethod.PUT)
+public ResponseEntity unselectCompanions(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
+Return:200 ok
+
+@RequestMapping(value="/validCompanions", method = RequestMethod.PUT)
+public ResponseEntity validCompanions(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
+Return:200 ok
+
+@RequestMapping(value="/addChildrenToLine", method = RequestMethod.PUT)
+public ResponseEntity addChildrenToLine(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody AddChildToLineRequest addChildToLineRequest)
+Return:200 ok
+   
+--------------------------------------------------------------------------------------------------------
+Lines and Races
+
+@RequestMapping(value="", method = RequestMethod.GET)
+public ResponseEntity getLines()
+Return: Collection<ClientLine>
+
+@RequestMapping(value="/[line_name]", method = RequestMethod.GET)
+public ResponseEntity getLine(@PathVariable String line_name)
+Return: ClientLine
+
+@RequestMapping(value="/[line_name]", method = RequestMethod.PUT)
+public ResponseEntity putLine(@PathVariable String line_name, @RequestBody ClientLine line)
+Return: ClientLine
+
+@RequestMapping(value="/[line_name]/races", method = RequestMethod.GET)
+public ResponseEntity getLineRaces(@PathVariable String line_name, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  @RequestParam Date fromDate, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate, @Nullable @RequestParam @Valid DirectionType direction)
+Return: Collection<ClientRaces>
+
+@RequestMapping(value="/[line_name]/races", method = RequestMethod.POST)
+public ResponseEntity postLineRace(@PathVariable String line_name, @RequestBody ClientRace clientRace, @AuthenticationPrincipal ClientUserCredentials clientUserCredentials)
+Return: 200 ok
+
+@RequestMapping(value="/[line_name]/races/[date]/[direction]", method = RequestMethod.DELETE)
+public ResponseEntity deleteLineRace(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable String line_name,  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable Date date, @PathVariable DirectionType direction)
+Return: 200 ok
