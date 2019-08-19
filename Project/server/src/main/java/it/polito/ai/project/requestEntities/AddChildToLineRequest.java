@@ -6,12 +6,12 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class addChildToLineRequest {
+public class AddChildToLineRequest {
     ClientChild child;
     String lineName;
 
 
-    public addChildToLineRequest(ClientChild child, String lineName) {
+    public AddChildToLineRequest(ClientChild child, String lineName) {
         this.child = child;
         this.lineName = lineName;
 

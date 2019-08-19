@@ -12,7 +12,7 @@ import java.util.List;
 public class TakeorDeliverChildrenRequest {
     private ClientRace clientRace;
     private List<ClientPassenger> children;
-    //atarting or arrival ClientPediStop;
+    //starting or arrival ClientPediStop;
     private ClientPediStop pedistop;
 
     public TakeorDeliverChildrenRequest(ClientRace clientRace, List<ClientPassenger> children, ClientPediStop pedistop) {

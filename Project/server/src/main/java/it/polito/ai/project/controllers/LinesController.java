@@ -44,6 +44,7 @@ public class LinesController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @RequestMapping(value="/[line_name]", method = RequestMethod.GET)
     public ResponseEntity getLine(@PathVariable String line_name)
     {
@@ -56,6 +57,7 @@ public class LinesController
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
+
     @RequestMapping(value="/[line_name]/races", method = RequestMethod.GET)
     public ResponseEntity getLineRaces(@PathVariable String line_name, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  @RequestParam Date fromDate, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate, @Nullable @RequestParam @Valid DirectionType direction)
     {
@@ -128,8 +130,6 @@ public class LinesController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 
     //TODO può essere chiamata da admin o sysadmin. In caso di admin viene verificato che sia l'admin della linea specificata
     @RequestMapping(value="/[line_name]/races", method = RequestMethod.POST)

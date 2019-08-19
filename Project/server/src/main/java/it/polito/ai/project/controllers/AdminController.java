@@ -9,7 +9,7 @@ import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.requestEntities.MakeOrRemoveAdminRequest;
 import it.polito.ai.project.requestEntities.SelectCompanionRequest;
-import it.polito.ai.project.requestEntities.addChildToLineRequest;
+import it.polito.ai.project.requestEntities.AddChildToLineRequest;
 import it.polito.ai.project.services.database.DatabaseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -232,7 +232,7 @@ public class AdminController {
         }
     }
     @RequestMapping(value="/addChildrenToLine", method = RequestMethod.PUT)
-    public ResponseEntity addChildrenToLine(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody addChildToLineRequest addChildToLineRequest)
+    public ResponseEntity addChildrenToLine(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody AddChildToLineRequest addChildToLineRequest)
     {
         try
         {

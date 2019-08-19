@@ -4,6 +4,7 @@ import it.polito.ai.project.exceptions.BadRequestException;
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.exceptions.UnauthorizedRequestException;
+import it.polito.ai.project.generalmodels.ClientCompanion;
 import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.requestEntities.AbsentChildrenRequest;
@@ -27,6 +28,65 @@ public class CompanionController {
     private DatabaseService db;
 
     //ATTENZIONE! Dato che questo è il controller per il companion, solo lui è autorizzato e la gestione delle credenziali va fatta a monte
+
+    @RequestMapping(value="/makeCompanion", method = RequestMethod.PUT)
+    public ResponseEntity makeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody String targetUsername)
+    {
+        try
+        {
+            db.makeCompanion(performerUserCredentials.getUsername(), targetUsername );
+            return ok(HttpStatus.OK);
+        }
+        catch(ResourceNotFoundException re)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        catch(InternalServerErrorException ie)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(BadRequestException be)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        catch(UnauthorizedRequestException ue)
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @RequestMapping(value="/removeCompanion", method = RequestMethod.PUT)
+    public ResponseEntity removeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientCompanion clientCompanion)
+    {
+        try
+        {
+            db.removeCompanion(performerUserCredentials.getUsername(), clientCompanion );
+            return ok(HttpStatus.OK);
+        }
+        catch(ResourceNotFoundException re)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        catch(InternalServerErrorException ie)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(BadRequestException be)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        catch(UnauthorizedRequestException ue)
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @RequestMapping(value="/takeChildren", method = RequestMethod.PUT)
     public ResponseEntity takeChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest takeChildrenRequest)
     {
