@@ -3,6 +3,7 @@ import { AuthService as authService } from 'src/app/services/auth/auth.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { MessageService } from 'src/app/services/bridges/message.service';
 
 @Component({
     selector: 'app-pass-reset',
@@ -15,7 +16,7 @@ export class PasswordResetComponent implements OnInit {
     errorMessage = '';
     busy = false;
 
-    constructor(private authSvc: authService, private router: Router, private fb: FormBuilder, private titleService: Title) {
+    constructor(private authSvc: authService, private msgSvc: MessageService, private router: Router, private fb: FormBuilder, private titleService: Title) {
         this.titleService.setTitle('Reset Password');
     }
 
@@ -43,7 +44,11 @@ export class PasswordResetComponent implements OnInit {
         this.errorMessage = null;
         this.showSpinner = true;
         this.authSvc.resetPassword(this.form.value.password1)
-            .then(_ => { })
+            .then(_ => {
+                this.msgSvc.title = 'Password Reset';
+                this.msgSvc.message = `Your password has been succesfully reset.`;
+                this.router.navigate([`${this.router.url}/done`]);
+            })
             .catch((error) => {
                 this.errorMessage = error;
                 this.busy = false;

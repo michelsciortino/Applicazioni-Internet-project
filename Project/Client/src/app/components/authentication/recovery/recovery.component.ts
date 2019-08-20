@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MessageService } from 'src/app/services/bridges/message.service';
 
 @Component({
     selector: 'app-recovery',
@@ -20,7 +21,7 @@ export class RecoveryComponent implements OnInit {
 
     token: string;
 
-    constructor(private authSvc: AuthService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder, private titleService: Title) {
+    constructor(private authSvc: AuthService, private msgSvc: MessageService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder, private titleService: Title) {
         this.titleService.setTitle('Recovery');
     }
 
@@ -40,7 +41,11 @@ export class RecoveryComponent implements OnInit {
         this.showSpinner = true;
         this.showMailSentMessage = false;
         this.authSvc.recovery(this.token, this.form.value.mail)
-            .then(_ => this.showMailSentMessage = true)
+            .then(_ => {
+                this.msgSvc.title = 'Recovery';
+                this.msgSvc.message = `A recovery mail has been sent to ${this.form.value.mail}`;
+                this.router.navigate([`${this.router.url}/done`]);
+            })
             .catch((error) => {
                 this.errorMessage = error;
                 this.busy = false;

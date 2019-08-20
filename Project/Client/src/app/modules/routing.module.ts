@@ -7,6 +7,7 @@ import { LogoutComponent } from '../components/authentication/logout.component';
 import { PasswordResetComponent } from '../components/authentication/password.reset/password-reset.component';
 import { ConfirmComponent } from '../components/authentication/confirm/confirm.component';
 import { RegisterComponent } from '../components/authentication/register/register.component';
+import { MessageComponent } from '../components/message/message.component';
 
 const routes: Routes = [
   // basic routes
@@ -18,18 +19,38 @@ const routes: Routes = [
     path: 'auth/recovery',
     children: [
       {
-        path: 'reset/:token', component: PasswordResetComponent, canActivate: [LoggedGuard]
+        path: 'reset/:token',
+        children: [
+          {
+            path: '', component: PasswordResetComponent, canActivate: [LoggedGuard],
+          },
+          {
+            path: 'done', component: MessageComponent
+          }
+        ]
       },
       {
-        path: '', component: RecoveryComponent, canActivate: [LoggedGuard]
+        path: '',
+        children: [
+          { path: '', component: RecoveryComponent, canActivate: [LoggedGuard] },
+          { path: 'done', component: MessageComponent }
+        ]
       }
     ]
   },
   {
-    path: 'auth/confirm/:token', component: ConfirmComponent, canActivate: [LoggedGuard],
+    path: 'auth/confirm/:token',
+    children: [
+      { path: '', component: ConfirmComponent, canActivate: [LoggedGuard] },
+      { path: 'done', component: MessageComponent }
+    ]
   },
   {
-    path: 'auth/register', component: RegisterComponent, canActivate: [LoggedGuard],
+    path: 'auth/register',
+    children: [
+      { path: '', component: RegisterComponent, canActivate: [LoggedGuard] },
+      { path: 'done', component: MessageComponent }
+    ]
   },
   {
     path: 'auth/logout', component: LogoutComponent, canActivate: [AuthGuard]

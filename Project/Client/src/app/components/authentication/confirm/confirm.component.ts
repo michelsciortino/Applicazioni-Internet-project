@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { ConfirmMail } from 'src/app/models/confirmMail';
+import { MessageService } from 'src/app/services/bridges/message.service';
 
 @Component({
     selector: 'app-confirm',
@@ -18,7 +19,7 @@ export class ConfirmComponent implements OnInit {
 
     token: string;
 
-    constructor(private authSvc: AuthService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder, private titleService: Title) {
+    constructor(private authSvc: AuthService, private msgSvc: MessageService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder, private titleService: Title) {
         this.titleService.setTitle('Confirm');
     }
 
@@ -55,7 +56,11 @@ export class ConfirmComponent implements OnInit {
         const confirmMail = new ConfirmMail(this.form.value.name, this.form.value.surname, this.form.value.password1);
 
         this.authSvc.confirmMail(this.token, confirmMail)
-            .then(_ => { })
+            .then(_ => {
+                this.msgSvc.title = 'Account confimation';
+                this.msgSvc.message = `Your account has been succesfully created :)`;
+                this.router.navigate([`${this.router.url}/done`]);
+            })
             .catch((error) => {
                 this.errorMessage = error;
                 this.busy = false;

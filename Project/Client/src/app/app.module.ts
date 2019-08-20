@@ -16,10 +16,13 @@ import { PasswordResetComponent } from './components/authentication/password.res
 import { PasswordToggleDirective } from './directives/passwordToggle.directive';
 import { ConfirmComponent } from './components/authentication/confirm/confirm.component';
 import { RegisterComponent } from './components/authentication/register/register.component';
+import { MessageComponent } from './components/message/message.component';
+import { MessageService } from './services/bridges/message.service';
 
 @NgModule({
   declarations: [
     AppComponent, LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent, RegisterComponent,
+    MessageComponent,
     PasswordToggleDirective
   ],
   imports: [
@@ -31,6 +34,7 @@ import { RegisterComponent } from './components/authentication/register/register
   ],
   providers: [
     AuthService,
+    MessageService
     // { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [AppComponent]
