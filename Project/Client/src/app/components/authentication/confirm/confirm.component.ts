@@ -55,7 +55,7 @@ export class ConfirmComponent implements OnInit {
         const confirmMail = new ConfirmMail(this.form.value.name, this.form.value.surname, this.form.value.password1);
 
         this.authSvc.confirmMail(this.token, confirmMail)
-            .then(_ => { })
+            .then(_ => {alert("registrato")})
             .catch((error) => {
                 this.errorMessage = error;
                 this.busy = false;

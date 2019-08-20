@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService as authService } from 'src/app/services/auth/auth.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-pass-reset',
@@ -15,11 +15,17 @@ export class PasswordResetComponent implements OnInit {
     errorMessage = '';
     busy = false;
 
-    constructor(private authSvc: authService, private router: Router, private fb: FormBuilder, private titleService: Title) {
+    token: string;
+
+    constructor(private authSvc: authService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder, private titleService: Title) {
         this.titleService.setTitle('Reset Password');
     }
 
     ngOnInit() {
+        this.route.params.subscribe(params => {
+            this.token = params.token;
+            console.log('token is:', this.token);
+        });
         this.form = this.fb.group({
             password1: ['', Validators.compose([Validators.required])],
             password2: ['', Validators.compose([Validators.required])]
@@ -42,7 +48,7 @@ export class PasswordResetComponent implements OnInit {
         this.busy = true;
         this.errorMessage = null;
         this.showSpinner = true;
-        this.authSvc.resetPassword(this.form.value.password1)
+        this.authSvc.resetPassword(this.token, this.form.value.password1)
             .then(_ => { })
             .catch((error) => {
                 this.errorMessage = error;
