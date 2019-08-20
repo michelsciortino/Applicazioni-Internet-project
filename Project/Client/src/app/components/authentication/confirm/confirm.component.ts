@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { ConfirmMail } from 'src/app/models/confirmMail';
 
@@ -15,13 +15,19 @@ export class ConfirmComponent implements OnInit {
     showSpinner = false;
     errorMessage = '';
     busy = false;
-    confirmMail: ConfirmMail;
 
-    constructor(private authSvc: AuthService, private router: Router, private fb: FormBuilder, private titleService: Title) {
+    token: string;
+
+    constructor(private authSvc: AuthService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder, private titleService: Title) {
         this.titleService.setTitle('Confirm');
     }
 
     ngOnInit() {
+        this.route.params.subscribe(params => {
+            this.token = params.token;
+            console.log('token is:', this.token);
+        });
+
         this.form = this.fb.group({
             name: ['', Validators.required],
             surname: ['', Validators.required],
@@ -46,9 +52,9 @@ export class ConfirmComponent implements OnInit {
         this.busy = true;
         this.errorMessage = null;
         this.showSpinner = true;
-        this.confirmMail= new ConfirmMail(this.form.value.name, this.form.value.surname, this.form.value.password1);
+        const confirmMail = new ConfirmMail(this.form.value.name, this.form.value.surname, this.form.value.password1);
 
-        this.authSvc.confirmMail(this.confirmMail)
+        this.authSvc.confirmMail(this.token, confirmMail)
             .then(_ => { })
             .catch((error) => {
                 this.errorMessage = error;

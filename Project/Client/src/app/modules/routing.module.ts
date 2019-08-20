@@ -18,7 +18,7 @@ const routes: Routes = [
     path: 'auth/recovery',
     children: [
       {
-        path: 'reset', component: PasswordResetComponent, canActivate: [LoggedGuard]
+        path: 'reset/:token', component: PasswordResetComponent, canActivate: [LoggedGuard]
       },
       {
         path: '', component: RecoveryComponent, canActivate: [LoggedGuard]
@@ -26,7 +26,7 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'auth/confirm', component: ConfirmComponent, canActivate: [LoggedGuard],
+    path: 'auth/confirm/:token', component: ConfirmComponent, canActivate: [LoggedGuard],
   },
   {
     path: 'auth/register', component: RegisterComponent, canActivate: [LoggedGuard],

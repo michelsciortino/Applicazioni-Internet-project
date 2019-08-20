@@ -54,11 +54,10 @@ export class AuthService {
 
     }
 
-    public recovery(recoveryMail: string) {
+    public recovery(token: string, mailToRecover: string) {
         const reqHeaders = new HttpHeaders({ ContentType: 'application/json' });
-        const reqParams = new HttpParams().set('token', 'TOKEN' );
         return new Promise((resolve, reject) =>
-            this.http.post(`${AuthService.authEndpoint}/recovery`, { mail: recoveryMail }, { headers: reqHeaders, params: reqParams })
+            this.http.post(`${AuthService.authEndpoint}/recovery/${token}`, { mail: mailToRecover }, { headers: reqHeaders })
                 .subscribe(
                     () => resolve(),
                     (error) => {
@@ -107,11 +106,10 @@ export class AuthService {
                 ));
     }
 
-    public confirmMail(confirmMail: ConfirmMail) {
+    public confirmMail(token: string, confirmMail: ConfirmMail) {
         const reqHeaders = new HttpHeaders({ ContentType: 'application/json' });
-        const reqParams = new HttpParams().set('token', 'TOKEN' );
         return new Promise((resolve, reject) =>
-            this.http.post(`${AuthService.authEndpoint}/confirm`, confirmMail, { headers: reqHeaders, params: reqParams })
+            this.http.post(`${AuthService.authEndpoint}/confirm/${token}`, confirmMail, { headers: reqHeaders })
                 .subscribe(
                     () => resolve(),
                     (error) => {
@@ -120,7 +118,6 @@ export class AuthService {
                                 reject('Server unreachable');
                                 break;
                             case 400:
-                                console.log(error)
                                 reject('Bad request: ' + error.error.message);
                                 break;
                             case 403:
