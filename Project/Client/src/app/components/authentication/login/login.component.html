@@ -4,9 +4,9 @@
         <div class="auth-content">
             <form [formGroup]="form" (ngSubmit)="login()">
                 <mat-form-field>
-                    <mat-label>Username </mat-label>
-                    <input matInput type="username" placeholder="Username" formControlName="username">
-                    <mat-error *ngIf="!form.controls['username'].valid">Insert an username</mat-error>
+                    <mat-label>Email</mat-label>
+                    <input matInput type="mail" placeholder="Email" formControlName="mail">
+                    <mat-error *ngIf="!form.controls['mail'].valid">Insert a valid email</mat-error>
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>Password</mat-label>
