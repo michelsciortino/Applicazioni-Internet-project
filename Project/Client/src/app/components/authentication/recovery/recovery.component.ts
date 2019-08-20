@@ -19,17 +19,11 @@ export class RecoveryComponent implements OnInit {
     errorMessage = '';
     busy = false;
 
-    token: string;
-
     constructor(private authSvc: AuthService, private msgSvc: MessageService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder, private titleService: Title) {
         this.titleService.setTitle('Recovery');
     }
 
     ngOnInit() {
-        this.route.params.subscribe(params => {
-            this.token = params.token;
-            console.log('token is:', this.token);
-        });
         this.form = this.fb.group({
             mail: ['', Validators.compose([Validators.required, Validators.email])]
         });
@@ -40,7 +34,8 @@ export class RecoveryComponent implements OnInit {
         this.errorMessage = null;
         this.showSpinner = true;
         this.showMailSentMessage = false;
-        this.authSvc.recovery(this.token, this.form.value.mail)
+
+        this.authSvc.recovery(this.form.value.mail)
             .then(_ => {
                 this.msgSvc.title = 'Recovery';
                 this.msgSvc.message = `A recovery mail has been sent to ${this.form.value.mail}`;

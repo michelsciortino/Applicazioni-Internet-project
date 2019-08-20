@@ -54,10 +54,11 @@ export class AuthService {
 
     }
 
-    public recovery(token: string, mailToRecover: string) {
+    public recovery(mailToRecover: string) {
         const reqHeaders = new HttpHeaders({ ContentType: 'application/json' });
+        console.log(mailToRecover);
         return new Promise((resolve, reject) =>
-            this.http.post(`${AuthService.authEndpoint}/recovery/${token}`, { mail: mailToRecover }, { headers: reqHeaders })
+            this.http.post(`${AuthService.authEndpoint}/recovery`, { mail: mailToRecover }, { headers: reqHeaders })
                 .subscribe(
                     () => resolve(),
                     (error) => {
@@ -80,10 +81,10 @@ export class AuthService {
                 ));
     }
 
-    public resetPassword(password: string) {
+    public resetPassword(token: string, password: string) {
         const reqHeaders = new HttpHeaders({ ContentType: 'application/json' });
         return new Promise((resolve, reject) =>
-            this.http.post(`${AuthService.authEndpoint}/recovery/reset`, { newPassword: password }, { headers: reqHeaders })
+            this.http.post(`${AuthService.authEndpoint}/recovery/reset/${token}`, { newPassword: password }, { headers: reqHeaders })
                 .subscribe(
                     () => resolve(),
                     (error) => {
