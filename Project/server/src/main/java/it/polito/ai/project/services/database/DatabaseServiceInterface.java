@@ -14,7 +14,7 @@ import java.util.List;
 public interface DatabaseServiceInterface {
     //---------------------------------------------###UserCredentials###----------------------------------------------//
 
-    ClientUserCredentials insertCredentials(String username, String password, List<String> role);
+    ClientUserCredentials insertCredentials(String username, String password, List<String> role, Boolean isEnable);
 
     ClientUserCredentials getCredentials(String username);
 
@@ -41,6 +41,8 @@ public interface DatabaseServiceInterface {
     ClientUser insertUser(ClientUser user);
 
     void updateUser(ClientUser user);
+
+    void deleteUser(ClientUser user);
 
     //----------------------------------------------###Notification###------------------------------------------------//
 
@@ -119,6 +121,4 @@ public interface DatabaseServiceInterface {
     void updateRace(ClientRace clientRace, String performerUsername);
 
     void deleteRace(ClientRace clientRace, String performerUsername);
-
-
 }

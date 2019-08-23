@@ -28,7 +28,7 @@ public class CredentialsController {
     {
         try
         {
-            return ok( db.insertCredentials(clientUserCredentials.getUsername(), clientUserCredentials.getPassword(), clientUserCredentials.getRoles()));
+            return ok( db.insertCredentials(clientUserCredentials.getUsername(), clientUserCredentials.getPassword(), clientUserCredentials.getRoles(),false));
         }
         catch(ResourceNotFoundException re)
         {
@@ -131,7 +131,7 @@ public class CredentialsController {
     {
         try
         {
-            if(!clientUserCredentials.getRoles().contains(Roles.ADMIN) && !!clientUserCredentials.getRoles().contains(Roles.SYSTEM_ADMIN)) {
+            if(!clientUserCredentials.getRoles().contains(Roles.ADMIN) && !clientUserCredentials.getRoles().contains(Roles.SYSTEM_ADMIN)) {
                 if (!clientUserCredentials.getUsername().equals(username))
                     throw new UnauthorizedRequestException();
             }

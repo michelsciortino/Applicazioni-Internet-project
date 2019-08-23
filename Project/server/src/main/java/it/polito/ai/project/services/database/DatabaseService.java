@@ -25,8 +25,7 @@ import java.util.*;
 
 @Service
 public class DatabaseService implements DatabaseServiceInterface {
-    final
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final LineRepository lineRepository;
     private final RaceRepository raceRepository;
     private final UserCredentialsRepository userCredentialsRepository;
@@ -62,11 +61,11 @@ public class DatabaseService implements DatabaseServiceInterface {
      */
     @Override
     @Transactional
-    public ClientUserCredentials insertCredentials(String username, String password, List<String> roles) {
+    public ClientUserCredentials insertCredentials(String username, String password, List<String> roles, Boolean isEnable) {
         try {
             if (!userCredentialsRepository.findByUsername(username).isPresent()) {
-                UserCredentials u = userCredentialsRepository.save(new UserCredentials(this.passwordEncoder.encode(password), username, roles));
-                return userCredentialsToClientUserCredentials(u);
+                UserCredentials user = userCredentialsRepository.save(new UserCredentials(username, this.passwordEncoder.encode(password), roles, isEnable));
+                return userCredentialsToClientUserCredentials(user);
             }
         } catch (Exception e) {
             throw new InternalServerErrorException();
@@ -344,6 +343,30 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     /**
+     * Function to delete user
+     *
+     * @param user user delete credential
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     */
+    @Override
+    @Transactional
+    public void deleteUser(ClientUser user) {
+        try {
+            Optional<User> u = userRepository.findByUsername(user.getUsername());
+            if (u.isPresent()) {
+                userRepository.delete(u.get());
+            } else {
+                throw new ResourceNotFoundException();
+            }
+        } catch (ResourceNotFoundException e1) {
+            throw new ResourceNotFoundException();
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    /**
      * Function to convert User to ClientUser
      *
      * @param p user to convert
@@ -571,6 +594,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         // Since an Admin without lines can exist we choose to don't remove ADMIN role
         updateUser(userToClientUser(target.get()));
     }
+
     @Transactional
     @Override
     public void makeCompanion(String performerUsername, String targetUsername) {
@@ -610,7 +634,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Transactional
     @Override
-    public void removeCompanion( String performerUsername, ClientCompanion clientCompanion) {
+    public void removeCompanion(String performerUsername, ClientCompanion clientCompanion) {
 
         List<Race> races;
         Optional<UserCredentials> targetCredentials;
@@ -656,54 +680,44 @@ public class DatabaseService implements DatabaseServiceInterface {
             for (Race r : races) {
                 Optional<Line> line;
                 // take line related with race
-                try
-                {
+                try {
                     line = lineRepository.findLineByName(r.getLineName());
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     throw new InternalServerErrorException();
                 }
-                if(!line.isPresent())
+                if (!line.isPresent())
                     throw new InternalServerErrorException();
 
 
                 CompanionState companionState = r.getCompanions().get(r.getCompanions().indexOf(clientCompanion)).getState();
                 //TODO: fai vedere ad andrea
                 //if companion is available, he's suddenly removed
-                if(companionState.equals(CompanionState.AVAILABLE))
+                if (companionState.equals(CompanionState.AVAILABLE))
                     r.getCompanions().remove(clientCompanionToCompanion(clientCompanion));
-                //if companion is chosen, all other chosen companions become available and a notification must be sent to admin
-                else if(companionState.equals(CompanionState.CHOSEN))
-                {
+                    //if companion is chosen, all other chosen companions become available and a notification must be sent to admin
+                else if (companionState.equals(CompanionState.CHOSEN)) {
                     //Remove chosen companion
-                    for(Companion c : r.getCompanions())
-                    {
-                        if (c.getState().equals(CompanionState.CHOSEN))
-                        {
+                    for (Companion c : r.getCompanions()) {
+                        if (c.getState().equals(CompanionState.CHOSEN)) {
                             r.getCompanions().get(r.getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
                         }
                     }
                     //Format content and send email to each admin
                     String content = clientCompanion.getUserDetails().getUsername() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
-                    for(String address : line.get().getAdmins())
+                    for (String address : line.get().getAdmins())
                         emailSenderService.sendSimpleMail(new Mail(performerUsername, address, "Companion Removed", content));
-                }
-                else if(companionState.equals(CompanionState.CONFIRMED))
-                {
+                } else if (companionState.equals(CompanionState.CONFIRMED)) {
                     //Remove chosen companion
-                    for(Companion c : r.getCompanions())
-                    {
+                    for (Companion c : r.getCompanions()) {
                         String content = "You have been removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
-                        if (c.getState().equals(CompanionState.CONFIRMED))
-                        {
+                        if (c.getState().equals(CompanionState.CONFIRMED)) {
                             r.getCompanions().get(r.getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
                             emailSenderService.sendSimpleMail(new Mail(performerUsername, c.getUserDetails().getUsername(), "Rounds Changed!", content));
                         }
                     }
                     //Format content and send email to each admin
                     String content = clientCompanion.getUserDetails().getUsername() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
-                    for(String address : line.get().getAdmins())
+                    for (String address : line.get().getAdmins())
                         emailSenderService.sendSimpleMail(new Mail(performerUsername, address, "Companion Removed", content));
 
                 }
@@ -906,7 +920,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         for (Companion c : race.get().getCompanions()) {
             //if a companion is in chosen state, at least one of the chosen companion has not confirmed
-            if(c.getState().equals(CompanionState.CHOSEN))
+            if (c.getState().equals(CompanionState.CHOSEN))
                 throw new BadRequestException();
             // Valid Companion: set state to VALIDATED
             if (c.getState().equals(CompanionState.CONFIRMED))
@@ -1064,8 +1078,8 @@ public class DatabaseService implements DatabaseServiceInterface {
             if (c.getState().equals(CompanionState.VALIDATED))
                 throw new BadRequestException();
             // Can't remove avialability if the target companion isn't in state AVAILABLE
-            if(c.getUserDetails().getName().equals(clientCompanion.getUserDetails().getName()))
-                if(!c.getState().equals(CompanionState.AVAILABLE))
+            if (c.getUserDetails().getName().equals(clientCompanion.getUserDetails().getName()))
+                if (!c.getState().equals(CompanionState.AVAILABLE))
                     throw new BadRequestException();
         }
         //TODO: parlare ad andre del problema di Validated, trasformarlo in NotValid, eventualmente impiegare questa funzione per rimuovere anche lo stato di chosen eliminando il controllo sullo stadio Available
@@ -1103,12 +1117,11 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new ResourceNotFoundException();
 
         Companion perfCompanion = null;
-        for(Companion c : race.get().getCompanions())
-        {
-            if(c.getUserDetails().getUsername().equals(performerUsername))
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getUsername().equals(performerUsername))
                 perfCompanion = c;
         }
-        if(perfCompanion == null)
+        if (perfCompanion == null)
             throw new UnauthorizedRequestException();
 
         // Set state CONFIRMED
@@ -1146,12 +1159,11 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         // If performer user is not one of selected companion for this race or the stop isn't in his route: Throw BadRequest
         for (Companion c : race.get().getCompanions()) {
-            if (c.getUserDetails().getName().equals(performerUsername))
-            {
+            if (c.getUserDetails().getName().equals(performerUsername)) {
                 if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
                     throw new BadRequestException();
-                if(!isStopInCompanionRoute(race.get(), line.get(), c, takePediStop));
-                    throw new BadRequestException();
+                if (!isStopInCompanionRoute(race.get(), line.get(), c, takePediStop)) ;
+                throw new BadRequestException();
 
             }
 
@@ -1201,7 +1213,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             if (c.getUserDetails().getName().equals(performerUsername)) {
                 if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
                     throw new BadRequestException();
-                if(!isStopInCompanionRoute(race.get(), line.get(), c, deliverPediStop));
+                if (!isStopInCompanionRoute(race.get(), line.get(), c, deliverPediStop)) ;
                 throw new BadRequestException();
             }
         }
@@ -1277,19 +1289,19 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!isCompanion(roles)) return false;
         return companions.contains(companion);
     }
+
     private boolean isSelectedCompanionOfRace(List<Companion> companions, List<String> roles, Companion companion) {
         if (!isCompanion(roles)) return false;
-        if(!companions.contains(companion)) return false;
-        if(!companions.get(companions.indexOf(companion)).getState().equals(CompanionState.VALIDATED))return false;
+        if (!companions.contains(companion)) return false;
+        if (!companions.get(companions.indexOf(companion)).getState().equals(CompanionState.VALIDATED)) return false;
         return true;
     }
-    private boolean isStopInCompanionRoute(Race race, Line line, Companion c, ClientPediStop pediStop)
-    {
+
+    private boolean isStopInCompanionRoute(Race race, Line line, Companion c, ClientPediStop pediStop) {
         boolean takeStopFound = false;
         boolean initialStopFound = false;
-        if(race.getDirection().equals(DirectionType.OUTWARD))
-        {
-            for(PediStop ps : line.getOutwardStops()) {
+        if (race.getDirection().equals(DirectionType.OUTWARD)) {
+            for (PediStop ps : line.getOutwardStops()) {
                 //cycle until initial stop is found
                 if (ps.getName().equals(c.getInitialStop()))
                     initialStopFound = true;
@@ -1301,10 +1313,8 @@ public class DatabaseService implements DatabaseServiceInterface {
                 if (ps.getName().equals(c.getFinalStop())) ;
                 break;
             }
-        }
-        else
-        {
-            for(PediStop ps : line.getReturnStops()) {
+        } else {
+            for (PediStop ps : line.getReturnStops()) {
                 //cycle until initial stop is found
                 if (ps.getName().equals(c.getInitialStop()))
                     initialStopFound = true;
@@ -1319,6 +1329,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         return takeStopFound;
     }
+
     private boolean isCompanion(List<String> roles) {
         return roles.contains(Roles.prefix + Roles.COMPANION);
     }
@@ -1420,14 +1431,14 @@ public class DatabaseService implements DatabaseServiceInterface {
         ClientUserCredentials clientUserCredentials = null;
         Token token = null;
         try {
-            clientUserCredentials = insertCredentials(username, "", roles);
+            clientUserCredentials = insertCredentials(username, "", roles,false);
             token = new Token(clientUserCredentials.getUsername(), ScopeToken.CONFIRM);
             insertToken(token);
             Mail mail = new Mail();
             mail.setFrom(EmailConfiguration.FROM);
             mail.setTo(clientUserCredentials.getUsername());
             mail.setSubject("Complete Registration for Pedibus!");
-            mail.setContent("To confirm your account, please click here :" + EmailConfiguration.BASE_URL + "/confirm?token=" + token.getToken());
+            mail.setContent("To confirm your account, please click here :" + EmailConfiguration.BASE_URL + "/confirm/" + token.getToken());
 
             //link print in console not send with email for test
             System.out.println(mail);
@@ -1476,6 +1487,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new InternalServerErrorException(e);
         }
     }
+
     /**
      * Function to get single line by name in DB as ClientLine
      *
@@ -1487,7 +1499,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     public ClientLine getLinebyName(String line_name) {
         try {
             Optional<Line> line = lineRepository.findLineByName(line_name);
-            if(!line.isPresent())
+            if (!line.isPresent())
                 throw new ResourceNotFoundException();
             ClientLine clientLine = lineToClientLine(line.get());
             return clientLine;
@@ -1652,6 +1664,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         else
             throw new ResourceNotFoundException();
     }
+
     //TODO: da fare
     @Override
     public Collection<ClientRace> getRacesByLine(String lineName) {
@@ -1664,11 +1677,10 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (Exception e) {
             throw new InternalServerErrorException(e);
         }
-        if(!line.isPresent())
+        if (!line.isPresent())
             throw new ResourceNotFoundException();
 
-        for(Race race : races)
-        {
+        for (Race race : races) {
             clientRaces.add(raceToClientRace(race));
         }
         return clientRaces;
@@ -1686,15 +1698,15 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (Exception e) {
             throw new InternalServerErrorException(e);
         }
-        if(!line.isPresent())
+        if (!line.isPresent())
             throw new ResourceNotFoundException();
 
-        for(Race race : races)
-        {
+        for (Race race : races) {
             clientRaces.add(raceToClientRace(race));
         }
         return clientRaces;
     }
+
     @Override
     public Collection<ClientRace> getRacesByLineAndDateInterval(String lineName, Date fromDate, Date toDate) {
         List<Race> races;
@@ -1706,11 +1718,10 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (Exception e) {
             throw new InternalServerErrorException(e);
         }
-        if(!line.isPresent())
+        if (!line.isPresent())
             throw new ResourceNotFoundException();
 
-        for(Race race : races)
-        {
+        for (Race race : races) {
             clientRaces.add(raceToClientRace(race));
         }
         return clientRaces;
@@ -1727,11 +1738,10 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (Exception e) {
             throw new InternalServerErrorException(e);
         }
-        if(!line.isPresent())
+        if (!line.isPresent())
             throw new ResourceNotFoundException();
 
-        for(Race race : races)
-        {
+        for (Race race : races) {
             clientRaces.add(raceToClientRace(race));
         }
         return clientRaces;
@@ -1748,15 +1758,15 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (Exception e) {
             throw new InternalServerErrorException(e);
         }
-        if(!line.isPresent())
+        if (!line.isPresent())
             throw new ResourceNotFoundException();
 
-        for(Race race : races)
-        {
+        for (Race race : races) {
             clientRaces.add(raceToClientRace(race));
         }
         return clientRaces;
     }
+
     @Override
     public Collection<ClientRace> getRacesByLineAndDirectionAndDateInterval(String lineName, DirectionType direction, Date fromDate, Date toDate) {
         List<Race> races;
@@ -1768,11 +1778,10 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (Exception e) {
             throw new InternalServerErrorException(e);
         }
-        if(!line.isPresent())
+        if (!line.isPresent())
             throw new ResourceNotFoundException();
 
-        for(Race race : races)
-        {
+        for (Race race : races) {
             clientRaces.add(raceToClientRace(race));
         }
         return clientRaces;
@@ -1848,7 +1857,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!targetLine.isPresent() || !performer.isPresent() || !performerCredentials.isPresent() || !targetRace.isPresent())
             throw new ResourceNotFoundException();
 
-        if(!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(),targetLine.get().getName()))
+        if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), targetLine.get().getName()))
             throw new UnauthorizedRequestException();
 
         try {

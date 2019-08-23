@@ -14,7 +14,6 @@ import java.util.UUID;
 public class Token {
     @Id
     private String id;
-    @Indexed(unique = true)
     private long tokenid;
     @Indexed(unique = true)
     private String token;
