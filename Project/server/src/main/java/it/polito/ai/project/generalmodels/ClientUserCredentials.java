@@ -15,15 +15,15 @@ import static java.util.stream.Collectors.toList;
 
 @Data
 public class ClientUserCredentials implements UserDetails {
-    boolean enable = true;
-    boolean credentialsNotExpired = true;
-    boolean accountNotLocked = true;
-    boolean accountNotExpired = true;
+    boolean enable;
+    boolean credentialsNotExpired;
+    boolean accountNotLocked;
+    boolean accountNotExpired;
     @NotNull
     @Email
     private String username;
     @NotNull
-    private List<String> roles = new ArrayList<>();
+    private List<String> roles;
 
     public ClientUserCredentials(@NotNull @Email String username, @NotNull List<String> roles, boolean enable, boolean credentialsNotExpired, boolean accountNotLocked, boolean accountNotExpired) {
         this.username = username;
@@ -46,21 +46,21 @@ public class ClientUserCredentials implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return accountNotExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return accountNotLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return credentialsNotExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return enable;
     }
 }

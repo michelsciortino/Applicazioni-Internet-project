@@ -31,7 +31,7 @@ public class UserCredentials implements UserDetails {
     @NotNull
     private List<String> roles = new ArrayList<>();
 
-    boolean enable = true;
+    boolean enable = false;
     boolean credentialsNotExpired = true;
     boolean accountNotLocked = true;
     boolean accountNotExpired = true;
@@ -54,6 +54,13 @@ public class UserCredentials implements UserDetails {
         this.accountNotLocked = accountLocked;
         this.accountNotExpired = accountExpired;
         this.roles = roles;
+    }
+
+    public UserCredentials(@NotNull @Email String username, @NotNull String password, @NotNull List<String> roles, boolean enable) {
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+        this.enable = enable;
     }
 
     @Override

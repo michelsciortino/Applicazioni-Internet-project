@@ -2,6 +2,7 @@ package it.polito.ai.project.securityConfig;
 
 import it.polito.ai.project.security.JwtConfigurer;
 import it.polito.ai.project.security.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
     public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -35,6 +37,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+                .antMatchers("/auth/login").permitAll()
+                .antMatchers("/auth/confirm/**").permitAll()
+                .antMatchers("/auth/recovery/**").permitAll()
+                .antMatchers("/auth/recovery/reset").permitAll()
+                .antMatchers("/auth/register").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));
