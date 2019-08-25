@@ -3,7 +3,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { ConfirmMail } from 'src/app/models/confirmMail';
+import { ConfirmMail } from 'src/app/models/requests/confirmMail';
 import { MessageService } from 'src/app/services/bridges/message.service';
 
 @Component({
