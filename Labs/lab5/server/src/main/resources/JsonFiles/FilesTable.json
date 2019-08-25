@@ -1,0 +1,9 @@
+{
+  "lines": [
+    "JsonFiles/lines/Bruchi_cantanti.json"
+  ],
+  "reservations": [
+    "JsonFiles/reservations/Reservations.json"
+  ],
+  "users": "JsonFiles/Users.json"
+}

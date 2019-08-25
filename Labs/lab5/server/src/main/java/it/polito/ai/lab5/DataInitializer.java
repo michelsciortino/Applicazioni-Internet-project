@@ -10,14 +10,20 @@ import it.polito.ai.lab5.services.database.models.*;
 import it.polito.ai.lab5.services.database.repositories.CredentialRepository;
 import it.polito.ai.lab5.services.database.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -133,123 +139,154 @@ public class DataInitializer implements CommandLineRunner {
             } else if (arg.startsWith("--real=")) {
                 String[] splitted = arg.split("=");
                 if (splitted[1] != null) {
-                    config.setFolderName(arg);
-                    insertReal(config.getFolderName());
+                    insertReal(splitted[1]);
                 }
             }
         }
     }
 
-    private void insertReal(String foldername) throws IOException {
-        File folder = new ClassPathResource(foldername).getFile();
-        if (folder.exists()) {
-            File usersFile = null;
-            File reservationsFile = null;
-            File[] linesFiles = null;
-            for (File f : folder.listFiles()) {
-                if (f.getName().equals("lines"))
-                    linesFiles = f.listFiles();
-                if (f.getName().equals("Reservations.json"))
-                    reservationsFile = f;
-                if (f.getName().equals("Users.json"))
-                    usersFile = f;
+    private void insertReal(String filesTable) throws IOException, JSONException {
+        URL resource = this.getClass().getClassLoader().getResource(filesTable);
+        if (resource != null) {
+            InputStream inputStream = resource.openStream();
+            if (inputStream != null) {
+                byte[] bytes = StreamUtils.copyToByteArray(inputStream);
+                String json = new String(bytes);
+                JSONObject jsonObject = new JSONObject(json);
+
+                JSONArray lines = jsonObject.getJSONArray("lines");
+                for (int i = 0; i < lines.length(); i++) {
+                    AddLines(lines.getString(i));
+                }
+
+                JSONArray reservations = jsonObject.getJSONArray("reservations");
+                for (int i = 0; i < reservations.length(); i++) {
+                    AddReservations(reservations.getString(i));
+                }
+
+                AddCredentialsAndUsers(jsonObject.getString("users"));
+
+            } else {
+                throw new IOException("Error in fileTable data stream");
             }
-            AddCredentialsAndUsers(usersFile);
-            AddLines(linesFiles);
-            AddReservations(reservationsFile);
+        } else {
+            throw new IOException("Wrong FilesTable location");
         }
     }
 
-    private void AddReservations(File reservationsFile) throws IOException {
+    private void AddReservations(String reservation) throws IOException {
         // ADD reservations
-        String jsonReservations = null;
-        try {
-            byte[] jsonBytes = Files.readAllBytes(reservationsFile.toPath());
-            jsonReservations = new String(jsonBytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
-        ReservationsJson reservations = new ObjectMapper().readValue(jsonReservations, ReservationsJson.class);
-
-        for (ReservationJson res : reservations.reservations) {
-            Reservation r = new Reservation(null, res.childSurname, res.childName, res.childCf, res.username, res.stopName, res.direction, res.present);
-            //1. Convert Date -> Instant
-            Instant instant = res.data.toInstant();
-            //2. Instant + system default time zone + toLocalDate() = LocalDate
-            LocalDate localDate = instant.atZone(ZoneOffset.UTC).toLocalDate();
-            if (credentials.findByUsername(r.getParentUsername()).isPresent() && database.getReservationByLineNameStopNameDateDirectionChildCf(res.lineName, localDate, res.childCf, res.direction, res.stopName) == null) {
-                database.addReservation(credentials.findByUsername(r.getParentUsername()).get().getRoles(), r.getParentUsername(), r, res.lineName, localDate);
-            }
-        }
-    }
-
-    private void AddLines(File[] linesFiles) throws IOException {
-
-        // ADD lines
-        for (File f : linesFiles) {
-            String jsonLines = null;
-            try {
-                byte[] jsonBytes = Files.readAllBytes(f.toPath());
-                jsonLines = new String(jsonBytes);
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw e;
-            }
-            Line line = new ObjectMapper().readValue(jsonLines, Line.class);
-            Line l = new Line(line.name, line.outboundStops, line.returnStops, line.subscribedChildren);
-            if (database.getLine(l.name) == null) {
-                database.insertLine(l);
-                for (LineSubscribedChild c : line.subscribedChildren) {
-                    Child child = new Child();
-                    child.setCF(c.child.CF);
-                    child.setName(c.child.name);
-                    child.setSurname(c.child.surname);
-                    if (credentials.findByUsername(c.parentId).isPresent() && !database.getLine(l.name).subscribedChildren.contains(c))
-                        database.addSubscriber(c.parentId, child, l.getName(), credentials.findByUsername(c.parentId).get().getRoles());
+        URL resource = this.getClass().getClassLoader().getResource(reservation);
+        if (resource != null) {
+            InputStream reservationsStream = resource.openStream();
+            if (reservationsStream != null) {
+                String jsonReservations;
+                try {
+                    byte[] jsonBytes = StreamUtils.copyToByteArray(reservationsStream);
+                    jsonReservations = new String(jsonBytes);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw e;
                 }
-            }
+                ReservationsJson reservations = new ObjectMapper().readValue(jsonReservations, ReservationsJson.class);
 
-        }
-
-    }
-
-    private void AddCredentialsAndUsers(File usersFile) throws IOException {
-        // Add Credentials and Users
-        String jsonUsers = null;
-        try {
-            byte[] jsonBytes = Files.readAllBytes(usersFile.toPath());
-            jsonUsers = new String(jsonBytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
-        UsersJson users = new ObjectMapper().readValue(jsonUsers, UsersJson.class);
-
-        for (UserJson user : users.users) {
-            if (!credentials.findByUsername(user.username).isPresent()) {
-                Credential c1 = new Credential("password", user.username, Arrays.asList(Roles.prefix + Roles.USER));
-                Credential result = database.insertCredential(c1.getUsername(), c1.getPassword(), c1.getRoles());
-                if (database.getUserByUsername(user.username) == null) {
-                    User u = new User();
-                    u.setCredential(result);
-                    u.setUsername(user.username);
-                    u.setName(user.name);
-                    u.setSurname(user.surname);
-                    List<Child> children = new ArrayList<>();
-                    for (ChildJson c : user.children) {
-                        Child child = new Child();
-                        child.setCF(c.CF);
-                        child.setName(c.name);
-                        child.setSurname(c.surname);
-                        children.add(child);
+                for (ReservationJson res : reservations.reservations) {
+                    Reservation r = new Reservation(null, res.childSurname, res.childName, res.childCf, res.username, res.stopName, res.direction, res.present);
+                    //1. Convert Date -> Instant
+                    Instant instant = res.data.toInstant();
+                    //2. Instant + system default time zone + toLocalDate() = LocalDate
+                    LocalDate localDate = instant.atZone(ZoneOffset.UTC).toLocalDate();
+                    if (credentials.findByUsername(r.getParentUsername()).isPresent() && database.getReservationByLineNameStopNameDateDirectionChildCf(res.lineName, localDate, res.childCf, res.direction, res.stopName) == null) {
+                        database.addReservation(credentials.findByUsername(r.getParentUsername()).get().getRoles(), r.getParentUsername(), r, res.lineName, localDate);
                     }
-                    u.setChildren(children);
-                    u.setLines(user.lines);
-                    database.insertUser(u);
                 }
+            } else {
+                throw new IOException("Error in reservations data stream");
             }
+        } else {
+            throw new IOException("Wrong reservations' file allocation.");
         }
+    }
+
+    private void AddLines(String fileName) throws IOException {
+        //Add lines
+        URL resource = this.getClass().getClassLoader().getResource(fileName);
+        if (resource != null) {
+            InputStream inputStream = resource.openStream();
+            if (inputStream != null) {
+                String jsonLines;
+                try {
+                    byte[] jsonBytes = StreamUtils.copyToByteArray(inputStream);
+                    jsonLines = new String(jsonBytes);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw e;
+                }
+                Line line = new ObjectMapper().readValue(jsonLines, Line.class);
+                Line l = new Line(line.name, line.outboundStops, line.returnStops, line.subscribedChildren);
+                if (database.getLine(l.name) == null) {
+                    database.insertLine(l);
+                    for (LineSubscribedChild c : line.subscribedChildren) {
+                        Child child = new Child();
+                        child.setCF(c.child.CF);
+                        child.setName(c.child.name);
+                        child.setSurname(c.child.surname);
+                        if (credentials.findByUsername(c.parentId).isPresent() && !database.getLine(l.name).subscribedChildren.contains(c))
+                            database.addSubscriber(c.parentId, child, l.getName(), credentials.findByUsername(c.parentId).get().getRoles());
+                    }
+                }
+            } else {
+                throw new IOException("Error in reservations' data stream");
+            }
+        } else {
+            throw new IOException("One of lines' file location is wrong.");
+        }
+    }
+
+    private void AddCredentialsAndUsers(String usersFile) throws IOException {
+        // Add Credentials and Users
+        URL resource = this.getClass().getClassLoader().getResource(usersFile);
+        if (resource != null) {
+            InputStream usersStream = resource.openStream();
+            if (usersStream != null) {
+                String jsonUsers;
+                try {
+                    byte[] jsonBytes = StreamUtils.copyToByteArray(usersStream);
+                    jsonUsers = new String(jsonBytes);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw e;
+                }
+                UsersJson users = new ObjectMapper().readValue(jsonUsers, UsersJson.class);
+
+                for (UserJson user : users.users) {
+                    if (!credentials.findByUsername(user.username).isPresent()) {
+                        Credential c1 = new Credential("password", user.username, Arrays.asList(Roles.prefix + Roles.USER));
+                        Credential result = database.insertCredential(c1.getUsername(), c1.getPassword(), c1.getRoles());
+                        if (database.getUserByUsername(user.username) == null) {
+                            User u = new User();
+                            u.setCredential(result);
+                            u.setUsername(user.username);
+                            u.setName(user.name);
+                            u.setSurname(user.surname);
+                            List<Child> children = new ArrayList<>();
+                            for (ChildJson c : user.children) {
+                                Child child = new Child();
+                                child.setCF(c.CF);
+                                child.setName(c.name);
+                                child.setSurname(c.surname);
+                                children.add(child);
+                            }
+                            u.setChildren(children);
+                            u.setLines(user.lines);
+                            database.insertUser(u);
+                        }
+                    }
+                }
+            } else {
+                throw new IOException("Error in users' data stream.");
+            }
+        } else throw new IOException("Wrong location for users' json file.");
     }
 
     public void InsertLineFromFileInFolder(String foldername) throws IOException {
