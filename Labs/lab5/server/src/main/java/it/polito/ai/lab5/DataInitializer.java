@@ -159,12 +159,12 @@ public class DataInitializer implements CommandLineRunner {
                     AddLines(lines.getString(i));
                 }
 
+                AddCredentialsAndUsers(jsonObject.getString("users"));
+
                 JSONArray reservations = jsonObject.getJSONArray("reservations");
                 for (int i = 0; i < reservations.length(); i++) {
                     AddReservations(reservations.getString(i));
                 }
-
-                AddCredentialsAndUsers(jsonObject.getString("users"));
 
             } else {
                 throw new IOException("Error in fileTable data stream");
