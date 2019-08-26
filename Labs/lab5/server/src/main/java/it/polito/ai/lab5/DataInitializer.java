@@ -154,12 +154,12 @@ public class DataInitializer implements CommandLineRunner {
                 String json = new String(bytes);
                 JSONObject jsonObject = new JSONObject(json);
 
+                AddCredentialsAndUsers(jsonObject.getString("users"));
+
                 JSONArray lines = jsonObject.getJSONArray("lines");
                 for (int i = 0; i < lines.length(); i++) {
                     AddLines(lines.getString(i));
                 }
-
-                AddCredentialsAndUsers(jsonObject.getString("users"));
 
                 JSONArray reservations = jsonObject.getJSONArray("reservations");
                 for (int i = 0; i < reservations.length(); i++) {
