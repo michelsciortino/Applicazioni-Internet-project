@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Credentials } from '../../models/requests/credentials';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
-
+import { environment } from 'src/environments/environment';
 import { map, catchError } from 'rxjs/operators';
 import { ConfirmMail } from 'src/app/models/requests/confirmMail';
 import { LoginResponse } from 'src/app/models/responses/login';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 const TOKEN = 'token';
 const USERMAIL = 'usermail';
 
 @Injectable()
 export class AuthService {
-    private static readonly authEndpoint = 'http://localhost:8080/auth';
+    private static readonly authEndpoint = `${environment.baseEndpoint}/auth`; // 'http://localhost:8080/auth';
     private tokenSbj: BehaviorSubject<string>;
     private usermailSbj: BehaviorSubject<string>;
 
@@ -24,7 +24,9 @@ export class AuthService {
     }
 
     isLoggedIn(): boolean {
-        return false;
+        console.log(this.tokenSbj.value);
+        console.log(this.usermailSbj.value);
+        return (this.tokenSbj.value && this.usermailSbj.value) ? true : false;
     }
 
     //#region Properties
@@ -35,6 +37,10 @@ export class AuthService {
 
     public getUserMail(): string {
         return this.usermailSbj.value;
+    }
+
+    public observeLoggedStatus(): Observable<boolean> {
+        return this.tokenSbj.asObservable().pipe(map((data) => data != null));
     }
 
     //#endregion
@@ -50,6 +56,8 @@ export class AuthService {
                         console.log(data);
                         localStorage.setItem(TOKEN, data.token);
                         localStorage.setItem(USERMAIL, data.mail);
+                        this.tokenSbj.next(data.token);
+                        this.usermailSbj.next(data.mail);
                         resolve();
                     },
                     (error) => {
@@ -58,7 +66,7 @@ export class AuthService {
                                 reject('Server unreachable');
                                 break;
                             case 400:
-                                console.log(error)
+                                console.log(error);
                                 reject('Bad request: ' + error.error.message);
                                 break;
                             case 403:
@@ -77,7 +85,10 @@ export class AuthService {
     }
 
     public logout() {
-
+        localStorage.removeItem(TOKEN);
+        localStorage.removeItem(USERMAIL);
+        this.usermailSbj.next(null);
+        this.tokenSbj.next(null);
     }
 
     //#endregion
@@ -96,7 +107,7 @@ export class AuthService {
                                 reject('Server unreachable');
                                 break;
                             case 400:
-                                console.log(error)
+                                console.log(error);
                                 reject('Bad request: ' + error.error.message);
                                 break;
                             case 403:
@@ -152,7 +163,7 @@ export class AuthService {
                                 reject('Server unreachable');
                                 break;
                             case 400:
-                                console.log(error)
+                                console.log(error);
                                 reject('Bad request: ' + error.error.message);
                                 break;
                             case 403:
@@ -178,7 +189,7 @@ export class AuthService {
                                 reject('Server unreachable');
                                 break;
                             case 400:
-                                console.log(error)
+                                console.log(error);
                                 reject('Bad request: ' + error.error.message);
                                 break;
                             case 403:
@@ -194,3 +205,4 @@ export class AuthService {
 
     //#endregion
 }
+

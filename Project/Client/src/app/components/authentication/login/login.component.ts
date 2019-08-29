@@ -32,12 +32,15 @@ export class LoginComponent implements OnInit {
             this.busy = true;
             this.showSpinner = true;
             this.authService.login(this.form.value)
-                .then(_ => this.router.navigate(['/']))
+                .then(_ => {
+                    console.log("login completato ->navigo verso home");
+                    this.router.navigate(['../../']);
+                })
                 .catch(error => {
                     this.loginError = error;
                     this.busy = false;
-                })
-                .then(_ => this.showSpinner = false);
+                    this.showSpinner = false;
+                });
         }
     }
 }
