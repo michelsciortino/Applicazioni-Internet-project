@@ -42,7 +42,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/recovery/**").permitAll()
                 .antMatchers("/auth/recovery/reset").permitAll()
                 .antMatchers("/auth/register").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/credentials/**").permitAll()
+                //.anyRequest().authenticated()
+                //TODO: remove permitAll
+                .anyRequest().permitAll()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));
     }

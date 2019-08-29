@@ -14,7 +14,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @Data
-public class ClientUserCredentials implements UserDetails {
+public class ClientUserCredentials{
     boolean enable;
     boolean credentialsNotExpired;
     boolean accountNotLocked;
@@ -32,35 +32,5 @@ public class ClientUserCredentials implements UserDetails {
         this.credentialsNotExpired = credentialsNotExpired;
         this.accountNotLocked = accountNotLocked;
         this.accountNotExpired = accountNotExpired;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return accountNotExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return accountNotLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return credentialsNotExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enable;
     }
 }
