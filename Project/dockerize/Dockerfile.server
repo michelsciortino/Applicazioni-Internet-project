@@ -1,0 +1,6 @@
+#Dockerfile for spring server
+FROM openjdk:8-jdk-alpine
+COPY ../ProjectServer/Applicazioni-Internet-project/Project/server/target/*.jar /usr/src/app.jar
+WORKDIR /usr/src/
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","app.jar",""]
