@@ -7,6 +7,7 @@ import it.polito.ai.project.generalmodels.ClientUser;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.requestEntities.ReserveChildrenRequest;
 import it.polito.ai.project.services.database.DatabaseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/users")
 public class UserController {
 
+    @Autowired
     private DatabaseService db;
     @RequestMapping(value="", method = RequestMethod.POST)
     public ResponseEntity postUsers(@RequestBody ClientUser clientUser)
@@ -70,8 +72,8 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @RequestMapping(value="[username]", method = RequestMethod.POST)
-    public ResponseEntity getUser(@PathVariable String username)
+    @RequestMapping(value="{username}", method = RequestMethod.GET)
+    public ResponseEntity getUser(@PathVariable(value="username") String username)
     {
         try
         {

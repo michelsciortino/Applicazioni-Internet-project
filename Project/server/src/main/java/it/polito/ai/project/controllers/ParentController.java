@@ -7,6 +7,7 @@ import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.requestEntities.ReserveChildrenRequest;
 import it.polito.ai.project.services.database.DatabaseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/parent")
 public class ParentController {
 
+    @Autowired
     private DatabaseService db;
     @RequestMapping(value="/reserveChildren", method = RequestMethod.PUT)
     public ResponseEntity reserveChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ReserveChildrenRequest reserveChildrenRequest)

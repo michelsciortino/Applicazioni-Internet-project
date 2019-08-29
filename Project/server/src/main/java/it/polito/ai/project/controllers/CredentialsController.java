@@ -9,6 +9,7 @@ import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.Roles;
 import it.polito.ai.project.services.database.models.UserCredentials;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,13 +23,14 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/credentials")
 public class CredentialsController {
 
+    @Autowired
     private DatabaseService db;
     @RequestMapping(value="", method = RequestMethod.POST)
     public ResponseEntity postUserCredentials(@RequestBody ClientUserCredentials clientUserCredentials)
     {
         try
         {
-            return ok( db.insertCredentials(clientUserCredentials.getUsername(), clientUserCredentials.getPassword(), clientUserCredentials.getRoles(),false));
+            return ok("");//db.insertCredentials(clientUserCredentials.getUsername(), clientUserCredentials.getPassword(), clientUserCredentials.getRoles(),false));
         }
         catch(ResourceNotFoundException re)
         {
@@ -47,8 +49,8 @@ public class CredentialsController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @RequestMapping(value="/[username]", method = RequestMethod.GET)
-    public ResponseEntity getUserCredentials(@PathVariable String username)
+    @RequestMapping(value="/{username}", method = RequestMethod.GET)
+    public ResponseEntity getUserCredentials(@PathVariable(value="username") String username)
     {
         try
         {
@@ -71,8 +73,8 @@ public class CredentialsController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @RequestMapping(value="/[username]", method = RequestMethod.PUT)
-    public ResponseEntity updateCredentials(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable String username, @RequestBody ClientUserCredentials newUserCredentials)
+    @RequestMapping(value="/{username}", method = RequestMethod.PUT)
+    public ResponseEntity updateCredentials(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable(value="username") String username, @RequestBody ClientUserCredentials newUserCredentials)
     {
         try
         {
@@ -126,8 +128,8 @@ public class CredentialsController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @RequestMapping(value="/[username]", method = RequestMethod.DELETE)
-    public ResponseEntity deleteCredentials(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable String username)
+    @RequestMapping(value="/{username}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteCredentials(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable(value="username") String username)
     {
         try
         {

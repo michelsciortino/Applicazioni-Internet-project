@@ -9,6 +9,7 @@ import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.DirectionType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +29,8 @@ import static org.springframework.http.ResponseEntity.ok;
 public class LinesController
 {
 
+    @Autowired
     private DatabaseService db;
-
-
 
     @RequestMapping(value="", method = RequestMethod.GET)
     public ResponseEntity getLines()
@@ -45,8 +45,8 @@ public class LinesController
         }
     }
 
-    @RequestMapping(value="/[line_name]", method = RequestMethod.GET)
-    public ResponseEntity getLine(@PathVariable String line_name)
+    @RequestMapping(value="/{line_name}", method = RequestMethod.GET)
+    public ResponseEntity getLine(@PathVariable(value="line_name") String line_name)
     {
         try
         {
@@ -58,8 +58,8 @@ public class LinesController
         }
     }
 
-    @RequestMapping(value="/[line_name]/races", method = RequestMethod.GET)
-    public ResponseEntity getLineRaces(@PathVariable String line_name, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  @RequestParam Date fromDate, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate, @Nullable @RequestParam @Valid DirectionType direction)
+    @RequestMapping(value="/{line_name}/races", method = RequestMethod.GET)
+    public ResponseEntity getLineRaces(@PathVariable(value="line_name") String line_name, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  @RequestParam Date fromDate, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate, @Nullable @RequestParam @Valid DirectionType direction)
     {
         try
         {
@@ -110,8 +110,8 @@ public class LinesController
     }
 
     //TODO abilitare solo per l'admin o il sysadmin
-    @RequestMapping(value="/[line_name]", method = RequestMethod.PUT)
-    public ResponseEntity putLine(@PathVariable String line_name, @RequestBody ClientLine line)
+    @RequestMapping(value="/{line_name}", method = RequestMethod.PUT)
+    public ResponseEntity putLine(@PathVariable(value="line_name") String line_name, @RequestBody ClientLine line)
     {
         try
         {
@@ -132,8 +132,8 @@ public class LinesController
     }
 
     //TODO può essere chiamata da admin o sysadmin. In caso di admin viene verificato che sia l'admin della linea specificata
-    @RequestMapping(value="/[line_name]/races", method = RequestMethod.POST)
-    public ResponseEntity postLineRace(@PathVariable String line_name, @RequestBody ClientRace clientRace, @AuthenticationPrincipal ClientUserCredentials clientUserCredentials)
+    @RequestMapping(value="/{line_name}/races", method = RequestMethod.POST)
+    public ResponseEntity postLineRace(@PathVariable(value="line_name") String line_name, @RequestBody ClientRace clientRace, @AuthenticationPrincipal ClientUserCredentials clientUserCredentials)
     {
         try
         {
@@ -156,8 +156,8 @@ public class LinesController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @RequestMapping(value="/[line_name]/races/[date]/[direction]", method = RequestMethod.DELETE)
-    public ResponseEntity deleteLineRace(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable String line_name,  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable Date date, @PathVariable DirectionType direction)
+    @RequestMapping(value="/{line_name}/races/{date}/{direction}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteLineRace(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable(value="line_name") String line_name,  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable(value="date") Date date, @PathVariable(value="direction") DirectionType direction)
     {
         try
         {
