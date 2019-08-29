@@ -9,7 +9,7 @@ import { ConfirmComponent } from '../components/authentication/confirm/confirm.c
 import { RegisterComponent } from '../components/authentication/register/register.component';
 import { MessageComponent } from '../components/message/message.component';
 import { HomeComponent } from '../components/home/home.component';
-import { NotLoggedGuard } from '../services/auth/guards/non-logged.guard';
+import { NotLoggedGuard } from '../services/auth/guards/not-logged.guard';
 import { AdminGuard } from '../services/auth/guards/admin.guard';
 import { AdminComponent } from '../components/admin/admin.component';
 import { CompanionGuard } from '../services/auth/guards/companion.guard';
