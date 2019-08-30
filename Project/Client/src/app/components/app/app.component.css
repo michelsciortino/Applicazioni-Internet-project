@@ -25,6 +25,10 @@
     min-width: 120px;
 }
 
+.app-toolbar {
+    height: 56px;
+}
+
 .is-mobile .app-toolbar {
     position: fixed;
     /* Make sure the toolbar will stay on top of the content as it scrolls past. */
@@ -55,4 +59,28 @@ h1.app-name {
 
 ::ng-deep .mat-button-focus-overlay {
     background-color: transparent!important;
+}
+
+.spacer {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+
+#copyright {}
+
+#contacts {
+    height: 30px;
+    color: darkgrey;
+    font-size: 14px;
+}
+
+.footer {
+    bottom: 0px;
+}
+
+.full-height {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
 }
