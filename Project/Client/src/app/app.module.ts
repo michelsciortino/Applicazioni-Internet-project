@@ -23,6 +23,7 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { CompanionComponent } from './components/companion/companion.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
+import { LinesComponent } from './components/lines/lines.component';
 
 @NgModule({
   declarations: [
@@ -30,8 +31,8 @@ import { WelcomeComponent } from './components/welcome/welcome.component';
     // auth components
     LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent, RegisterComponent,
     // home
-    HomeComponent, AdminComponent, CompanionComponent, MessagesComponent,
-
+    HomeComponent, AdminComponent, CompanionComponent, MessagesComponent, LinesComponent,
+    
     // dumb components
     MessageComponent,
 

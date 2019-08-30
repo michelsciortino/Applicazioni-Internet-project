@@ -15,11 +15,13 @@ import { AdminComponent } from '../components/admin/admin.component';
 import { CompanionGuard } from '../services/auth/guards/companion.guard';
 import { CompanionComponent } from '../components/companion/companion.component';
 import { WelcomeComponent } from '../components/welcome/welcome.component';
+import { LinesComponent } from '../components/lines/lines.component';
 
 const routes: Routes = [
   // basic routes
   { path: '', component: WelcomeComponent, canActivate: [NotLoggedGuard] },
   { path: 'home', component: HomeComponent, canActivate: [AuthenticatedGuard] },
+  { path: 'lines', component: LinesComponent, canActivate: [NotLoggedGuard] },
   { path: 'admin', component: AdminComponent, canActivate: [AuthenticatedGuard, AdminGuard] },
   { path: 'companion', component: CompanionComponent, canActivate: [AuthenticatedGuard, CompanionGuard] },
   // can be activated only if the user is not logged
