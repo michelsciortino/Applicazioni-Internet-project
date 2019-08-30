@@ -1,0 +1,13 @@
+.container-grid {
+    display: flex;
+    flex-flow: wrap;
+    align-items: top;
+    justify-content: center;
+}
+
+.container-grid-cell {
+    text-align: center;
+    margin: 20px 20px 20px 20px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
