@@ -1,3 +1,15 @@
 .signin-content {
     padding: 60px 1rem;
 }
+
+.links {
+    color:grey;
+    margin-top: 2rem !important;
+}
+
+.links a {
+    display: inline-block !important;
+    color: #55acee;
+    text-decoration: none;
+    background-color: transparent;
+}

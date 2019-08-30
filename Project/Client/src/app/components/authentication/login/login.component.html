@@ -18,6 +18,9 @@
                     <mat-error *ngIf="loginError">{{loginError}}</mat-error>
                 </div>
                 <button [disabled]="!form.valid || busy" mat-raised-button color="primary" type="submit ">Login</button>
+                <div class="links">
+                    <a routerLink="/auth/recovery">Password dimenticata?</a>
+                </div>
             </form>
         </div>
     </mat-card>
