@@ -3,7 +3,7 @@
 }
 
 .links {
-    color:grey;
+    color: grey;
     margin-top: 2rem !important;
 }
 
@@ -12,4 +12,8 @@
     color: #55acee;
     text-decoration: none;
     background-color: transparent;
+}
+
+.mat-input-element {
+    padding: 0 !important;
 }
