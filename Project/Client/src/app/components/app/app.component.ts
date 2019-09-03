@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { MatSidenav } from '@angular/material';
 import { UserService } from 'src/app/services/user/user.service';
 import { UserInfo } from 'src/app/services/user/models/user';
+import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
 
 @Component({
   selector: 'app-root',
@@ -25,13 +26,17 @@ export class AppComponent implements OnDestroy {
   @ViewChild('snav', { static: true })
   sidenav: MatSidenav;
 
-  constructor(private router: Router, private authSvc: AuthService, private userSvc: UserService, changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
+  constructor(private router: Router, private authSvc: AuthService, private userSvc: UserService, private isMobileSvc: IsMobileService, changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this.mobileQueryListener = () => {
-      if (this.mobileQuery.matches)
+      if (this.mobileQuery.matches) {
         this.sidenav.close();
-      else
+        this.isMobileSvc.setIsMobile(true);
+      }
+      else{
         this.sidenav.open();
+        this.isMobileSvc.setIsMobile(false);
+      }
       changeDetectorRef.detectChanges();
     };
 
