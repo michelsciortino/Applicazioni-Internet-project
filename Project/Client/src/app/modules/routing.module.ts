@@ -4,9 +4,8 @@ import { LoginComponent } from '../components/authentication/login/login.compone
 import { AuthenticatedGuard } from '../services/auth/guards/auth.guard';
 import { RecoveryComponent } from '../components/authentication/recovery/recovery.component';
 import { LogoutComponent } from '../components/authentication/logout.component';
-import { PasswordResetComponent } from '../components/authentication/password.reset/password-reset.component';
+import { PasswordResetComponent } from '../components/authentication/password-reset/password-reset.component';
 import { ConfirmComponent } from '../components/authentication/confirm/confirm.component';
-import { RegisterComponent } from '../components/authentication/register/register.component';
 import { MessageComponent } from '../components/message/message.component';
 import { HomeComponent } from '../components/home/home.component';
 import { NotLoggedGuard } from '../services/auth/guards/not-logged.guard';
@@ -17,6 +16,7 @@ import { CompanionComponent } from '../components/companion/companion.component'
 import { WelcomeComponent } from '../components/welcome/welcome.component';
 import { LinesComponent } from '../components/lines/lines.component';
 import { SettingsComponent } from '../components/settings/settings.component';
+import { RegisterComponent } from '../components/admin/register/register.component';
 
 const routes: Routes = [
   // basic routes
