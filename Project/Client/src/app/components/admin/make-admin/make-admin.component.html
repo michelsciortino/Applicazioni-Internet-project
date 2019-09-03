@@ -1,0 +1,23 @@
+<div class="padded-content">
+    <mat-card class="compact-card centered">
+        <p>Make Admin</p>
+        <div class="admin-content">
+            <form [formGroup]="form" (ngSubmit)="makeCompanion()">
+                <mat-form-field>
+                    <mat-label>Email</mat-label>
+                    <input matInput type="email" placeholder="Email" formControlName="mail">
+                    <mat-error *ngIf="!form.controls['mail'].valid"> Insert a valid email</mat-error>
+                </mat-form-field>
+                <mat-spinner [diameter]="32" [style.display]="showSpinner ? 'block' : 'none' "></mat-spinner>
+                <div class="form-error">
+                    <mat-error *ngIf="errorMessage">{{errorMessage}}</mat-error>
+                </div>
+                <div class="form-message">
+                    <mat-error *ngIf="showMailSentMessage">Make admin user: {{mail}}</mat-error>
+                </div>
+                <br>
+                <button [disabled]="!form.valid || busy" mat-raised-button color="primary" type="submit">Make</button>
+            </form>
+        </div>
+    </mat-card>
+</div>

@@ -11,10 +11,9 @@ import { LoginComponent } from './components/authentication/login/login.componen
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { RecoveryComponent } from './components/authentication/recovery/recovery.component';
 import { LogoutComponent } from './components/authentication/logout.component';
-import { PasswordResetComponent } from './components/authentication/password.reset/password-reset.component';
+import { PasswordResetComponent } from './components/authentication/password-reset/password-reset.component';
 import { PasswordToggleDirective } from './directives/passwordToggle.directive';
 import { ConfirmComponent } from './components/authentication/confirm/confirm.component';
-import { RegisterComponent } from './components/authentication/register/register.component';
 import { MessageComponent } from './components/message/message.component';
 import { MessageService } from './services/bridges/message.service';
 import { HomeComponent } from './components/home/home.component';
@@ -25,6 +24,10 @@ import { CompanionComponent } from './components/companion/companion.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { LinesComponent } from './components/lines/lines.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { MakeCompanionComponent } from './components/admin/make-companion/make-companion.component';
+import { MakeAdminComponent } from './components/admin/make-admin/make-admin.component';
+import { RegisterComponent } from './components/admin/register/register.component';
+import { IsMobileService } from './services/bridges/is-mobile.service';
 
 @NgModule({
   declarations: [
@@ -34,8 +37,11 @@ import { SettingsComponent } from './components/settings/settings.component';
     // home
     HomeComponent, AdminComponent, CompanionComponent, MessagesComponent, LinesComponent, SettingsComponent,
     
+    // admin components
+    MakeCompanionComponent, MakeAdminComponent,
+
     // dumb components
-    MessageComponent,
+    MessageComponent, 
 
     // directives
     PasswordToggleDirective
@@ -51,6 +57,7 @@ import { SettingsComponent } from './components/settings/settings.component';
     AuthService,
     UserService,
     MessageService,
+    IsMobileService,
     { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [AppComponent]
