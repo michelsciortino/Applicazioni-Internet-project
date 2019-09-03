@@ -3,7 +3,7 @@ import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import { UserService } from '../../user/user.service';
 import { UserInfo } from '../../user/models/user';
 import { UserRole } from '../../user/models/roles';
-import { Observable } from 'rxjs';
+import { Observable, isObservable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
@@ -11,22 +11,24 @@ export class CompanionGuard implements CanActivate {
     constructor(private userSvc: UserService, private router: Router) {
     }
 
+
     canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Observable<boolean> | boolean {
-        return this.userSvc.getUserInfo().pipe(
-            map(
-                (info: UserInfo) => {
-                    if (!info.roles.find(r => r === UserRole.COMPANION)) {
-                        console.log("info.roles does not cotain COMPANION role");
-                        this.router.navigate(['/']);
-                        return false;
-                    } else {
-                        console.log("info.roles cotains COMPANION role");
-                        return true;
+        const userinfo = this.userSvc.getUserInfo();
+        if (isObservable(userinfo))
+            return userinfo.pipe(
+                map(
+                    (info: UserInfo) => {
+                        console.log("INFO:", JSON.stringify(info));
+                        if (info == null) return false;
+                        return info.isCompanion();
                     }
-                }
-            )
-        );
+                )
+            );
+        else {
+            if (userinfo == null || userinfo.isCompanion() == false) return false;
+            return true;
+        }
     }
 }

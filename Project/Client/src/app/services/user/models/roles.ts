@@ -1,6 +1,6 @@
 export enum UserRole {
-    ADMIN = 'admin',
-    COMPANION = 'companion',
-    USER = 'user',
-    SYS_ADMIN = 'sys_admin'
+    ROLE_ADMIN = 'ROLE_ADMIN',
+    ROLE_COMPANION = 'ROLE_COMPANION',
+    ROLE_USER = 'ROLE_USER',
+    ROLE_SYSTEM_ADMIN = 'ROLE_SYSTEM_ADMIN'
 }

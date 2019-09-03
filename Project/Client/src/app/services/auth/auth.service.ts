@@ -13,34 +13,32 @@ const USERMAIL = 'usermail';
 @Injectable()
 export class AuthService {
     private static readonly authEndpoint = `${environment.baseEndpoint}/auth`; // 'http://localhost:8080/auth';
-    private tokenSbj: BehaviorSubject<string>;
-    private usermailSbj: BehaviorSubject<string>;
+    private authSbj: BehaviorSubject<{ token: string, mail: string }>;
 
     constructor(private http: HttpClient) {
         const storedToken = localStorage.getItem(TOKEN);
-        this.tokenSbj = new BehaviorSubject<string>(storedToken);
         const usermail = localStorage.getItem(USERMAIL);
-        this.usermailSbj = new BehaviorSubject<string>(usermail);
+        this.authSbj = new BehaviorSubject<{ token: string, mail: string }>({ token: storedToken, mail: usermail });
     }
 
     isLoggedIn(): boolean {
-        console.log(this.tokenSbj.value);
-        console.log(this.usermailSbj.value);
-        return (this.tokenSbj.value && this.usermailSbj.value) ? true : false;
+        // console.log(this.tokenSbj.value);
+        // console.log(this.usermailSbj.value);
+        return (this.authSbj.value!= null && this.authSbj.value.token!=null && this.authSbj.value.token!=null) ? true : false;
     }
 
     //#region Properties
 
     public getToken(): string {
-        return this.tokenSbj.value;
+        return this.authSbj.value.token;
     }
 
     public getUserMail(): string {
-        return this.usermailSbj.value;
+        return this.authSbj.value.mail;
     }
 
     public observeLoggedStatus(): Observable<boolean> {
-        return this.tokenSbj.asObservable().pipe(map((data) => data != null));
+        return this.authSbj.asObservable().pipe(map((data) => data != null && data.token!=null && data.mail!=null));
     }
 
     //#endregion
@@ -53,11 +51,11 @@ export class AuthService {
                 .subscribe(
                     (data: LoginResponse) => {
                         // handle jwt
-                        console.log(data);
+                        // console.log(data);
                         localStorage.setItem(TOKEN, data.token);
                         localStorage.setItem(USERMAIL, data.mail);
-                        this.tokenSbj.next(data.token);
-                        this.usermailSbj.next(data.mail);
+                        this.authSbj.next({token:data.token,mail:data.mail});
+                        // console.log(JSON.stringify(this.authSbj.value));
                         resolve();
                     },
                     (error) => {
@@ -87,8 +85,7 @@ export class AuthService {
     public logout() {
         localStorage.removeItem(TOKEN);
         localStorage.removeItem(USERMAIL);
-        this.usermailSbj.next(null);
-        this.tokenSbj.next(null);
+        this.authSbj.next(null);
     }
 
     //#endregion

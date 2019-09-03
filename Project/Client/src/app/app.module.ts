@@ -24,6 +24,7 @@ import { AdminComponent } from './components/admin/admin.component';
 import { CompanionComponent } from './components/companion/companion.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { LinesComponent } from './components/lines/lines.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,7 @@ import { LinesComponent } from './components/lines/lines.component';
     // auth components
     LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent, RegisterComponent,
     // home
-    HomeComponent, AdminComponent, CompanionComponent, MessagesComponent, LinesComponent,
+    HomeComponent, AdminComponent, CompanionComponent, MessagesComponent, LinesComponent, SettingsComponent,
     
     // dumb components
     MessageComponent,

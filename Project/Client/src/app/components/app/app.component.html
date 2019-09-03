@@ -6,10 +6,10 @@
         </button>
         <h1 class="app-name" routerLink="/">Pedibus</h1>
         <span class="fill-remaining-space"></span>
-        <button *ngIf="!loggedStatus && !mobileQuery.matches" mat-button routerLink="/auth/login">
+        <button *ngIf="!isLogged && !mobileQuery.matches" mat-button routerLink="/auth/login">
             <span>Login</span>
         </button>
-        <button *ngIf="loggedStatus && !mobileQuery.matches" mat-button routerLink="/auth/logout">
+        <button *ngIf="isLogged && !mobileQuery.matches" mat-button routerLink="/auth/logout">
             <span>Logout</span>
         </button>
     </mat-toolbar>
@@ -17,15 +17,15 @@
     <mat-sidenav-container class="sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 60 : 0">
         <mat-sidenav opened="true" class="sidenav" #snav [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="true" fixedTopGap="56">
             <mat-nav-list>
-                <a mat-list-item *ngIf="loggedStatus" routerLink="./home">Home</a>
-                <a mat-list-item *ngIf="loggedStatus" routerLink="./admin">Admin</a>
-                <a mat-list-item *ngIf="loggedStatus" routerLink="./companion">Companion</a>
+                <a mat-list-item *ngIf="isLogged" routerLink="./home">Home</a>
+                <a mat-list-item *ngIf="isLogged && isAdmin" routerLink="./admin">Admin</a>
+                <a mat-list-item *ngIf="isLogged && isCompanion" routerLink="./companion">Companion</a>
                 <a mat-list-item routerLink="./lines">Lines</a>
-                <a mat-list-item *ngIf="loggedStatus" routerLink="./settings">Settings</a>
-                <button *ngIf="!loggedStatus && mobileQuery.matches" mat-button routerLink="/auth/login">
+                <a mat-list-item *ngIf="isLogged" routerLink="./settings">Settings</a>
+                <button *ngIf="!isLogged && mobileQuery.matches" mat-button routerLink="/auth/login">
                     <span>Login</span>
                 </button>
-                <button *ngIf="loggedStatus && mobileQuery.matches" mat-button routerLink="/auth/logout">
+                <button *ngIf="isLogged && mobileQuery.matches" mat-button routerLink="/auth/logout">
                     <span>Logout</span>
                 </button>
             </mat-nav-list>
