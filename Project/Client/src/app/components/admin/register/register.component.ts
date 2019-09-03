@@ -9,7 +9,7 @@ import { MessageService } from 'src/app/services/bridges/message.service';
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
-    styleUrls: ['./register.component.css', '../auth.style.css']
+    styleUrls: ['./register.component.css', '../admin.component.css']
 })
 export class RegisterComponent implements OnInit {
     form: FormGroup;
