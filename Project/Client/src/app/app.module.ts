@@ -28,6 +28,7 @@ import { MakeCompanionComponent } from './components/admin/make-companion/make-c
 import { MakeAdminComponent } from './components/admin/make-admin/make-admin.component';
 import { RegisterComponent } from './components/admin/register/register.component';
 import { IsMobileService } from './services/bridges/is-mobile.service';
+import { UserManagementComponent } from './components/admin/users-management/users-management.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,7 @@ import { IsMobileService } from './services/bridges/is-mobile.service';
     HomeComponent, AdminComponent, CompanionComponent, MessagesComponent, LinesComponent, SettingsComponent,
     
     // admin components
-    MakeCompanionComponent, MakeAdminComponent,
+    MakeCompanionComponent, MakeAdminComponent, UserManagementComponent,
 
     // dumb components
     MessageComponent, 
