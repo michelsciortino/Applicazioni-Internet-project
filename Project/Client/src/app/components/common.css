@@ -5,9 +5,7 @@
     justify-content: center;
 }
 
-.container-grid-cell {
+.container-grid * {
     text-align: center;
-    margin: 20px 20px 20px 20px;
-    padding-right: 15px;
-    padding-left: 15px;
+    margin: 15px 15px 15px 15px!important;
 }
