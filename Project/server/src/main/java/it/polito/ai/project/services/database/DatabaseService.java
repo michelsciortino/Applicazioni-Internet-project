@@ -181,7 +181,7 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @return ClientUserCredentials converted
      */
     private ClientUserCredentials userCredentialsToClientUserCredentials(UserCredentials uc) {
-        return new ClientUserCredentials(uc.getUsername(), uc.getRoles(), uc.isEnable(), uc.isCredentialsNotExpired(), uc.isAccountNotLocked(), uc.isAccountNotExpired());
+        return new ClientUserCredentials(uc.getUsername(), rolesToClientRoles(uc.getRoles()), uc.isEnable(), uc.isCredentialsNotExpired(), uc.isAccountNotLocked(), uc.isAccountNotExpired());
     }
 
     //---------------------------------------------------###Token###--------------------------------------------------//

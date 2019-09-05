@@ -4,16 +4,15 @@ import it.polito.ai.project.DataInitializer;
 import it.polito.ai.project.exceptions.BadRequestException;
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
+import it.polito.ai.project.generalmodels.ClientRoles;
 import it.polito.ai.project.generalmodels.ClientUser;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.requestEntities.ConfirmRequest;
 import it.polito.ai.project.security.JwtTokenProvider;
-import it.polito.ai.project.services.database.models.Roles;
-import it.polito.ai.project.services.database.models.ScopeToken;
-import it.polito.ai.project.services.database.models.Token;
-import it.polito.ai.project.services.database.models.UserCredentials;
+import it.polito.ai.project.services.database.models.*;
 import it.polito.ai.project.services.database.repositories.TokenRepository;
 import it.polito.ai.project.services.database.repositories.UserCredentialsRepository;
+import it.polito.ai.project.services.database.repositories.UserRepository;
 import it.polito.ai.project.services.email.EmailConfiguration;
 import it.polito.ai.project.services.email.EmailSenderService;
 import it.polito.ai.project.services.email.models.Mail;
@@ -25,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService implements AuthServiceInterface {
@@ -35,6 +35,8 @@ public class AuthService implements AuthServiceInterface {
     private DatabaseServiceInterface database;
     @Autowired
     private UserCredentialsRepository userCredentialsRepository;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private TokenRepository tokenRepository;
     @Autowired
@@ -230,4 +232,51 @@ public class AuthService implements AuthServiceInterface {
     private ClientUserCredentials userCredentialsToClientUserCredentials(UserCredentials uc) {
         return new ClientUserCredentials(uc.getUsername(), uc.getRoles(), uc.isEnable(), uc.isCredentialsNotExpired(), uc.isAccountNotLocked(), uc.isAccountNotExpired());
     }
+
+    /**
+     * Function to get User by Username
+     *
+     * @param username user username
+     * @return ClientUser: requested user
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     */
+    @Override
+    public ClientUser getUserByUsername(String username) {
+        try {
+            Optional<User> p = userRepository.findByUsername(username);
+            if (p.isPresent()) {
+                Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.get().getUsername());
+                return userToClientUser(p.get(), credentials.get().getRoles());
+            } else
+                throw new ResourceNotFoundException();
+        } catch (ResourceNotFoundException e1) {
+            throw new ResourceNotFoundException();
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    /**
+     * Function to convert User to ClientUser
+     *
+     * @param p     user to convert
+     * @param roles
+     * @return ClientUser: converted client user
+     */
+    private ClientUser userToClientUser(User p, List<String> roles) {
+        assert p.getChildren() != null;
+        return new ClientUser(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), new ArrayList<>(), p.getLines(), rolesToClientRoles(roles));
+    }
+
+    /**
+     * Function to convert Roles to ClientRoles
+     *
+     * @param roles list of roles
+     * @return list<ClientRoles>: converted client user
+     */
+    private List<String> rolesToClientRoles(List<String> roles) {
+        return roles.stream().map((role)-> ClientRoles.valueOf((role.substring(Roles.prefix.length()))).toString()).collect(Collectors.toList());
+    }
+
 }
