@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @RequestMapping(value="", method = RequestMethod.GET)
-    public ResponseEntity getUsers(@RequestParam int pageNumber)
+    public ResponseEntity getUsers(@RequestParam(defaultValue = "0") int pageNumber)
     {
         try
         {

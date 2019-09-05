@@ -111,7 +111,7 @@ public class AuthService implements AuthServiceInterface {
                     userCredentials.get().setEnable(true);
                     database.modifyUserPassword(userCredentialsToClientUserCredentials(userCredentials.get()),confirmRequest.getPassword());
                     database.updateCredentials(userCredentialsToClientUserCredentials(userCredentials.get()));
-                    ClientUser user = new ClientUser(mail,confirmRequest.getName(),confirmRequest.getSurname(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                    ClientUser user = new ClientUser(mail,confirmRequest.getName(),confirmRequest.getSurname(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>());
                     database.updateUser(user);
                     database.deleteToken(token);
                     return mail;
@@ -200,7 +200,7 @@ public class AuthService implements AuthServiceInterface {
         } else {
             log.debug("register new credential");
             ClientUserCredentials credentials = database.insertCredentials(mail, "", Arrays.asList(Roles.prefix + Roles.USER),false);
-            ClientUser user = new ClientUser(mail, "", "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            ClientUser user = new ClientUser(mail, "", "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
             database.insertUser(user);
             Token confirmToken = new Token(mail, ScopeToken.CONFIRM);
             tokenRepository.save(confirmToken);

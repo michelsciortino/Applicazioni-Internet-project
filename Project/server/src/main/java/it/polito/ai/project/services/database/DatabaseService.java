@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DatabaseService implements DatabaseServiceInterface {
@@ -232,8 +233,10 @@ public class DatabaseService implements DatabaseServiceInterface {
             Pageable pageable = PageRequest.of(pageNumber, 10);
 
             List<ClientUser> usersList = new ArrayList<>();
-            for (User p : userRepository.findAll(pageable))
-                usersList.add(userToClientUser(p));
+            for (User p : userRepository.findAll(pageable)) {
+                Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.getUsername());
+                usersList.add(userToClientUser(p, credentials.get().getRoles()));
+            }
 
             return new PageImpl<>(usersList);
         } catch (Exception e) {
@@ -253,9 +256,10 @@ public class DatabaseService implements DatabaseServiceInterface {
     public ClientUser getUser(String id) {
         try {
             Optional<User> p = userRepository.findById(id);
-            if (p.isPresent())
-                return userToClientUser(p.get());
-            else
+            if (p.isPresent()) {
+                Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.get().getUsername());
+                return userToClientUser(p.get(), credentials.get().getRoles());
+            } else
                 throw new ResourceNotFoundException();
         } catch (ResourceNotFoundException e1) {
             throw new ResourceNotFoundException();
@@ -276,9 +280,10 @@ public class DatabaseService implements DatabaseServiceInterface {
     public ClientUser getUserByUsername(String username) {
         try {
             Optional<User> p = userRepository.findByUsername(username);
-            if (p.isPresent())
-                return userToClientUser(p.get());
-            else
+            if (p.isPresent()) {
+                Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.get().getUsername());
+                return userToClientUser(p.get(), credentials.get().getRoles());
+            } else
                 throw new ResourceNotFoundException();
         } catch (ResourceNotFoundException e1) {
             throw new ResourceNotFoundException();
@@ -299,7 +304,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Transactional
     public ClientUser insertUser(ClientUser user) {
         try {
-            if (!userRepository.findByUsername(user.getUsername()).isPresent()) {
+            if (!userRepository.findByUsername(user.getMail()).isPresent()) {
                 userRepository.save(clientUserToUser(user));
                 return user;
             }
@@ -319,7 +324,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Override
     @Transactional
     public void updateUser(ClientUser user) {
-        Optional<User> u = userRepository.findByUsername(user.getUsername());
+        Optional<User> u = userRepository.findByUsername(user.getMail());
         try {
             if (u.isPresent()) {
                 u.get().setName(user.getName());
@@ -353,7 +358,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Transactional
     public void deleteUser(ClientUser user) {
         try {
-            Optional<User> u = userRepository.findByUsername(user.getUsername());
+            Optional<User> u = userRepository.findByUsername(user.getMail());
             if (u.isPresent()) {
                 userRepository.delete(u.get());
             } else {
@@ -369,12 +374,23 @@ public class DatabaseService implements DatabaseServiceInterface {
     /**
      * Function to convert User to ClientUser
      *
-     * @param p user to convert
+     * @param p     user to convert
+     * @param roles
      * @return ClientUser: converted client user
      */
-    private ClientUser userToClientUser(User p) {
+    private ClientUser userToClientUser(User p, List<String> roles) {
         assert p.getChildren() != null;
-        return new ClientUser(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), childListToClientChildList(p.getChildren()), p.getLines());
+        return new ClientUser(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), childListToClientChildList(p.getChildren()), p.getLines(), rolesToClientRoles(roles));
+    }
+
+    /**
+     * Function to convert Roles to ClientRoles
+     *
+     * @param roles list of roles
+     * @return list<ClientRoles>: converted client user
+     */
+    private List<String> rolesToClientRoles(List<String> roles) {
+       return roles.stream().map((role)->ClientRoles.valueOf((role.substring(Roles.prefix.length()))).toString()).collect(Collectors.toList());
     }
 
     /**
@@ -385,7 +401,7 @@ public class DatabaseService implements DatabaseServiceInterface {
      */
     private User clientUserToUser(ClientUser p) {
         assert p.getChildren() != null;
-        return new User(p.getUsername(), p.getName(), p.getSurname(), p.getContacts(), clientChildListToChildList(p.getChildren()), p.getLines());
+        return new User(p.getMail(), p.getName(), p.getSurname(), p.getContacts(), clientChildListToChildList(p.getChildren()), p.getLines());
     }
 
     /**
@@ -539,7 +555,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         // Save results: update User modified before
         updateCredentials(userCredentialsToClientUserCredentials(targetCredentials.get()));
-        updateUser(userToClientUser(target.get()));
+        updateUser(userToClientUser(target.get(), targetCredentials.get().getRoles()));
     }
 
     /**
@@ -592,7 +608,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Objects.requireNonNull(target.get().getLines()).remove(line);
 
         // Since an Admin without lines can exist we choose to don't remove ADMIN role
-        updateUser(userToClientUser(target.get()));
+        updateUser(userToClientUser(target.get(), targetCredentials.get().getRoles()));
     }
 
     @Transactional
@@ -645,8 +661,8 @@ public class DatabaseService implements DatabaseServiceInterface {
         try {
             perfCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
-            targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
-            target = userRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
+            targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getMail());
+            target = userRepository.findByUsername(clientCompanion.getUserDetails().getMail());
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
@@ -703,7 +719,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         }
                     }
                     //Format content and send email to each admin
-                    String content = clientCompanion.getUserDetails().getUsername() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
+                    String content = clientCompanion.getUserDetails().getMail() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
                     for (String address : line.get().getAdmins())
                         emailSenderService.sendSimpleMail(new Mail(performerUsername, address, "Companion Removed", content));
                 } else if (companionState.equals(CompanionState.CONFIRMED)) {
@@ -716,7 +732,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         }
                     }
                     //Format content and send email to each admin
-                    String content = clientCompanion.getUserDetails().getUsername() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
+                    String content = clientCompanion.getUserDetails().getMail() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
                     for (String address : line.get().getAdmins())
                         emailSenderService.sendSimpleMail(new Mail(performerUsername, address, "Companion Removed", content));
 
@@ -1005,7 +1021,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         try {
             race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
-            targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
+            targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getMail());
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
         } catch (Exception e) {
             throw new InternalServerErrorException();
@@ -1049,7 +1065,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         try {
             race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
-            targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getUsername());
+            targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getMail());
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
         } catch (Exception e) {
             throw new InternalServerErrorException();
@@ -1338,14 +1354,15 @@ public class DatabaseService implements DatabaseServiceInterface {
         return new Companion(clientUserToUser(clientCompanion.getUserDetails()), clientPediStopToPediStop(clientCompanion.getInitialStop()), clientPediStopToPediStop(clientCompanion.getFinalStop()), clientCompanion.getState());
     }
 
-    private ClientCompanion companionToClientCompanion(Companion companion) {
-        return new ClientCompanion(userToClientUser(companion.getUserDetails()), pediStopToClientPediStop(companion.getInitialStop()), pediStopToClientPediStop(companion.getFinalStop()), companion.getState());
+    private ClientCompanion companionToClientCompanion(Companion companion, List<String> roles) {
+        return new ClientCompanion(userToClientUser(companion.getUserDetails(), roles), pediStopToClientPediStop(companion.getInitialStop()), pediStopToClientPediStop(companion.getFinalStop()), companion.getState());
     }
 
     private List<ClientCompanion> companionsToClientCompanions(List<Companion> companions) {
         List<ClientCompanion> clientCompanions = new ArrayList<>();
         for (Companion companion : companions) {
-            clientCompanions.add(companionToClientCompanion(companion));
+            Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(companion.getUserDetails().getUsername());
+            clientCompanions.add(companionToClientCompanion(companion, credentials.get().getRoles()));
         }
         return clientCompanions;
     }
@@ -1431,7 +1448,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         ClientUserCredentials clientUserCredentials = null;
         Token token = null;
         try {
-            clientUserCredentials = insertCredentials(username, "", roles,false);
+            clientUserCredentials = insertCredentials(username, "", roles, false);
             token = new Token(clientUserCredentials.getUsername(), ScopeToken.CONFIRM);
             insertToken(token);
             Mail mail = new Mail();

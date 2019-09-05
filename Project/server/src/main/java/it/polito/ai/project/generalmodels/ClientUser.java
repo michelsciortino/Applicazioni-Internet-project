@@ -13,7 +13,7 @@ public class ClientUser {
 
     @Email
     @NotNull
-    private String username;
+    private String mail;
 
     @Size(min = 2, max = 30)
     @NotNull
@@ -28,13 +28,17 @@ public class ClientUser {
     private List<ClientChild> children;
     @Nullable
     private List<String> lines;
+    @NotNull
+    private List<String> roles;
 
-    public ClientUser(@Email @NotNull String username, @Size(min = 2, max = 30) @NotNull String name, @Size(min = 2, max = 30) @NotNull String surname, @Nullable List<String> contacts, @Nullable List<ClientChild> children, @Nullable List<String> lines) {
-        this.username = username;
+    public ClientUser(@Email @NotNull String mail, @Size(min = 2, max = 30) @NotNull String name, @Size(min = 2, max = 30) @NotNull String surname, @Nullable List<String> contacts, @Nullable List<ClientChild> children, @Nullable List<String> lines, @NotNull
+    @NotNull List<String> roles) {
+        this.mail = mail;
         this.name = name;
         this.surname = surname;
         this.contacts = contacts;
         this.children = children;
         this.lines = lines;
+        this.roles = roles;
     }
 }
