@@ -82,18 +82,6 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'auth/register',
-    children: [
-      {
-        path: '',
-        component: RegisterComponent,
-        canActivate: [AuthGuard],
-        data: { roles: [UserRole.ADMIN] }
-      },
-      { path: 'done', component: MessageComponent }
-    ]
-  },
-  {
     path: 'auth/logout', component: LogoutComponent, canActivate: [AuthGuard]
   }
 ];

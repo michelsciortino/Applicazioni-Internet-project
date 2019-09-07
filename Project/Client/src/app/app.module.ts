@@ -33,6 +33,8 @@ import { AdminService } from './services/admin/admin.service';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
+import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/confirm-dialog.component';
+import { MessageDialogComponent } from './components/dialogs/messege-dialog/messege-dialog.component';
 
 @NgModule({
   declarations: [
@@ -45,11 +47,17 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
     // admin components
     MakeCompanionComponent, MakeAdminComponent, UserManagementComponent,
 
+    // dialog
+    ConfirmDialogComponent, MessageDialogComponent,
+
     // dumb components
     MessageComponent,
 
     // directives
     PasswordToggleDirective
+  ],
+  entryComponents: [
+    ConfirmDialogComponent, MessageDialogComponent
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,
