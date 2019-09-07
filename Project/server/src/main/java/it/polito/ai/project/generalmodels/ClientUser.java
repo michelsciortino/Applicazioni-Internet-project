@@ -6,6 +6,7 @@ import org.springframework.lang.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -40,5 +41,11 @@ public class ClientUser {
         this.children = children;
         this.lines = lines;
         this.roles = roles;
+    }
+
+    public ClientUser() {
+        contacts = new ArrayList<>();
+        children = new ArrayList<>();
+        lines = new ArrayList<>();
     }
 }

@@ -1,0 +1,160 @@
+{
+  "users": [
+    {
+      "username": "rossi@mail.com",
+      "name": "Mario",
+      "surname": "Rossi",
+      "children": [
+        {
+          "name": "Benedetta",
+          "surname": "Rossi",
+          "CF": "BNDRSS01C25B919P"
+        },
+        {
+          "name": "Marco",
+          "surname": "Rossi",
+          "CF": "MRCRSS01C15B919P"
+        }
+      ],
+      "lines": [
+        "Bruchi_cantanti"
+      ]
+    }, {
+      "username": "bianchi@mail.com",
+      "name": "Vincenzo",
+      "surname": "Bianchi",
+      "children": [
+        {
+          "name": "Aurora",
+          "surname": "Bianchi",
+          "CF": "ARRBNC01C25B919P"
+        }
+      ],
+      "lines": [
+        "Bruchi_cantanti"
+      ]
+    },{
+      "username": "primo@mail.com",
+      "name": "Guido",
+      "surname": "Primo",
+      "children": [
+        {
+          "name": "Chanel",
+          "surname": "Primo",
+          "CF": "CHNPRM01C25B919P"
+        },
+        {
+          "name": "Coco",
+          "surname": "Primo",
+          "CF": "CCOPRM01C25B919P"
+        }
+      ],
+      "lines": [
+        "Bruchi_cantanti"
+      ]
+    },{
+      "username": "bruno@mail.com",
+      "name": "Ugo",
+      "surname": "Bruno",
+      "children": [
+        {
+          "name": "Matteo",
+          "surname": "Bruno",
+          "CF": "MTTBRN01C25B919P"
+        }
+      ],
+      "lines": [
+        "Bruchi_cantanti"
+      ]
+    },{
+      "username": "secondo@mail.com",
+      "name": "Marts",
+      "surname": "Secondo",
+      "children": [
+        {
+          "name": "Sara",
+          "surname": "Secondo",
+          "CF": "SRASCN01C25B919P"
+        },
+        {
+          "name": "Ugo",
+          "surname": "Secondo",
+          "CF": "UGOSCN01C25B919P"
+        }
+      ],
+      "lines": [
+        "Bruchi_cantanti"
+      ]
+    },{
+      "username": "fumagalli@mail.com",
+      "name": "Claudio",
+      "surname": "Fumagalli",
+      "children": [
+        {
+          "name": "Simone",
+          "surname": "Fumagalli",
+          "CF": "SMNFMG01C25B919P"
+        }
+      ],
+      "lines": [
+        "Bruchi_cantanti"
+      ]
+    },
+    {
+      "username": "verdi@mail.com",
+      "name": "Roberta",
+      "surname": "Verdi",
+      "children": [
+        {
+          "name": "Claudia",
+          "surname": "Verdi",
+          "CF": "CLDVRD01C25B919P"
+        }
+      ],
+      "lines": [
+        "Bruchi_cantanti"
+      ]
+    },{
+      "username": "youssef@mail.com",
+      "name": "Mohamed",
+      "surname": "Youssef",
+      "children": [
+        {
+          "name": "Iaia",
+          "surname": "Youssef",
+          "CF": "IAIYSS01C25B919P"
+        }
+      ],
+      "lines": [
+        "Bruchi_cantanti"
+      ]
+    },{
+      "username": "chin@mail.com",
+      "name": "Chon",
+      "surname": "Chin",
+      "children": [
+        {
+          "name": "Shibo",
+          "surname": "Chin",
+          "CF": "SHBCHN01C25B919P"
+        }
+      ],
+      "lines": [
+        "Bruchi_cantanti"
+      ]
+    },{
+      "username": "movalli@mail.com",
+      "name": "Lore",
+      "surname": "Movalli",
+      "children": [],
+      "lines": []
+    },
+    {
+      "username": "pascoli@mail.com",
+      "name": "Sergio",
+      "surname": "Pascoli",
+      "children": [],
+      "lines": []
+    }
+  ]
+}

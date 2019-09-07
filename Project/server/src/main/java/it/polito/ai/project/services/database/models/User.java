@@ -20,7 +20,6 @@ public class User {
 
     @Email
     @NotNull
-    @Indexed(unique = true)
     private String username;
 
     @Size(min = 2, max = 30)

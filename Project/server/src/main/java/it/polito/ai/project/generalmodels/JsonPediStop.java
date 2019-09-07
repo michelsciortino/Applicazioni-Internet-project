@@ -27,7 +27,7 @@ public class JsonPediStop {
     public JsonPediStop() {
     }
 
-    public JsonPediStop(@Size(min = 2, max = 30) String name, @DecimalMin(value = "-180.0", inclusive = true) @DecimalMax(value = "180.0", inclusive = true) BigDecimal longitude, @DecimalMin(value = "-90.0", inclusive = true) @DecimalMax(value = "90.0", inclusive = true) BigDecimal latitude, @Min(0) long delayinmillis) {
+    public JsonPediStop(@Size(min = 2, max = 30) String name, @DecimalMin(value = "-180.0", inclusive = true) @DecimalMax(value = "180.0", inclusive = true) BigDecimal longitude, @DecimalMin(value = "-90.0", inclusive = true) @DecimalMax(value = "90.0", inclusive = true) BigDecimal latitude, @Min(0) long delayInMillis) {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;

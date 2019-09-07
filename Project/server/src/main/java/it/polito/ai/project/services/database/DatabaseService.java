@@ -1387,6 +1387,9 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Transactional
     public void insertLine(JsonLine line) {
         try {
+            if (lineRepository.findLineByName(line.getName()).isPresent()) {
+                throw new BadRequestException();
+            }
             ArrayList<PediStop> outStops = new ArrayList<>();
             for (JsonPediStop p : line.getOutwardStops())
                 outStops.add(new PediStop(p.getName(), p.getLongitude(), p.getLatitude(), p.getDelayInMillis()));
@@ -1406,7 +1409,13 @@ public class DatabaseService implements DatabaseServiceInterface {
             }
             Line l = new Line(line.getName(), outStops, retStops, line.getAdmins());
             lineRepository.save(l);
-        } catch (Exception e) {
+
+        }
+        catch (BadRequestException e) {
+            //TO-DO check unique index Exception
+            throw new BadRequestException();
+        }
+        catch (Exception e) {
             //TO-DO check unique index Exception
             throw new InternalServerErrorException(e);
         }
@@ -1540,29 +1549,36 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Override
     @Transactional
     public ClientLine addChildToLine(String UserID, ClientChild child, String lineName, List<String> roles) {
+        Optional<Line> l;
         try {
-            Optional<Line> l = lineRepository.findLineByName(lineName);
-            if (!l.isPresent())
-                throw new ResourceNotFoundException();
-
-            if (!roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN)) {
-                if (!l.get().getAdmins().contains(UserID))
-                    throw new UnauthorizedRequestException("Line Admins only can perform this operation");
-            }
-
-            Child c = new Child(child.getName(), child.getSurname(), child.getCF(), child.getParentId(), EntryState.ISENABLE);
-
-            if (!l.get().getSubscribedChildren().contains(c)) {
-
-                l.get().getSubscribedChildren().add(c);
-                lineRepository.save(l.get());
-                return lineToClientLine(l.get());
-            } else {
-                throw new BadRequestException();
-            }
-        } catch (Exception e) {
+            l = lineRepository.findLineByName(lineName);
+        }
+        catch (Exception e)
+        {
             throw new InternalServerErrorException(e);
         }
+
+        if (!l.isPresent())
+            throw new ResourceNotFoundException();
+
+        if (!roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN)) {
+            if (!l.get().getAdmins().contains(UserID))
+                throw new UnauthorizedRequestException("Line Admins only can perform this operation");
+        }
+
+        Child c = new Child(child.getName(), child.getSurname(), child.getCF(), child.getParentId(), EntryState.ISENABLE);
+
+        if (!l.get().getSubscribedChildren().contains(c)) {
+
+            l.get().getSubscribedChildren().add(c);
+            lineRepository.save(l.get());
+            return lineToClientLine(l.get());
+        } else {
+            throw new BadRequestException();
+        }
+
+
+
     }
 
     /**
@@ -1629,8 +1645,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
             throw new UnauthorizedRequestException();
 
-        clientRace.getPassengers().clear();
-        clientRace.getCompanions().clear();
         Race race = clientRaceToRace(clientRace);
         try {
             raceRepository.save(race);

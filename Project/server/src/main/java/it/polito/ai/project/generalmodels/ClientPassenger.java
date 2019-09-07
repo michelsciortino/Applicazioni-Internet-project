@@ -20,4 +20,8 @@ public class ClientPassenger {
         this.isReserved = isReserved;
         this.state = state;
     }
+
+    public ClientPassenger() {
+
+    }
 }

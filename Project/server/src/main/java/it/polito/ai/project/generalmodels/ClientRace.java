@@ -4,6 +4,7 @@ import it.polito.ai.project.services.database.models.DirectionType;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,5 +26,10 @@ public class ClientRace {
         this.date = date;
         this.passengers = passengers;
         this.companions = companions;
+    }
+
+    public ClientRace() {
+        passengers = new ArrayList<>();
+        companions = new ArrayList<>();
     }
 }

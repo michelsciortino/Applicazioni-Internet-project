@@ -1,0 +1,126 @@
+{
+  "name": "Bruchi_cantanti",
+  "outwardStops": [
+    {
+      "name": "Piazza Mellano",
+      "latitude": 12,
+      "longitude": 24,
+      "delayInMillis": 0
+    },
+    {
+      "name": "Via primo Alpini",
+      "latitude": 13,
+      "longitude": 24,
+      "delayInMillis": 300000
+    },
+    {
+      "name": "Via Vigo",
+      "latitude": 12,
+      "longitude": 24,
+      "delayInMillis": 600000
+    },
+    {
+      "name": "Piazza XXV Aprile",
+      "latitude": 13,
+      "longitude": 24,
+      "delayInMillis": 900000
+    },
+    {
+      "name": "Scuola",
+      "latitude": 13,
+      "longitude": 24,
+      "delayInMillis": 1200000
+    }
+  ],
+  "returnStops": [
+    {
+      "name": "Scuola",
+      "latitude": 13,
+      "longitude": 24,
+      "delayInMillis": 0
+    },
+    {
+      "name": "Piazza XXV Aprile",
+      "latitude": 12,
+      "longitude": 24,
+      "delayInMillis": 300000
+    },
+    {
+      "name": "Via Vigo",
+      "latitude": 12,
+      "longitude": 24,
+      "delayInMillis": 600000
+    },
+    {
+      "name": "Via primo Alpini",
+      "latitude": 13,
+      "longitude": 24,
+      "delayInMillis": 900000
+    },
+    {
+      "name": "Piazza Mellano",
+      "latitude": 12,
+      "longitude": 24,
+      "delayInMillis": 1200000
+    }
+  ],
+  "subscribedChildren": [
+    {
+      "parentId": "rossi@mail.com",
+      "name": "Benedetta",
+      "surname": "Rossi",
+      "CF": "BNDRSS01C25B919P"
+    },
+    {
+      "parentId": "bianchi@mail.com",
+      "name": "Aurora",
+      "surname": "Bianchi",
+      "CF": "ARRBNC01C25B919P"
+    },
+    {
+      "parentId": "primo@mail.com",
+      "name": "Chanel",
+      "surname": "Primo",
+      "CF": "CHNPRM01C25B919P"
+    },
+    {
+      "parentId": "bruno@mail.com",
+      "name": "Matteo",
+      "surname": "Bruno",
+      "CF": "MTTBRN01C25B919P"
+    },
+    {
+      "parentId": "secondo@mail.com",
+      "name": "Sara",
+      "surname": "Secondo",
+      "CF": "SRASCN01C25B919P"
+    },
+    {
+      "parentId": "fumagalli@mail.com",
+      "name": "Simone",
+      "surname": "Fumagalli",
+      "CF": "SMNFMG01C25B919P"
+    },
+    {
+      "parentId": "verdi@mail.com",
+      "name": "Claudia",
+      "surname": "Verdi",
+      "CF": "CLDVRD01C25B919P"
+    },
+    {
+      "parentId": "youssef@mail.com",
+      "name": "Iaia",
+      "surname": "Youssef",
+      "CF": "IAIYSS01C25B919P"
+    },
+    {
+      "parentId": "chin@mail.com",
+      "name": "Shibo",
+      "surname": "Chin",
+      "CF": "SHBCHN01C25B919P"
+    }
+  ],
+  "admins": [
+    "admin@mail.com"
+  ]
+}
