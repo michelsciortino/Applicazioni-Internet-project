@@ -1615,7 +1615,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<User> performer;
         Optional<Line> targetLine;
         Date today = Calendar.getInstance().getTime();
-        if (today.before(clientRace.getDate()))
+        if (!today.before(clientRace.getDate()))
             throw new BadRequestException();
         try {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
@@ -1821,10 +1821,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<UserCredentials> performerCredentials;
         Optional<Line> targetLine;
         Optional<Race> targetRace;
-        Date today = Calendar.getInstance().getTime();
         Optional<User> performer;
-        if (today.before(clientRace.getDate()))
-            throw new BadRequestException();
         try {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
