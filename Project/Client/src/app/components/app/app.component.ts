@@ -1,8 +1,7 @@
 import { Component, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { AuthService } from 'src/app/services/auth/auth.service';
-import { Observable, Subscription, isObservable } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatSidenav } from '@angular/material';
 import { UserService } from 'src/app/services/user/user.service';
@@ -33,7 +32,7 @@ export class AppComponent implements OnDestroy {
         this.sidenav.close();
         this.isMobileSvc.setIsMobile(true);
       }
-      else{
+      else {
         this.sidenav.open();
         this.isMobileSvc.setIsMobile(false);
       }
@@ -46,7 +45,7 @@ export class AppComponent implements OnDestroy {
     this.isLoggedSub = this.authSvc.observeLoggedStatus().subscribe(
       (value: boolean) => this.isLogged = value);
 
-    this.userInfoSub = this.userSvc.observeUserInfo().subscribe(
+    this.userInfoSub = this.userSvc.getUserInfo().subscribe(
       (info: UserInfo) => {
         if (info != null) {
           this.isAdmin = info.isAdmin();

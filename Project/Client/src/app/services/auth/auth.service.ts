@@ -4,27 +4,23 @@ import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map, catchError } from 'rxjs/operators';
 import { ConfirmMail } from 'src/app/models/requests/confirmMail';
-import { LoginResponse } from 'src/app/models/responses/login';
+import { AuthenticatedUser } from 'src/app/models/responses/authenticated-user';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-const TOKEN = 'token';
-const USERMAIL = 'usermail';
+const AUTHENTICATED_USER = 'authenticated_user';
 
 @Injectable()
 export class AuthService {
     private static readonly authEndpoint = `${environment.baseEndpoint}/auth`; // 'http://localhost:8080/auth';
-    private authSbj: BehaviorSubject<{ token: string, mail: string }>;
+    private authSbj: BehaviorSubject<AuthenticatedUser>;
 
     constructor(private http: HttpClient) {
-        const storedToken = localStorage.getItem(TOKEN);
-        const usermail = localStorage.getItem(USERMAIL);
-        this.authSbj = new BehaviorSubject<{ token: string, mail: string }>({ token: storedToken, mail: usermail });
+        const authenticatedUser = JSON.parse(localStorage.getItem(AUTHENTICATED_USER)) as AuthenticatedUser;
+        this.authSbj = new BehaviorSubject<AuthenticatedUser>(authenticatedUser);
     }
 
     isLoggedIn(): boolean {
-        // console.log(this.tokenSbj.value);
-        // console.log(this.usermailSbj.value);
-        return (this.authSbj.value!= null && this.authSbj.value.token!=null && this.authSbj.value.token!=null) ? true : false;
+        return this.authSbj.value != null;
     }
 
     //#region Properties
@@ -33,12 +29,12 @@ export class AuthService {
         return this.authSbj.value.token;
     }
 
-    public getUserMail(): string {
-        return this.authSbj.value.mail;
+    public getCurrentUser(): AuthenticatedUser {
+        return this.authSbj.value;
     }
 
     public observeLoggedStatus(): Observable<boolean> {
-        return this.authSbj.asObservable().pipe(map((data) => data != null && data.token!=null && data.mail!=null));
+        return this.authSbj.asObservable().pipe(map((data) => data != null));
     }
 
     //#endregion
@@ -49,13 +45,11 @@ export class AuthService {
         return new Promise((resolve, reject) =>
             this.http.post(`${AuthService.authEndpoint}/login`, credentials, { headers: reqHeaders })
                 .subscribe(
-                    (data: LoginResponse) => {
+                    (data: AuthenticatedUser) => {
                         // handle jwt
-                        // console.log(data);
-                        localStorage.setItem(TOKEN, data.token);
-                        localStorage.setItem(USERMAIL, data.mail);
-                        this.authSbj.next({token:data.token,mail:data.mail});
-                        // console.log(JSON.stringify(this.authSbj.value));
+                        localStorage.setItem(AUTHENTICATED_USER, JSON.stringify(data));
+                        this.authSbj.next(data);
+                        // console.log("Login response:", JSON.stringify(this.authSbj.value));
                         resolve();
                     },
                     (error) => {
@@ -83,8 +77,7 @@ export class AuthService {
     }
 
     public logout() {
-        localStorage.removeItem(TOKEN);
-        localStorage.removeItem(USERMAIL);
+        localStorage.removeItem(AUTHENTICATED_USER);
         this.authSbj.next(null);
     }
 

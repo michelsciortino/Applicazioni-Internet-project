@@ -12,23 +12,16 @@ export class UserInfo {
     public roles: UserRole[];
 
     public isAdmin(): boolean {
-        console.log("ISADMIN")
-        console.log(this.getRoles());
-        return this.roles != null && this.roles.find(r => r === UserRole.ROLE_ADMIN || r === UserRole.ROLE_SYSTEM_ADMIN) != null;
+        return this.roles != null && this.roles.find(r => r === UserRole.ADMIN || r === UserRole.SYSTEM_ADMIN) != null;
     }
 
     public isCompanion(): boolean {
         return this.roles != null &&
-            this.roles.find(r => r === UserRole.ROLE_COMPANION || r === UserRole.ROLE_SYSTEM_ADMIN) != null;
+            this.roles.find(r => r === UserRole.COMPANION || r === UserRole.SYSTEM_ADMIN) != null;
     }
 
     public isSystemAdmin(): boolean {
         return this.roles != null &&
-            this.roles.find(r => r === UserRole.ROLE_SYSTEM_ADMIN) != null;
-    }
-
-    public getRoles(){
-        console.log(JSON.stringify(this))
-        return this.roles;
+            this.roles.find(r => r === UserRole.SYSTEM_ADMIN) != null;
     }
 }

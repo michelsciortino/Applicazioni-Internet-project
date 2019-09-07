@@ -29,6 +29,10 @@ import { MakeAdminComponent } from './components/admin/make-admin/make-admin.com
 import { RegisterComponent } from './components/admin/register/register.component';
 import { IsMobileService } from './services/bridges/is-mobile.service';
 import { UserManagementComponent } from './components/admin/users-management/users-management.component';
+import { AdminService } from './services/admin/admin.service';
+import { AngularSvgIconModule } from 'angular-svg-icon';
+import { JwtInterceptor } from './interceptors/jwt.interceptor';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -37,12 +41,12 @@ import { UserManagementComponent } from './components/admin/users-management/use
     LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent, RegisterComponent,
     // home
     HomeComponent, AdminComponent, CompanionComponent, MessagesComponent, LinesComponent, SettingsComponent,
-    
+
     // admin components
     MakeCompanionComponent, MakeAdminComponent, UserManagementComponent,
 
     // dumb components
-    MessageComponent, 
+    MessageComponent,
 
     // directives
     PasswordToggleDirective
@@ -53,13 +57,18 @@ import { UserManagementComponent } from './components/admin/users-management/use
     AppRoutingModule,
     FormsModule, ReactiveFormsModule,
     HttpClientModule,
+    AngularSvgIconModule
   ],
   providers: [
     AuthService,
     UserService,
+    AdminService,
     MessageService,
     IsMobileService,
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+
   ],
   bootstrap: [AppComponent]
 })
