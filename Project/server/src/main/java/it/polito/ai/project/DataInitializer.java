@@ -21,13 +21,8 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -52,17 +47,15 @@ public class DataInitializer implements CommandLineRunner {
             ClientUserCredentials user = db.getCredentials("user@mail.com");
         } catch (ResourceNotFoundException e) {
             db.insertCredentials("user@mail.com", "password", Arrays.asList(Roles.USER), true);
-            ClientUser user = new ClientUser();
-            user.setMail("user@mail.com");
-            db.insertUser(user);
+            ClientUser u = new ClientUser("user@mail.com", "user", "user", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            db.insertUser(u);
         }
         try {
             ClientUserCredentials user1 = db.getCredentials("admin@mail.com");
         } catch (ResourceNotFoundException e) {
             db.insertCredentials("admin@mail.com", "password", Arrays.asList(Roles.USER, Roles.ADMIN, Roles.SYSTEM_ADMIN), true);
-            ClientUser user = new ClientUser();
-            user.setMail("admin@mail.com");
-            db.insertUser(user);
+            ClientUser u = new ClientUser("admin@mail.com", "admin", "admin", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            db.insertUser(u);
         }
 
         for (String arg : args) {
@@ -187,16 +180,14 @@ public class DataInitializer implements CommandLineRunner {
                     throw e;
                 }
                 JsonLine line = new ObjectMapper().readValue(jsonLines, JsonLine.class);
-                try{
+                try {
                     db.insertLine(line);
                     for (JsonChild c : line.getSubscribedChildren()) {
                         ClientChild child = new ClientChild(c.getName(), c.getSurname(), c.getCF(), c.getParentId());
                         if (db.getCredentials(child.getParentId()) != null)
                             db.addChildToLine(line.getAdmins().get(0), child, line.getName(), db.getCredentials(line.getAdmins().get(0)).getRoles());
                     }
-                }
-                catch(BadRequestException e)
-                {
+                } catch (BadRequestException e) {
                     System.out.println("Line already inserted");
                 }
             } else {
@@ -225,17 +216,14 @@ public class DataInitializer implements CommandLineRunner {
                 JsonUsers users = new ObjectMapper().readValue(jsonUsers, JsonUsers.class);
 
                 for (JsonUser user : users.users) {
-                    try
-                    {
+                    try {
 
-                        if(user.getUsername().toString().equals("movalli@mail.com") || user.getUsername().toString().equals("pascoli@mail.com"))
-                        {
+                        if (user.getUsername().toString().equals("movalli@mail.com") || user.getUsername().toString().equals("pascoli@mail.com")) {
                             List<String> roles = new ArrayList<>();
                             roles.add(Roles.USER);
                             roles.add(Roles.COMPANION);
                             db.insertCredentials(user.username, "password", roles, Boolean.TRUE);
-                        }
-                        else
+                        } else
                             db.insertCredentials(user.username, "password", Arrays.asList(Roles.USER), Boolean.TRUE);
 
                         ClientUser u = new ClientUser();
@@ -253,9 +241,7 @@ public class DataInitializer implements CommandLineRunner {
                         u.setChildren(children);
                         u.setLines(user.getLines());
                         db.insertUser(u);
-                    }
-                    catch(BadRequestException e)
-                    {
+                    } catch (BadRequestException e) {
                         System.out.println("User already exists");
                     }
                 }
