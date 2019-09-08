@@ -11,6 +11,7 @@ import it.polito.ai.project.requestEntities.MakeOrRemoveAdminRequest;
 import it.polito.ai.project.requestEntities.SelectCompanionRequest;
 import it.polito.ai.project.requestEntities.AddChildToLineRequest;
 import it.polito.ai.project.services.database.DatabaseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,7 +24,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-
+    @Autowired
     private DatabaseService db;
 
     @RequestMapping(value="/makeAdmin", method = RequestMethod.PUT)

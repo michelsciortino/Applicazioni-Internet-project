@@ -12,6 +12,7 @@ import it.polito.ai.project.requestEntities.ReserveChildrenRequest;
 import it.polito.ai.project.requestEntities.StateOrRemoveCompanionAvailabilityRequest;
 import it.polito.ai.project.requestEntities.TakeorDeliverChildrenRequest;
 import it.polito.ai.project.services.database.DatabaseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +25,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequestMapping("/companion")
 public class CompanionController {
-
+    @Autowired
     private DatabaseService db;
 
     //ATTENZIONE! Dato che questo è il controller per il companion, solo lui è autorizzato e la gestione delle credenziali va fatta a monte
