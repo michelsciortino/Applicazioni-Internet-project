@@ -11,6 +11,7 @@ import it.polito.ai.project.requestEntities.MakeOrRemoveAdminRequest;
 import it.polito.ai.project.requestEntities.SelectCompanionRequest;
 import it.polito.ai.project.requestEntities.AddChildToLineRequest;
 import it.polito.ai.project.services.database.DatabaseService;
+import it.polito.ai.project.services.database.models.UserCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class AdminController {
     private DatabaseService db;
 
     @RequestMapping(value="/makeAdmin", method = RequestMethod.PUT)
-    public ResponseEntity makeAdmin(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody MakeOrRemoveAdminRequest makeOrRemoveAdminRequest)
+    public ResponseEntity makeAdmin(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody MakeOrRemoveAdminRequest makeOrRemoveAdminRequest)
     {
         try
         {
@@ -57,7 +58,7 @@ public class AdminController {
         }
     }
     @RequestMapping(value="/removeAdmin", method = RequestMethod.PUT)
-    public ResponseEntity removeAdmin(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody MakeOrRemoveAdminRequest makeOrRemoveAdminRequest)
+    public ResponseEntity removeAdmin(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody MakeOrRemoveAdminRequest makeOrRemoveAdminRequest)
     {
         try
         {
@@ -86,7 +87,7 @@ public class AdminController {
         }
     }
     @RequestMapping(value="/makeCompanion", method = RequestMethod.PUT)
-    public ResponseEntity makeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody String targetUsername)
+    public ResponseEntity makeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody String targetUsername)
     {
         try
         {
@@ -115,7 +116,7 @@ public class AdminController {
         }
     }
     @RequestMapping(value="/removeCompanion", method = RequestMethod.PUT)
-    public ResponseEntity removeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientCompanion clientCompanion)
+    public ResponseEntity removeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientCompanion clientCompanion)
     {
         try
         {
@@ -144,7 +145,7 @@ public class AdminController {
         }
     }
     @RequestMapping(value="/selectCompanions", method = RequestMethod.PUT)
-    public ResponseEntity selectCompanions(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody SelectCompanionRequest selectCompanionRequest)
+    public ResponseEntity selectCompanions(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody SelectCompanionRequest selectCompanionRequest)
     {
         try
         {
@@ -174,7 +175,7 @@ public class AdminController {
     }
 
     @RequestMapping(value="/unselectCompanions", method = RequestMethod.PUT)
-    public ResponseEntity unselectCompanions(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
+    public ResponseEntity unselectCompanions(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
     {
         try
         {
@@ -204,7 +205,7 @@ public class AdminController {
     }
 
     @RequestMapping(value="/validCompanions", method = RequestMethod.PUT)
-    public ResponseEntity validCompanions(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
+    public ResponseEntity validCompanions(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
     {
         try
         {
@@ -233,7 +234,7 @@ public class AdminController {
         }
     }
     @RequestMapping(value="/addChildrenToLine", method = RequestMethod.PUT)
-    public ResponseEntity addChildrenToLine(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody AddChildToLineRequest addChildToLineRequest)
+    public ResponseEntity addChildrenToLine(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AddChildToLineRequest addChildToLineRequest)
     {
         try
         {

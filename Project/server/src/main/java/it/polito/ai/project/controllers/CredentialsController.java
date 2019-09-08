@@ -30,6 +30,7 @@ public class CredentialsController {
     {
         try
         {
+            //TODO: controllare perchè l'inserimento è disabilitato
             return ok("");//db.insertCredentials(clientUserCredentials.getUsername(), clientUserCredentials.getPassword(), clientUserCredentials.getRoles(),false));
         }
         catch(ResourceNotFoundException re)
@@ -78,7 +79,7 @@ public class CredentialsController {
     {
         try
         {
-            if(!clientUserCredentials.getRoles().contains(Roles.ADMIN) && !!clientUserCredentials.getRoles().contains(Roles.SYSTEM_ADMIN)) {
+            if(!clientUserCredentials.getRoles().contains(Roles.ADMIN) && !clientUserCredentials.getRoles().contains(Roles.SYSTEM_ADMIN)) {
                 if (!clientUserCredentials.getUsername().equals(newUserCredentials.getUsername()))
                     throw new UnauthorizedRequestException();
             }

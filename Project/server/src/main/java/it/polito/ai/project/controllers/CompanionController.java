@@ -12,6 +12,7 @@ import it.polito.ai.project.requestEntities.ReserveChildrenRequest;
 import it.polito.ai.project.requestEntities.StateOrRemoveCompanionAvailabilityRequest;
 import it.polito.ai.project.requestEntities.TakeorDeliverChildrenRequest;
 import it.polito.ai.project.services.database.DatabaseService;
+import it.polito.ai.project.services.database.models.UserCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class CompanionController {
     //ATTENZIONE! Dato che questo è il controller per il companion, solo lui è autorizzato e la gestione delle credenziali va fatta a monte
 
     @RequestMapping(value="/makeCompanion", method = RequestMethod.PUT)
-    public ResponseEntity makeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody String targetUsername)
+    public ResponseEntity makeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody String targetUsername)
     {
         try
         {
@@ -60,7 +61,7 @@ public class CompanionController {
         }
     }
     @RequestMapping(value="/removeCompanion", method = RequestMethod.PUT)
-    public ResponseEntity removeCompanion(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientCompanion clientCompanion)
+    public ResponseEntity removeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientCompanion clientCompanion)
     {
         try
         {
@@ -89,7 +90,7 @@ public class CompanionController {
         }
     }
     @RequestMapping(value="/takeChildren", method = RequestMethod.PUT)
-    public ResponseEntity takeChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest takeChildrenRequest)
+    public ResponseEntity takeChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest takeChildrenRequest)
     {
         try
         {
@@ -115,7 +116,7 @@ public class CompanionController {
     }
 
     @RequestMapping(value="/deliverChildren", method = RequestMethod.PUT)
-    public ResponseEntity deliverChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest deliverChildrenRequest)
+    public ResponseEntity deliverChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest deliverChildrenRequest)
     {
         try
         {
@@ -141,7 +142,7 @@ public class CompanionController {
     }
 
     @RequestMapping(value="/absentChildren", method = RequestMethod.PUT)
-    public ResponseEntity absentChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody AbsentChildrenRequest absentChildrenRequest)
+    public ResponseEntity absentChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AbsentChildrenRequest absentChildrenRequest)
     {
         try
         {
@@ -167,7 +168,7 @@ public class CompanionController {
     }
 
     @RequestMapping(value="/stateAvailability", method = RequestMethod.PUT)
-    public ResponseEntity stateAvailability(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody StateOrRemoveCompanionAvailabilityRequest stateRequest)
+    public ResponseEntity stateAvailability(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody StateOrRemoveCompanionAvailabilityRequest stateRequest)
     {
         try
         {
@@ -196,7 +197,7 @@ public class CompanionController {
         }
     }
     @RequestMapping(value="/removeAvailability", method = RequestMethod.PUT)
-    public ResponseEntity removeAvailability(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody StateOrRemoveCompanionAvailabilityRequest stateRequest)
+    public ResponseEntity removeAvailability(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody StateOrRemoveCompanionAvailabilityRequest stateRequest)
     {
         try
         {
@@ -226,7 +227,7 @@ public class CompanionController {
     }
 
     @RequestMapping(value="/confirmChosen", method = RequestMethod.PUT)
-    public ResponseEntity confirmChosen(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
+    public ResponseEntity confirmChosen(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
     {
         try
         {
