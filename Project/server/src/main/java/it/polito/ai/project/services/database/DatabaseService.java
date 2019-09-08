@@ -10,11 +10,10 @@ import it.polito.ai.project.services.database.repositories.*;
 import it.polito.ai.project.services.email.EmailConfiguration;
 import it.polito.ai.project.services.email.EmailSenderService;
 import it.polito.ai.project.services.email.models.Mail;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -218,7 +217,21 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     //---------------------------------------------------###User###---------------------------------------------------//
 
-    //TODO checkare se funge
+    public static class SortType {
+        private static final String MAIL = "Username";
+        private static final String NAME = "Name";
+        private static final String SURNAME = "Surname";
+
+        public static String get(String type) {
+            if (type.equals("MAIL"))
+                return MAIL;
+            if (type.equals("NAME"))
+                return NAME;
+            if (type.equals("SURNAME"))
+                return SURNAME;
+            else return null;
+        }
+    }
 
     /**
      * Function to get all Users paged
@@ -228,17 +241,66 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @throws InternalServerErrorException
      */
     @Override
-    public Page<ClientUser> getUsers(int pageNumber) {
+    public Page<ClientUser> getUsers(int pageSize, int pageNumber, String sortBy, String filterBy, String filter) {
         try {
-            Pageable pageable = PageRequest.of(pageNumber, 10);
-
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(SortType.get(sortBy)));
             List<ClientUser> usersList = new ArrayList<>();
-            for (User p : userRepository.findAll(pageable)) {
-                Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.getUsername());
-                usersList.add(userToClientUser(p, credentials.get().getRoles()));
-            }
 
-            return new PageImpl<>(usersList);
+            if (filterBy == null && filter == null) {
+                Page<User> users = userRepository.findAll(pageable);
+                long totalElements = users.getTotalElements();
+                for (User p : users) {
+                    Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.getUsername());
+                    usersList.add(userToClientUser(p, credentials.get().getRoles()));
+                }
+                return new PageImpl<>(usersList, pageable, totalElements);
+            }
+            if (filterBy == null || filter == null)
+                throw new BadRequestException();
+
+            if (filterBy.equals("MAIL")) {
+                Page<User> users = userRepository.findAllByUsernameContains(filter, pageable);
+                long totalElements = users.getTotalElements();
+                for (User p : users) {
+                    Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.getUsername());
+                    usersList.add(userToClientUser(p, credentials.get().getRoles()));
+                }
+                return new PageImpl<>(usersList, pageable, totalElements);
+            }
+            if (filterBy.equals("NAME")) {
+                Page<User> users = userRepository.findAllByNameContains(filter, pageable);
+                long totalElements = users.getTotalElements();
+                for (User p : users) {
+                    Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.getUsername());
+                    usersList.add(userToClientUser(p, credentials.get().getRoles()));
+                }
+                return new PageImpl<>(usersList, pageable, totalElements);
+            }
+            if (filterBy.equals("SURNAME")) {
+                Page<User> users = userRepository.findAllBySurnameContains(filter, pageable);
+                long totalElements = users.getTotalElements();
+                for (User p : users) {
+                    Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.getUsername());
+                    usersList.add(userToClientUser(p, credentials.get().getRoles()));
+                }
+                return new PageImpl<>(usersList, pageable, totalElements);
+            }
+            if (filterBy.equals("ROLE")) {
+                Pageable pageableC = PageRequest.of(pageNumber, pageSize);
+                List<String> roles = new ArrayList<>();
+                roles.add(filter);
+                Page<UserCredentials> usersC = userCredentialsRepository.findAllByRolesContains(clientRolesToRoles(roles).get(0), pageableC);
+                long totalElements = usersC.getTotalElements();
+                for (UserCredentials p : usersC) {
+                    Optional<User> user = userRepository.findByUsername(p.getUsername());
+                    usersList.add(userToClientUser(user.get(), p.getRoles()));
+                }
+                return new PageImpl<>(usersList, pageable, totalElements);
+            } else {
+                throw new BadRequestException();
+            }
+        } catch (BadRequestException be) {
+            throw new BadRequestException(be);
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
@@ -390,8 +452,9 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @return list<ClientRoles>: converted client user
      */
     private List<String> rolesToClientRoles(List<String> roles) {
-       return roles.stream().map((role)->ClientRoles.valueOf((role.substring(Roles.prefix.length()))).toString()).collect(Collectors.toList());
+        return roles.stream().map((role) -> ClientRoles.valueOf((role.substring(Roles.prefix.length()))).toString()).collect(Collectors.toList());
     }
+
     /**
      * Function to convert ClientRoles to Roles
      *
@@ -399,9 +462,12 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @return list<ClientRoles>: converted client user
      */
     private List<String> clientRolesToRoles(List<String> roles) {
-        return roles.stream().map((role)->{role = Roles.prefix.toString() + role;
-                                                return role;}).collect(Collectors.toList());
+        return roles.stream().map((role) -> {
+            role = Roles.prefix.toString() + role;
+            return role;
+        }).collect(Collectors.toList());
     }
+
     /**
      * Function to convert ClientUser to  User
      *
@@ -556,15 +622,13 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
 
         // Adding line to User.lines
-        if(targetLines == null) {
+        if (targetLines == null) {
             target.get().setLines(new ArrayList<>());
             target.get().getLines().add(line);
+        } else {
+            if (!targetLines.contains(line))
+                Objects.requireNonNull(target.get().getLines()).add(line);
         }
-        else
-            {
-                if(!targetLines.contains(line))
-                    Objects.requireNonNull(target.get().getLines()).add(line);
-            }
         // UpdateLine: Add user admin in line
         mongoLine.get().getAdmins().add(targetCredentials.get().getUsername());
         updateLine(lineToClientLine(mongoLine.get()));
@@ -722,9 +786,9 @@ public class DatabaseService implements DatabaseServiceInterface {
                 CompanionState targetCompanionState = null;
                 Companion targetcompanion = null;
                 boolean lockedrace = false;
-                for(Companion c : r.getCompanions()) {
+                for (Companion c : r.getCompanions()) {
                     //verify if race is locked
-                    if(c.getState() == CompanionState.VALIDATED)
+                    if (c.getState() == CompanionState.VALIDATED)
                         lockedrace = true;
                     //put target companion in a local variable
                     if (c.getUserDetails().getUsername().equals(clientCompanion.getUserDetails().getMail())) {
@@ -732,9 +796,9 @@ public class DatabaseService implements DatabaseServiceInterface {
                         targetcompanion = c;
                     }
                 }
-                if(lockedrace)
+                if (lockedrace)
                     continue;
-                if(targetCompanionState == null || targetcompanion == null)
+                if (targetCompanionState == null || targetcompanion == null)
                     throw new InternalServerErrorException();
                 //TODO: fai vedere ad andrea
                 //if companion is available, he's suddenly removed
@@ -757,7 +821,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                     //Remove chosen companion
                     for (Companion c : r.getCompanions()) {
                         String content = "You have been removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
-                        if (c.getState().equals(CompanionState.CONFIRMED)|| c.getState().equals(CompanionState.CHOSEN)) {
+                        if (c.getState().equals(CompanionState.CONFIRMED) || c.getState().equals(CompanionState.CHOSEN)) {
                             r.getCompanions().get(r.getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
                             emailSenderService.sendSimpleMail(new Mail(performerUsername, c.getUserDetails().getUsername(), "Rounds Changed!", content));
                         }
@@ -1440,12 +1504,10 @@ public class DatabaseService implements DatabaseServiceInterface {
             Line l = new Line(line.getName(), outStops, retStops, line.getAdmins());
             lineRepository.save(l);
 
-        }
-        catch (BadRequestException e) {
+        } catch (BadRequestException e) {
             //TO-DO check unique index Exception
             throw new BadRequestException();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //TO-DO check unique index Exception
             throw new InternalServerErrorException(e);
         }
@@ -1582,9 +1644,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<Line> l;
         try {
             l = lineRepository.findLineByName(lineName);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new InternalServerErrorException(e);
         }
 
@@ -1606,7 +1666,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         } else {
             throw new BadRequestException();
         }
-
 
 
     }

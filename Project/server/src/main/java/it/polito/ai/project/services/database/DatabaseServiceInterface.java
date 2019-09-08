@@ -1,5 +1,6 @@
 package it.polito.ai.project.services.database;
 
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.models.DirectionType;
@@ -32,7 +33,7 @@ public interface DatabaseServiceInterface {
 
     //---------------------------------------------------###User###---------------------------------------------------//
 
-    Page<ClientUser> getUsers(int pageNumber);
+    Page<ClientUser> getUsers(int pageSize, int pageNumber, String sortBy, String filterBy, String filter);
 
     ClientUser getUser(String id);
 
