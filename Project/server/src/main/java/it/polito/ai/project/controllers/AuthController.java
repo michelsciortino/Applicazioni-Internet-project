@@ -1,7 +1,9 @@
 package it.polito.ai.project.controllers;
 
 import it.polito.ai.project.exceptions.BadRequestException;
+import it.polito.ai.project.exceptions.ConflicException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
+import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.ClientUser;
 import it.polito.ai.project.responseEntities.LoginResponse;
 import it.polito.ai.project.requestEntities.*;
@@ -59,6 +61,8 @@ public class AuthController {
             return ok(model);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (UnauthorizedRequestException ue) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
         } catch (BadRequestException be) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
         } catch (Exception ie) {
@@ -108,6 +112,8 @@ public class AuthController {
             return ok(model);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (ConflicException ce) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, ce.getMessage());
         } catch (BadRequestException | BadCredentialsException be) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
         } catch (Exception ie) {

@@ -1,9 +1,7 @@
 package it.polito.ai.project.services.database;
 
 import it.polito.ai.project.DataInitializer;
-import it.polito.ai.project.exceptions.BadRequestException;
-import it.polito.ai.project.exceptions.InternalServerErrorException;
-import it.polito.ai.project.exceptions.ResourceNotFoundException;
+import it.polito.ai.project.exceptions.*;
 import it.polito.ai.project.generalmodels.ClientRoles;
 import it.polito.ai.project.generalmodels.ClientUser;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
@@ -118,11 +116,11 @@ public class AuthService implements AuthServiceInterface {
                     database.deleteToken(token);
                     return mail;
                 } else
-                    throw new BadRequestException("Token expired");
+                    throw new UnauthorizedRequestException("Token expired");
             } else
                 throw new ResourceNotFoundException();
         } else
-            throw new BadRequestException("Token is invalid or link is broken!");
+            throw new UnauthorizedRequestException("Token is invalid or link is broken!");
     }
 
     /**
@@ -198,7 +196,7 @@ public class AuthService implements AuthServiceInterface {
         Optional<UserCredentials> userCredentials = userCredentialsRepository.findByUsername(mail);
         if (userCredentials.isPresent()) {
             log.debug("Invalid mail... Credential already exist");
-            throw new BadRequestException("Invalid mail... Credential already exist");
+            throw new ConflicException("Invalid mail... Credential already exist");
         } else {
             log.debug("register new credential");
             ClientUserCredentials credentials = database.insertCredentials(mail, "", Arrays.asList(Roles.prefix + Roles.USER),false);
