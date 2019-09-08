@@ -7,6 +7,7 @@ import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.ClientCompanion;
 import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
+import it.polito.ai.project.requestEntities.MakeCompanionRequest;
 import it.polito.ai.project.requestEntities.MakeOrRemoveAdminRequest;
 import it.polito.ai.project.requestEntities.SelectCompanionRequest;
 import it.polito.ai.project.requestEntities.AddChildToLineRequest;
@@ -38,7 +39,7 @@ public class AdminController {
         }
         catch(ResourceNotFoundException re)
         {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
         }
         catch(InternalServerErrorException ie)
         {
@@ -46,11 +47,11 @@ public class AdminController {
         }
         catch(BadRequestException be)
         {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
         }
         catch(UnauthorizedRequestException ue)
         {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
         }
         catch(Exception e)
         {
@@ -67,31 +68,31 @@ public class AdminController {
         }
         catch(ResourceNotFoundException re)
         {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
         }
         catch(InternalServerErrorException ie)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
         }
         catch(BadRequestException be)
         {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
         }
         catch(UnauthorizedRequestException ue)
         {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
         }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
     @RequestMapping(value="/makeCompanion", method = RequestMethod.PUT)
-    public ResponseEntity makeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody String targetUsername)
+    public ResponseEntity makeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody MakeCompanionRequest companionRequest)
     {
         try
         {
-            db.makeCompanion(performerUserCredentials.getUsername(), targetUsername );
+            db.makeCompanion(performerUserCredentials.getUsername(), companionRequest.getTargetName() );
             return ok(HttpStatus.OK);
         }
         catch(ResourceNotFoundException re)

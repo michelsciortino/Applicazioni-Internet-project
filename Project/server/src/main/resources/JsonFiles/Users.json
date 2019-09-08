@@ -11,13 +11,15 @@
           "CF": "BNDRSS01C25B919P"
         },
         {
+          "name": "Figlio",
+          "surname": "Figlio",
+          "CF": "FGLFGL01C15B919P"
+        },
+        {
           "name": "Marco",
           "surname": "Rossi",
           "CF": "MRCRSS01C15B919P"
         }
-      ],
-      "lines": [
-        "Bruchi_cantanti"
       ]
     }, {
       "username": "bianchi@mail.com",
@@ -29,9 +31,6 @@
           "surname": "Bianchi",
           "CF": "ARRBNC01C25B919P"
         }
-      ],
-      "lines": [
-        "Bruchi_cantanti"
       ]
     },{
       "username": "primo@mail.com",
@@ -48,9 +47,6 @@
           "surname": "Primo",
           "CF": "CCOPRM01C25B919P"
         }
-      ],
-      "lines": [
-        "Bruchi_cantanti"
       ]
     },{
       "username": "bruno@mail.com",
@@ -62,9 +58,6 @@
           "surname": "Bruno",
           "CF": "MTTBRN01C25B919P"
         }
-      ],
-      "lines": [
-        "Bruchi_cantanti"
       ]
     },{
       "username": "secondo@mail.com",
@@ -81,9 +74,6 @@
           "surname": "Secondo",
           "CF": "UGOSCN01C25B919P"
         }
-      ],
-      "lines": [
-        "Bruchi_cantanti"
       ]
     },{
       "username": "fumagalli@mail.com",
@@ -95,9 +85,6 @@
           "surname": "Fumagalli",
           "CF": "SMNFMG01C25B919P"
         }
-      ],
-      "lines": [
-        "Bruchi_cantanti"
       ]
     },
     {
@@ -110,9 +97,6 @@
           "surname": "Verdi",
           "CF": "CLDVRD01C25B919P"
         }
-      ],
-      "lines": [
-        "Bruchi_cantanti"
       ]
     },{
       "username": "youssef@mail.com",
@@ -124,9 +108,6 @@
           "surname": "Youssef",
           "CF": "IAIYSS01C25B919P"
         }
-      ],
-      "lines": [
-        "Bruchi_cantanti"
       ]
     },{
       "username": "chin@mail.com",

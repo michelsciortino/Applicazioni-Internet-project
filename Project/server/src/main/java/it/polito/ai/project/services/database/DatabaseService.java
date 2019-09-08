@@ -65,7 +65,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     public ClientUserCredentials insertCredentials(String username, String password, List<String> roles, Boolean isEnable) {
         try {
             if (!userCredentialsRepository.findByUsername(username).isPresent()) {
-                UserCredentials user = userCredentialsRepository.save(new UserCredentials(username, this.passwordEncoder.encode(password), roles, isEnable));
+                UserCredentials user = userCredentialsRepository.save(new UserCredentials(username, this.passwordEncoder.encode(password), clientRolesToRoles(roles), isEnable));
                 return userCredentialsToClientUserCredentials(user);
             }
         } catch (Exception e) {
@@ -133,7 +133,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         try {
             Optional<UserCredentials> u = userCredentialsRepository.findByUsername(clientUserCredentials.getUsername());
             if (u.isPresent()) {
-                u.get().setRoles(clientUserCredentials.getRoles());
+                u.get().setRoles(clientRolesToRoles(clientUserCredentials.getRoles()));
                 u.get().setAccountNotExpired(clientUserCredentials.isAccountNotExpired());
                 u.get().setAccountNotLocked(clientUserCredentials.isAccountNotLocked());
                 u.get().setCredentialsNotExpired(clientUserCredentials.isCredentialsNotExpired());
@@ -392,7 +392,16 @@ public class DatabaseService implements DatabaseServiceInterface {
     private List<String> rolesToClientRoles(List<String> roles) {
        return roles.stream().map((role)->ClientRoles.valueOf((role.substring(Roles.prefix.length()))).toString()).collect(Collectors.toList());
     }
-
+    /**
+     * Function to convert ClientRoles to Roles
+     *
+     * @param roles list of roles
+     * @return list<ClientRoles>: converted client user
+     */
+    private List<String> clientRolesToRoles(List<String> roles) {
+        return roles.stream().map((role)->{role = Roles.prefix.toString() + role;
+                                                return role;}).collect(Collectors.toList());
+    }
     /**
      * Function to convert ClientUser to  User
      *
@@ -526,20 +535,20 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         // If one of line, performer, performerCredentials, target or targetCredentials misses: Throw ResourceNotFound
         if (!mongoLine.isPresent() || !perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
-            throw new ResourceNotFoundException();
+            throw new ResourceNotFoundException("Line or Target doesn't exist");
 
-        List<String> performerLines = performer.get().getLines();
+        List<String> performerLines = Objects.requireNonNull(performer.get()).getLines();
         List<String> performerRoles = perfCredentials.get().getRoles();
-        List<String> targetLines = target.get().getLines();
+        List<String> targetLines = Objects.requireNonNull(target.get()).getLines();
         List<String> targetRoles = targetCredentials.get().getRoles();
 
         // If performer isn't the System_Admin or an Admin of the selected line: Throw Unahuthorized
         if (!isAdminOfLineOrSysAdmin(performerLines, performerRoles, line))
-            throw new UnauthorizedRequestException();
+            throw new UnauthorizedRequestException("Performer must be either SystemAdmin or Line Admin");
 
         // If target is the System_Admin or an Admin of the selected line: Throw BadRequest
         if (isAdminOfLineOrSysAdmin(targetLines, targetRoles, line))
-            throw new BadRequestException();
+            throw new BadRequestException("Target User is already Line Admin of selected Line or is System Admin");
 
         //If target was a normal user before this action: Add Admin in UserCredentials.roles
         if (!isAdmin(targetRoles)) {
@@ -547,8 +556,15 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
 
         // Adding line to User.lines
-        Objects.requireNonNull(target.get().getLines()).add(line);
-
+        if(targetLines == null) {
+            target.get().setLines(new ArrayList<>());
+            target.get().getLines().add(line);
+        }
+        else
+            {
+                if(!targetLines.contains(line))
+                    Objects.requireNonNull(target.get().getLines()).add(line);
+            }
         // UpdateLine: Add user admin in line
         mongoLine.get().getAdmins().add(targetCredentials.get().getUsername());
         updateLine(lineToClientLine(mongoLine.get()));
@@ -589,16 +605,16 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         // If one of line, performer, performerCredentials, target or targetCredentials misses: Throw ResourceNotFound
         if (!mongoLine.isPresent() || !perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
-            throw new ResourceNotFoundException();
+            throw new ResourceNotFoundException("Target or Line doesn't exist");
 
 
         // If performer isn't the System_Admin or an Admin of the selected line: Throw Unahuthorized
         if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), perfCredentials.get().getRoles(), line))
-            throw new UnauthorizedRequestException();
+            throw new UnauthorizedRequestException("Performer must be either SystemAdmin or Line Admin");
 
-        // If target isn't the System_Admin or an Admin of the selected line: Throw BadRequest
+        // If target isn't the  Admin of the selected line: Throw BadRequest
         if (!isAdminOfLine(target.get().getLines(), targetCredentials.get().getRoles(), line))
-            throw new BadRequestException();
+            throw new BadRequestException("Target must be Line Admin");
 
         // UpdateLine: remove user admin from line
         mongoLine.get().getAdmins().remove(targetCredentials.get().getUsername());
@@ -634,8 +650,8 @@ public class DatabaseService implements DatabaseServiceInterface {
         List<String> performerRoles = perfCredentials.get().getRoles();
         List<String> targetRoles = targetCredentials.get().getRoles();
 
-        // If performer isn't the SysAdmin or an Admin: Throw Unauthorized
-        if (!isAdmin(performerRoles) || !isSystemAdmin(performerRoles))
+        // If performer isn't the SysAdmin or an Admin or a Companion: Throw Unauthorized
+        if (!isAdmin(performerRoles) && !isSystemAdmin(performerRoles) && !isCompanion(performerRoles))
             throw new UnauthorizedRequestException();
         // If target is already a Companion: Throw BadRequest
         if (isCompanion(targetRoles))
@@ -677,7 +693,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         try {
             Date date = simpleDateFormat.parse(stringDate);
-            races = raceRepository.findAllByCompanionsAndDateGreaterThan(clientCompanionToCompanion(clientCompanion), date);
+            races = raceRepository.findAllByCompanionsAndDateGreaterThan(clientCompanionToCompanion(clientCompanion).getUserDetails().getUsername(), date);
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
@@ -689,7 +705,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!isCompanion(targetRoles))
             throw new BadRequestException();
         // If performer isn't the SysAdmin or an Admin: Throw Unauthorized
-        if (!isAdmin(performerRoles) || !isSystemAdmin(performerRoles))
+        if (!isAdmin(performerRoles) && !isSystemAdmin(performerRoles) && !isCompanion(performerRoles))
             throw new UnauthorizedRequestException();
 
         if (!races.isEmpty()) {
@@ -703,30 +719,45 @@ public class DatabaseService implements DatabaseServiceInterface {
                 }
                 if (!line.isPresent())
                     throw new InternalServerErrorException();
-
-
-                CompanionState companionState = r.getCompanions().get(r.getCompanions().indexOf(clientCompanion)).getState();
+                CompanionState targetCompanionState = null;
+                Companion targetcompanion = null;
+                boolean lockedrace = false;
+                for(Companion c : r.getCompanions()) {
+                    //verify if race is locked
+                    if(c.getState() == CompanionState.VALIDATED)
+                        lockedrace = true;
+                    //put target companion in a local variable
+                    if (c.getUserDetails().getUsername().equals(clientCompanion.getUserDetails().getMail())) {
+                        targetCompanionState = c.getState();
+                        targetcompanion = c;
+                    }
+                }
+                if(lockedrace)
+                    continue;
+                if(targetCompanionState == null || targetcompanion == null)
+                    throw new InternalServerErrorException();
                 //TODO: fai vedere ad andrea
                 //if companion is available, he's suddenly removed
-                if (companionState.equals(CompanionState.AVAILABLE))
-                    r.getCompanions().remove(clientCompanionToCompanion(clientCompanion));
+                if (targetCompanionState.equals(CompanionState.AVAILABLE))
+                    r.getCompanions().remove(targetcompanion);
                     //if companion is chosen, all other chosen companions become available and a notification must be sent to admin
-                else if (companionState.equals(CompanionState.CHOSEN)) {
+                else if (targetCompanionState.equals(CompanionState.CHOSEN)) {
                     //Remove chosen companion
                     for (Companion c : r.getCompanions()) {
-                        if (c.getState().equals(CompanionState.CHOSEN)) {
+                        if (c.getState().equals(CompanionState.CHOSEN) || c.getState().equals(CompanionState.CONFIRMED)) {
                             r.getCompanions().get(r.getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
                         }
                     }
+
                     //Format content and send email to each admin
                     String content = clientCompanion.getUserDetails().getMail() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
                     for (String address : line.get().getAdmins())
                         emailSenderService.sendSimpleMail(new Mail(performerUsername, address, "Companion Removed", content));
-                } else if (companionState.equals(CompanionState.CONFIRMED)) {
+                } else if (targetCompanionState.equals(CompanionState.CONFIRMED)) {
                     //Remove chosen companion
                     for (Companion c : r.getCompanions()) {
                         String content = "You have been removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
-                        if (c.getState().equals(CompanionState.CONFIRMED)) {
+                        if (c.getState().equals(CompanionState.CONFIRMED)|| c.getState().equals(CompanionState.CHOSEN)) {
                             r.getCompanions().get(r.getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
                             emailSenderService.sendSimpleMail(new Mail(performerUsername, c.getUserDetails().getUsername(), "Rounds Changed!", content));
                         }
@@ -748,7 +779,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         // Update Credentials: update user to remove companion
         updateCredentials(userCredentialsToClientUserCredentials(targetCredentials.get()));
 
-        //TODO: se non ci sono vincoli delle linee ok
     }
 
     /**
@@ -826,7 +856,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new BadRequestException();
 
         // Create Map with PediStop type key and boolean value which marks a stop as covered if true
-        Map<PediStop, Boolean> coverageStopsMap = new HashMap<>();
+        Map<PediStop, Boolean> coverageStopsMap = new LinkedHashMap<>();
         if (race.get().getDirection().toString().equals(DirectionType.OUTWARD.toString())) {
             for (PediStop p : line.get().getOutwardStops())
                 coverageStopsMap.put(p, false);
@@ -1457,7 +1487,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         ClientUserCredentials clientUserCredentials = null;
         Token token = null;
         try {
-            clientUserCredentials = insertCredentials(username, "", roles, false);
+            clientUserCredentials = insertCredentials(username, "", clientRolesToRoles(roles), false);
             token = new Token(clientUserCredentials.getUsername(), ScopeToken.CONFIRM);
             insertToken(token);
             Mail mail = new Mail();
@@ -1849,6 +1879,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         Race race = clientRaceToRace(clientRace);
         try {
+            raceRepository.delete(targetRace.get());
             raceRepository.save(race);
         } catch (Exception e) {
             throw new InternalServerErrorException();

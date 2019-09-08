@@ -7,10 +7,7 @@ import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.ClientCompanion;
 import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
-import it.polito.ai.project.requestEntities.AbsentChildrenRequest;
-import it.polito.ai.project.requestEntities.ReserveChildrenRequest;
-import it.polito.ai.project.requestEntities.StateOrRemoveCompanionAvailabilityRequest;
-import it.polito.ai.project.requestEntities.TakeorDeliverChildrenRequest;
+import it.polito.ai.project.requestEntities.*;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.UserCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +29,11 @@ public class CompanionController {
     //ATTENZIONE! Dato che questo è il controller per il companion, solo lui è autorizzato e la gestione delle credenziali va fatta a monte
 
     @RequestMapping(value="/makeCompanion", method = RequestMethod.PUT)
-    public ResponseEntity makeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody String targetUsername)
+    public ResponseEntity makeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody MakeCompanionRequest companionRequest)
     {
         try
         {
-            db.makeCompanion(performerUserCredentials.getUsername(), targetUsername );
+            db.makeCompanion(performerUserCredentials.getUsername(), companionRequest.getTargetName() );
             return ok(HttpStatus.OK);
         }
         catch(ResourceNotFoundException re)

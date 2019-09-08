@@ -29,8 +29,8 @@ public interface RaceRepository extends MongoRepository<Race, String> {
     @Query("{'date' : {$gt : ?1, $lt : ?2}}")
     List<Race> findAllByLineNameAndDirectionAndDateBetween(String lineName, DirectionType direction, Date fromDate, Date toDate );
 
-    @Query("{'companion' : ?0, 'date':{$gt:?1}}")
-    List<Race> findAllByCompanionsAndDateGreaterThan(Companion companion, Date date);
+    @Query("{'companions.userDetails.username' : ?0, 'date':{$gt:?1}}")
+    List<Race> findAllByCompanionsAndDateGreaterThan(String companion, Date date);
 
     @Query("{'companion' : ?0, 'date':{$eq:?1}}")
     List<Race> findAllByCompanionsAndEqDate(Companion companion, Date date);

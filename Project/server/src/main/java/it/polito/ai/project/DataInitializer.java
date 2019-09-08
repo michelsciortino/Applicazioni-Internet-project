@@ -51,7 +51,7 @@ public class DataInitializer implements CommandLineRunner {
         try {
             ClientUserCredentials user = db.getCredentials("user@mail.com");
         } catch (ResourceNotFoundException e) {
-            db.insertCredentials("user@mail.com", "password", Arrays.asList(Roles.prefix + Roles.USER), true);
+            db.insertCredentials("user@mail.com", "password", Arrays.asList(Roles.USER), true);
             ClientUser user = new ClientUser();
             user.setMail("user@mail.com");
             db.insertUser(user);
@@ -59,7 +59,7 @@ public class DataInitializer implements CommandLineRunner {
         try {
             ClientUserCredentials user1 = db.getCredentials("admin@mail.com");
         } catch (ResourceNotFoundException e) {
-            db.insertCredentials("admin@mail.com", "password", Arrays.asList(Roles.prefix + Roles.USER, Roles.prefix + Roles.ADMIN, Roles.prefix + Roles.SYSTEM_ADMIN), true);
+            db.insertCredentials("admin@mail.com", "password", Arrays.asList(Roles.USER, Roles.ADMIN, Roles.SYSTEM_ADMIN), true);
             ClientUser user = new ClientUser();
             user.setMail("admin@mail.com");
             db.insertUser(user);
@@ -227,7 +227,16 @@ public class DataInitializer implements CommandLineRunner {
                 for (JsonUser user : users.users) {
                     try
                     {
-                        db.insertCredentials(user.username, "password", Arrays.asList(Roles.prefix + Roles.USER), Boolean.TRUE);
+
+                        if(user.getUsername().toString().equals("movalli@mail.com") || user.getUsername().toString().equals("pascoli@mail.com"))
+                        {
+                            List<String> roles = new ArrayList<>();
+                            roles.add(Roles.USER);
+                            roles.add(Roles.COMPANION);
+                            db.insertCredentials(user.username, "password", roles, Boolean.TRUE);
+                        }
+                        else
+                            db.insertCredentials(user.username, "password", Arrays.asList(Roles.USER), Boolean.TRUE);
 
                         ClientUser u = new ClientUser();
                         u.setMail(user.getUsername());
