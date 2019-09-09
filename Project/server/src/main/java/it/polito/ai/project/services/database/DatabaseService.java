@@ -1047,7 +1047,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (ParseException e) {
             throw new InternalServerErrorException();
         }
-        List<Race> otherRaces = raceRepository.findAllByCompanionsAndEqDate(companion, date);
+        List<Race> otherRaces = raceRepository.findAllByCompanionsAndEqDate(companion.getUserDetails().getUsername(), date);
         for (Race r : otherRaces) {
             if (!r.getCompanions().contains(companion))
                 throw new InternalServerErrorException();
@@ -1112,26 +1112,27 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<Race> race;
         Optional<UserCredentials> targetCredentials;
         Optional<UserCredentials> performerCredentials;
-
+        Optional<Line> line;
         try {
             race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+            line = lineRepository.findLineByName(clientRace.getLineName());
             targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getMail());
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-        // If race, targetCredentials or PerformCredentials aren't in db: Throw ResourceNotFound
-        if (!race.isPresent() || !targetCredentials.isPresent() || !performerCredentials.isPresent())
+        // If race, line, targetCredentials or PerformCredentials aren't in db: Throw ResourceNotFound
+        if (!race.isPresent() || !targetCredentials.isPresent() || !performerCredentials.isPresent()||!line.isPresent())
             throw new ResourceNotFoundException();
         // If the performer isn't the SysAdmin or the Companion: Throw UnauthorizedRequest
         if (!isCompanion(performerCredentials.get().getRoles()) && !isSystemAdmin(performerCredentials.get().getRoles()))
             throw new UnauthorizedRequestException();
         // If the target isn't a companion: Throw BadRequest
         if (!isCompanion(targetCredentials.get().getRoles()))
-            throw new BadRequestException();
+            throw new BadRequestException("Target isn't a Companion");
         // If race companions already contains companion: Throw BadRequest
         if (isCompanionOfRace(race.get().getCompanions(), targetCredentials.get().getRoles(), clientCompanionToCompanion((clientCompanion))))
-            throw new BadRequestException();
+            throw new BadRequestException("Companion already in race");
 
         // If the performer is a Companion: check if he is stating availability for himself
         if (isCompanion(performerCredentials.get().getRoles())) {
@@ -1139,9 +1140,41 @@ public class DatabaseService implements DatabaseServiceInterface {
                 throw new UnauthorizedRequestException();
         }
         // Can't be available for locked race
-        for (Companion c : race.get().getCompanions())
+        for (Companion c : race.get().getCompanions()) {
             if (c.getState().equals(CompanionState.VALIDATED))
                 throw new BadRequestException();
+        }
+
+        boolean initialStopFlag = false;
+        boolean finalStopFlag = false;
+        if(race.get().getDirection().equals(DirectionType.OUTWARD))
+        {
+            for (PediStop stop : line.get().getOutwardStops()) {
+                if (stop.getName().equals(clientCompanion.getFinalStop().getName()))
+                    finalStopFlag = true;
+                if (stop.getName().equals(clientCompanion.getInitialStop().getName())) {
+                    if (finalStopFlag)
+                        throw new BadRequestException("FinalStop preceding InitialStop");
+                    initialStopFlag = true;
+
+                }
+            }
+        }
+        else
+        {
+            for (PediStop stop : line.get().getReturnStops()) {
+                if (stop.getName().equals(clientCompanion.getFinalStop().getName()))
+                    finalStopFlag = true;
+                if (stop.getName().equals(clientCompanion.getInitialStop().getName())) {
+                    if (finalStopFlag)
+                        throw new BadRequestException("FinalStop preceding InitialStop");
+                    initialStopFlag = true;
+                }
+            }
+
+        }
+        if(!finalStopFlag || !finalStopFlag)
+            throw new BadRequestException("Stop not Found");
 
         clientCompanion.setState(CompanionState.AVAILABLE);
         race.get().getCompanions().add(clientCompanionToCompanion(clientCompanion));
@@ -1192,7 +1225,6 @@ public class DatabaseService implements DatabaseServiceInterface {
                 if (!c.getState().equals(CompanionState.AVAILABLE))
                     throw new BadRequestException();
         }
-        //TODO: parlare ad andre del problema di Validated, trasformarlo in NotValid, eventualmente impiegare questa funzione per rimuovere anche lo stato di chosen eliminando il controllo sullo stadio Available
         race.get().getCompanions().remove(clientCompanionToCompanion(clientCompanion));
         ClientRace finalRace = raceToClientRace(race.get());
 
@@ -1397,14 +1429,25 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     private boolean isCompanionOfRace(List<Companion> companions, List<String> roles, Companion companion) {
         if (!isCompanion(roles)) return false;
-        return companions.contains(companion);
+        for (Companion c : companions)
+        {
+            if (c.getUserDetails().getUsername().equals(companion.getUserDetails().getUsername()))
+                return true;
+        }
+        return false;
     }
 
     private boolean isSelectedCompanionOfRace(List<Companion> companions, List<String> roles, Companion companion) {
-        if (!isCompanion(roles)) return false;
-        if (!companions.contains(companion)) return false;
-        if (!companions.get(companions.indexOf(companion)).getState().equals(CompanionState.VALIDATED)) return false;
-        return true;
+        if (!isCompanionOfRace(companions,roles,companion)) return false;
+        for(Companion c: companions)
+        {
+            if(c.getUserDetails().getUsername().equals(companion.getUserDetails().getUsername()))
+            {
+                if (c.getState().equals(CompanionState.VALIDATED)) return true;
+                else break;
+            }
+        }
+        return false;
     }
 
     private boolean isStopInCompanionRoute(Race race, Line line, Companion c, ClientPediStop pediStop) {

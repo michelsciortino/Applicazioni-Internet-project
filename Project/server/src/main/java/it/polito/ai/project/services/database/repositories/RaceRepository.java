@@ -32,6 +32,6 @@ public interface RaceRepository extends MongoRepository<Race, String> {
     @Query("{'companions.userDetails.username' : ?0, 'date':{$gt:?1}}")
     List<Race> findAllByCompanionsAndDateGreaterThan(String companion, Date date);
 
-    @Query("{'companion' : ?0, 'date':{$eq:?1}}")
-    List<Race> findAllByCompanionsAndEqDate(Companion companion, Date date);
+    @Query("{'companions.userDetails.username' : ?0, 'date':{$eq:?1}}")
+    List<Race> findAllByCompanionsAndEqDate(String companion, Date date);
 }
