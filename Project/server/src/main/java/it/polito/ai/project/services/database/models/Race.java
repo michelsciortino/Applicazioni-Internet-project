@@ -21,6 +21,7 @@ public class Race {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private Date date;
 
+    
     private List<Passenger> passengers;
 
     private List<Companion> companions;

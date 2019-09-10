@@ -1029,9 +1029,11 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new UnauthorizedRequestException();
 
         for (Companion c : race.get().getCompanions()) {
+            if(c.getState().equals(CompanionState.VALIDATED))
+                throw new BadRequestException("Race locked");
             //if a companion is in chosen state, at least one of the chosen companion has not confirmed
             if (c.getState().equals(CompanionState.CHOSEN))
-                throw new BadRequestException();
+                throw new BadRequestException("One or more companion/s has/have not confirmed yet ");
             // Valid Companion: set state to VALIDATED
             if (c.getState().equals(CompanionState.CONFIRMED))
                 race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.VALIDATED);
@@ -1262,6 +1264,8 @@ public class DatabaseService implements DatabaseServiceInterface {
         for (Companion c : race.get().getCompanions()) {
             if (c.getUserDetails().getUsername().equals(performerUsername))
                 perfCompanion = c;
+            if(c.getState().equals(CompanionState.VALIDATED))
+                throw new BadRequestException("Race locked");
         }
         if (perfCompanion == null)
             throw new UnauthorizedRequestException();
@@ -1273,7 +1277,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 if (c.getState().equals(CompanionState.CHOSEN))
                     race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.CONFIRMED);
                 else
-                    throw new BadRequestException();
+                    throw new BadRequestException("Companion not in CHOSEN state");
         }
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
@@ -1300,16 +1304,20 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new ResourceNotFoundException();
 
         // If performer user is not one of selected companion for this race or the stop isn't in his route: Throw BadRequest
+        boolean companionfound =false;
         for (Companion c : race.get().getCompanions()) {
-            if (c.getUserDetails().getName().equals(performerUsername)) {
+            if (c.getUserDetails().getUsername().equals(performerUsername)) {
+                companionfound =true;
                 if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
-                    throw new BadRequestException();
-                if (!isStopInCompanionRoute(race.get(), line.get(), c, takePediStop)) ;
-                throw new BadRequestException();
+                    throw new BadRequestException("Performer isn't one of the validated Companion");
+                if (!isStopInCompanionRoute(race.get(), line.get(), c, takePediStop))
+                    throw new BadRequestException("Performer isn't the Companion in charge for this stop");
 
             }
 
         }
+        if(!companionfound)
+            throw new BadRequestException("Performer is not a companion of the race");
         int count = 0;
         for (Passenger p : race.get().getPassengers()) {
             for (ClientPassenger cp : clientPassengers) {
@@ -1317,9 +1325,12 @@ public class DatabaseService implements DatabaseServiceInterface {
                 if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
                     {
                         // If state is not NULL or ABSENT: Throw BadRequest
-                        if (!p.getState().equals(PassengerState.NULL) || !p.getState().equals(PassengerState.ABSENT))
-                            throw new BadRequestException();
+                        if (!p.getState().equals(PassengerState.NULL) && !p.getState().equals(PassengerState.ABSENT))
+                            throw new BadRequestException("Children not in Absent State");
                         count++;
+                        if (race.get().getDirection().equals(DirectionType.OUTWARD))
+                            if(!takePediStop.getName().equals(p.getStopReserved()));
+                                //TODO: implementare notifiche
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.TAKEN);
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setStopTaken(clientPediStopToPediStop(takePediStop));
                     }
@@ -1328,7 +1339,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         // Check if all passenger in list passed are taken else Throw BadRequest
         if (count != clientPassengers.size())
-            throw new BadRequestException();
+            throw new BadRequestException("One or more specified children are not in line");
         // Update the race
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
@@ -1354,9 +1365,9 @@ public class DatabaseService implements DatabaseServiceInterface {
         for (Companion c : race.get().getCompanions()) {
             if (c.getUserDetails().getName().equals(performerUsername)) {
                 if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
-                    throw new BadRequestException();
+                    throw new BadRequestException("Performer isn't one of the validated Companion");
                 if (!isStopInCompanionRoute(race.get(), line.get(), c, deliverPediStop)) ;
-                throw new BadRequestException();
+                throw new BadRequestException("Performer isn't the Companion in charge for this stop");
             }
         }
         int count = 0;
@@ -1367,9 +1378,13 @@ public class DatabaseService implements DatabaseServiceInterface {
                     {
                         // If state is not TAKEN: Throw BadRequest
                         if (!p.getState().equals(PassengerState.TAKEN))
-                            throw new BadRequestException();
+                            throw new BadRequestException("One or more child are not in Taken State");
                         count++;
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.DELIVERED);
+                        if(race.get().getDirection().equals(DirectionType.RETURN))
+                            if(!deliverPediStop.getName().equals(p.getStopReserved().getName()));
+                                //TODO:implementare notifiche
+
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setStopDelivered(clientPediStopToPediStop(deliverPediStop));
                     }
                 }
@@ -1377,7 +1392,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         // Check if all passenger in list passed are taken else Throw BadRequest
         if (count != clientPassengers.size())
-            throw new BadRequestException();
+            throw new BadRequestException("One or More child/s is/are not in race");
         // Update the race
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
@@ -1409,9 +1424,9 @@ public class DatabaseService implements DatabaseServiceInterface {
                 // For each Passenger in list passed check if is in race
                 if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
                     {
-                        // If state is not NULL or ABSENT: Throw BadRequest
+                        // If state is not NULL : Throw BadRequest
                         if (!p.getState().equals(PassengerState.NULL))
-                            throw new BadRequestException();
+                            throw new BadRequestException("Passenger is not in initial State");
                         count++;
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.ABSENT);
                     }
@@ -1420,7 +1435,9 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         // Check if all passenger in list passed are taken else Throw BadRequest
         if (count != clientPassengers.size())
-            throw new BadRequestException();
+            throw new BadRequestException("One ");
+        //TODO: implementare notifche
+
         // Update the race
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
@@ -1454,29 +1471,32 @@ public class DatabaseService implements DatabaseServiceInterface {
         boolean takeStopFound = false;
         boolean initialStopFound = false;
         if (race.getDirection().equals(DirectionType.OUTWARD)) {
-            for (PediStop ps : line.getOutwardStops()) {
+            for (PediStop ps : line.getOutwardStops())
+            {
                 //cycle until initial stop is found
-                if (ps.getName().equals(c.getInitialStop()))
+                if (ps.getName().equals(c.getInitialStop().getName()))
                     initialStopFound = true;
                 else if (!initialStopFound) continue;
 
                 //if we get this point we are checking stops between Initial and Final for current companion
                 if (ps.getName().equals(pediStop.getName()))
-                    takeStopFound = true;
-                if (ps.getName().equals(c.getFinalStop())) ;
+                {   takeStopFound = true;
+                    break;
+                }
+                if (ps.getName().equals(c.getFinalStop().getName())) ;
                 break;
             }
         } else {
             for (PediStop ps : line.getReturnStops()) {
                 //cycle until initial stop is found
-                if (ps.getName().equals(c.getInitialStop()))
+                if (ps.getName().equals(c.getInitialStop().getName()))
                     initialStopFound = true;
                 else if (!initialStopFound) continue;
 
                 //if we get this point we are checking stops between Initial and Final for current companion
                 if (ps.getName().equals(pediStop.getName()))
                     takeStopFound = true;
-                if (ps.getName().equals(c.getFinalStop())) ;
+                if (ps.getName().equals(c.getFinalStop().getName())) ;
                 break;
             }
         }
