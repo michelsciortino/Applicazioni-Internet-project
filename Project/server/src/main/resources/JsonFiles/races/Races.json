@@ -52,6 +52,38 @@
           },
           "reserved": false,
           "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Giacomo",
+            "surname": "Pantani",
+            "CF": "PNTGCM03A01L219S",
+            "parentId": "pantani@mail.com"
+          },
+          "stopReserved": {
+            "name": "Piazza XXV Aprile",
+            "latitude": 13,
+            "longitude": 24,
+            "delayInMillis": 900000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Jessica",
+            "surname": "Palermo",
+            "CF": "PLRJSC06A46L219G",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "name": "Piazza Mellano",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
         }
       ],
       "companions": [
@@ -122,6 +154,22 @@
             "surname": "Bruno",
             "CF": "MTTBRN01C25B919P",
             "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Paolo",
+            "surname": "Albanese",
+            "CF": "LBNPLA07E02L219A",
+            "parentId": "albanese@mail.com"
           },
           "stopReserved": {
             "name": "Scuola",
@@ -207,6 +255,22 @@
             "surname": "Bianchi",
             "CF": "ARRBNC01C25B919P",
             "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Vigo",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 600000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Flavio",
+            "surname": "Serravalle",
+            "CF": "SRRFLV06A19F205Q",
+            "parentId": "serravalle@mail.com"
           },
           "stopReserved": {
             "name": "Via Vigo",

@@ -217,8 +217,7 @@ public class DataInitializer implements CommandLineRunner {
 
                 for (JsonUser user : users.users) {
                     try {
-
-                        if (user.getUsername().toString().equals("movalli@mail.com") || user.getUsername().toString().equals("pascoli@mail.com")) {
+                        if ((user.getChildren() != null ? user.getChildren().size() : 0) == 0) {
                             List<String> roles = new ArrayList<>();
                             roles.add(Roles.USER);
                             roles.add(Roles.COMPANION);

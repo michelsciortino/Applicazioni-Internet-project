@@ -4,6 +4,9 @@
       "username": "rossi@mail.com",
       "name": "Mario",
       "surname": "Rossi",
+      "contacts": [
+        "3454321123"
+      ],
       "children": [
         {
           "name": "Benedetta",
@@ -21,10 +24,15 @@
           "CF": "MRCRSS01C15B919P"
         }
       ]
-    }, {
+    },
+    {
       "username": "bianchi@mail.com",
       "name": "Vincenzo",
       "surname": "Bianchi",
+      "contacts": [
+        "3455696423",
+        "3396879458"
+      ],
       "children": [
         {
           "name": "Aurora",
@@ -32,10 +40,14 @@
           "CF": "ARRBNC01C25B919P"
         }
       ]
-    },{
+    },
+    {
       "username": "primo@mail.com",
       "name": "Guido",
       "surname": "Primo",
+      "contacts": [
+        "3368957485"
+      ],
       "children": [
         {
           "name": "Chanel",
@@ -48,10 +60,14 @@
           "CF": "CCOPRM01C25B919P"
         }
       ]
-    },{
+    },
+    {
       "username": "bruno@mail.com",
       "name": "Ugo",
       "surname": "Bruno",
+      "contacts": [
+        "3662546923"
+      ],
       "children": [
         {
           "name": "Matteo",
@@ -59,10 +75,14 @@
           "CF": "MTTBRN01C25B919P"
         }
       ]
-    },{
+    },
+    {
       "username": "secondo@mail.com",
       "name": "Marts",
       "surname": "Secondo",
+      "contacts": [
+        "3887512469"
+      ],
       "children": [
         {
           "name": "Sara",
@@ -75,10 +95,15 @@
           "CF": "UGOSCN01C25B919P"
         }
       ]
-    },{
+    },
+    {
       "username": "fumagalli@mail.com",
       "name": "Claudio",
       "surname": "Fumagalli",
+      "contacts": [
+        "3354872135",
+        "3469821526"
+      ],
       "children": [
         {
           "name": "Simone",
@@ -91,6 +116,9 @@
       "username": "verdi@mail.com",
       "name": "Roberta",
       "surname": "Verdi",
+      "contacts": [
+        "3265987514"
+      ],
       "children": [
         {
           "name": "Claudia",
@@ -98,10 +126,14 @@
           "CF": "CLDVRD01C25B919P"
         }
       ]
-    },{
+    },
+    {
       "username": "youssef@mail.com",
       "name": "Mohamed",
       "surname": "Youssef",
+      "contacts": [
+        "3432658974"
+      ],
       "children": [
         {
           "name": "Iaia",
@@ -109,10 +141,14 @@
           "CF": "IAIYSS01C25B919P"
         }
       ]
-    },{
+    },
+    {
       "username": "chin@mail.com",
       "name": "Chon",
       "surname": "Chin",
+      "contacts": [
+        "3457812469"
+      ],
       "children": [
         {
           "name": "Shibo",
@@ -123,10 +159,262 @@
       "lines": [
         "Bruchi_cantanti"
       ]
-    },{
+    },
+    {
+      "username": "pantani@mail.com",
+      "name": "Filippo",
+      "surname": "Pantani",
+      "contacts": [
+        "3354499856"
+      ],
+      "children": [
+        {
+          "name": "Giacomo",
+          "surname": "Pantani",
+          "CF": "PNTGCM03A01L219S"
+        }
+      ]
+    },
+    {
+      "username": "palermo@mail.com",
+      "name": "Giorgio",
+      "surname": "Palermo",
+      "contacts": [
+        "3659827485",
+        "3357192846"
+      ],
+      "children": [
+        {
+          "name": "Jessica",
+          "surname": "Palermo",
+          "CF": "PLRJSC06A46L219G"
+        },
+        {
+          "name": "Giovanni",
+          "surname": "Palermo",
+          "CF": "PLRGNN00A13L219F"
+        }
+      ]
+    },
+    {
+      "username": "albanese@mail.com",
+      "name": "Claudio",
+      "surname": "Albanese",
+      "contacts": [
+        "3457898586"
+      ],
+      "children": [
+        {
+          "name": "Paolo",
+          "surname": "Albanese",
+          "CF": "LBNPLA07E02L219A"
+        }
+      ]
+    },
+    {
+      "username": "serravalle@mail.com",
+      "name": "Vittorio",
+      "surname": "Serravalle",
+      "contacts": [
+        "3361223568"
+      ],
+      "children": [
+        {
+          "name": "Viola",
+          "surname": "Serravalle",
+          "CF": "SRRVLI06A59F205X"
+        },
+        {
+          "name": "Flavio",
+          "surname": "Serravalle",
+          "CF": "SRRFLV06A19F205Q"
+        },
+        {
+          "name": "Antonio",
+          "surname": "Serravalle",
+          "CF": "SRRNTN09P19F205F"
+        }
+      ]
+    },
+    {
+      "username": "ferrari@mail.com",
+      "name": "Chiara",
+      "surname": "Ferrari",
+      "contacts": [
+        "3456989586",
+        "3362545265"
+      ],
+      "children": [
+        {
+          "name": "Beatrice",
+          "surname": "Ferrari",
+          "CF": "FRRBRC07A61F205J"
+        }
+      ]
+    },
+    {
+      "username": "silvestri@mail.com",
+      "name": "Francesco",
+      "surname": "Silvestri",
+      "contacts": [
+        "3358975246"
+      ],
+      "children": [
+        {
+          "name": "Alessandro",
+          "surname": "Silvestri",
+          "CF": "SLVLSN07A26F205O"
+        },
+        {
+          "name": "Tania",
+          "surname": "Silvestri",
+          "CF": "SLVTNA08R66F205D"
+        }
+      ]
+    },
+    {
+      "username": "ciceu@mail.com",
+      "name": "Dimitri",
+      "surname": "Ciceu",
+      "contacts": [
+        "3897541256"
+      ],
+      "children": [
+        {
+          "name": "Razvan",
+          "surname": "Ciceu",
+          "CF": "CCIRVN05H26F205Z"
+        }
+      ]
+    },
+    {
+      "username": "argentero@mail.com",
+      "name": "Luca",
+      "surname": "Argentero",
+      "contacts": [
+        "3478457951"
+      ],
+      "children": [
+        {
+          "name": "Alice",
+          "surname": "Argentero",
+          "CF": "RGNLCA12L70F205J"
+        }
+      ]
+    },
+    {
+      "username": "tito@mail.com",
+      "name": "Giorgia",
+      "surname": "Tito",
+      "contacts": [
+        "3456543266"
+      ],
+      "children": [
+        {
+          "name": "Walter",
+          "surname": "Tito",
+          "CF": "TTIWTR10T29F205J"
+        },
+        {
+          "name": "Shantal",
+          "surname": "Tito",
+          "CF": "TTISNT08R69F205U"
+        }
+      ]
+    },
+    {
+      "username": "sesto@mail.com",
+      "name": "Maria",
+      "surname": "Sesto",
+      "contacts": [
+        "3457895462",
+        "3565895475"
+      ],
+      "children": [
+        {
+          "name": "Cecilia",
+          "surname": "Sesto",
+          "CF": "SSTCCL12L62F205Y"
+        }
+      ]
+    },
+    {
+      "username": "audasso@mail.com",
+      "name": "Bianca",
+      "surname": "Audasso",
+      "contacts": [
+        "3495862458"
+      ],
+      "children": [
+        {
+          "name": "Alberto",
+          "surname": "Audasso",
+          "CF": "DSSLRT09E14L219M"
+        },
+        {
+          "name": "Katia",
+          "surname": "Audasso",
+          "CF": "DSSKTA11E54L219T"
+        }
+      ]
+    },
+    {
+      "username": "maschietti@mail.com",
+      "name": "Simone",
+      "surname": "Maschietti",
+      "contacts": [
+        "3498567895"
+      ],
+      "children": [
+        {
+          "name": "Veronica",
+          "surname": "Maschietti",
+          "CF": "MSCVNC09M42L219D"
+        }
+      ]
+    },
+    {
+      "username": "cianci@mail.com",
+      "name": "Renato",
+      "surname": "Cianci",
+      "contacts": [
+        "3396859754"
+      ],
+      "children": [
+        {
+          "name": "Emanuele",
+          "surname": "Cianci",
+          "CF": "CNCMNL07C04L219W"
+        }
+      ]
+    },
+    {
+      "username": "pierri@mail.com",
+      "name": "Piero",
+      "surname": "Pierri",
+      "contacts": [
+        "3485978451"
+      ],
+      "children": [
+        {
+          "name": "Giancarlo",
+          "surname": "Pierri",
+          "CF": "PRRGCR09L07L219V"
+        },
+        {
+          "name": "Sebastiano",
+          "surname": "Pierri",
+          "CF": "PRRSST11P07L219G"
+        }
+      ]
+    },
+    {
       "username": "movalli@mail.com",
       "name": "Lore",
       "surname": "Movalli",
+      "contacts": [
+        "3389574812"
+      ],
       "children": [],
       "lines": []
     },
@@ -134,6 +422,59 @@
       "username": "pascoli@mail.com",
       "name": "Sergio",
       "surname": "Pascoli",
+      "contacts": [
+        "3359862135"
+      ],
+      "children": [],
+      "lines": []
+    },
+    {
+      "username": "buongiorno@mail.com",
+      "name": "Marco",
+      "surname": "Buongiorno",
+      "contacts": [
+        "3458526481"
+      ],
+      "children": [],
+      "lines": []
+    },
+    {
+      "username": "italia@mail.com",
+      "name": "Giuseppe",
+      "surname": "Italia",
+      "contacts": [
+        "3396587412"
+      ],
+      "children": [],
+      "lines": []
+    },
+    {
+      "username": "sasso@mail.com",
+      "name": "Michele",
+      "surname": "Sasso",
+      "contacts": [
+        "3269512478"
+      ],
+      "children": [],
+      "lines": []
+    },
+    {
+      "username": "testa@mail.com",
+      "name": "Fabio",
+      "surname": "Testa",
+      "contacts": [
+        "3352625148"
+      ],
+      "children": [],
+      "lines": []
+    },
+    {
+      "username": "amoroso@mail.com",
+      "name": "Gianluca",
+      "surname": "Amoroso",
+      "contacts": [
+        "3568952465"
+      ],
       "children": [],
       "lines": []
     }
