@@ -9,6 +9,7 @@ import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.DirectionType;
+import it.polito.ai.project.services.database.models.RaceState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -161,7 +162,7 @@ public class LinesController
     {
         try
         {
-            ClientRace clientRace = new ClientRace(line_name,direction,date, new ArrayList<>(), new ArrayList<>());
+            ClientRace clientRace = new ClientRace(line_name,direction,date, RaceState.NULL, new ArrayList<>(), new ArrayList<>());
             db.deleteRace(clientRace, clientUserCredentials.getUsername());
             return ok(HttpStatus.OK);
         }

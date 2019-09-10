@@ -750,6 +750,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!perfCredentials.isPresent() || !performer.isPresent() || !target.isPresent() || !targetCredentials.isPresent())
             throw new ResourceNotFoundException();
 
+
         String pattern = "yyyy-MM-dd'T'HH:mm";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
@@ -786,6 +787,9 @@ public class DatabaseService implements DatabaseServiceInterface {
                 CompanionState targetCompanionState = null;
                 Companion targetcompanion = null;
                 boolean lockedrace = false;
+                if(!r.getRaceState().equals(RaceState.NULL))
+                    lockedrace = true;
+
                 for (Companion c : r.getCompanions()) {
                     //verify if race is locked
                     if (c.getState() == CompanionState.VALIDATED)
@@ -813,6 +817,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         }
                     }
 
+                    //TODO modifica in notifica
                     //Format content and send email to each admin
                     String content = clientCompanion.getUserDetails().getMail() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
                     for (String address : line.get().getAdmins())
@@ -875,14 +880,18 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!performerCredentials.isPresent() || !race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
 
-        // if performer isn't an Admin or LineAdmin: Throw UnauthorizedRequestException
+        // if performer isn't SystemAdmin or LineAdmin: Throw UnauthorizedRequestException
         if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
-            throw new UnauthorizedRequestException();
+            throw new UnauthorizedRequestException("Performer must be a LineAdmin or SysAdmin ");
+
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
 
         try {
             line = lineRepository.findLineByName(race.get().getLineName());
         } catch (Exception e) {
-            throw new InternalServerErrorException();
+            throw new InternalServerErrorException("Error during repository lookup");
         }
         if (!line.isPresent())
             throw new ResourceNotFoundException();
@@ -893,12 +902,12 @@ public class DatabaseService implements DatabaseServiceInterface {
             try {
                 userTemp = userCredentialsRepository.findByUsername(c);
             } catch (Exception e) {
-                throw new InternalServerErrorException();
+                throw new InternalServerErrorException("Error during repository lookup");
             }
             if (!userTemp.isPresent())
                 throw new ResourceNotFoundException();
             if (!userTemp.get().getRoles().contains(Roles.prefix + Roles.COMPANION))
-                throw new BadRequestException();
+                throw new BadRequestException("Target isn't a companion");
         }
 
         // Select required companion from race.Companions
@@ -995,11 +1004,13 @@ public class DatabaseService implements DatabaseServiceInterface {
         // If performer isn't an Admin or LineAdmin: Throw UnauthorizedRequestException
         if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
             throw new UnauthorizedRequestException();
-
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
         for (Companion c : race.get().getCompanions()) {
             // If a companion with the status VALIDATED is present the race is locked
             if (c.getState().equals(CompanionState.VALIDATED))
-                throw new BadRequestException();
+                throw new BadRequestException("Companions already validated for this race");
             // Unselect all Chosen Companion
             if (c.getState().equals(CompanionState.CHOSEN))
                 race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
@@ -1027,6 +1038,10 @@ public class DatabaseService implements DatabaseServiceInterface {
         // If performer isn't an Admin or LineAdmin: Throw UnauthorizedRequestException
         if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), clientRace.getLineName()))
             throw new UnauthorizedRequestException();
+
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
 
         for (Companion c : race.get().getCompanions()) {
             if(c.getState().equals(CompanionState.VALIDATED))
@@ -1135,12 +1150,14 @@ public class DatabaseService implements DatabaseServiceInterface {
         // If race companions already contains companion: Throw BadRequest
         if (isCompanionOfRace(race.get().getCompanions(), targetCredentials.get().getRoles(), clientCompanionToCompanion((clientCompanion))))
             throw new BadRequestException("Companion already in race");
-
         // If the performer is a Companion: check if he is stating availability for himself
         if (isCompanion(performerCredentials.get().getRoles())) {
             if (!performerCredentials.get().getUsername().equals(targetCredentials.get().getUsername()))
                 throw new UnauthorizedRequestException();
         }
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
         // Can't be available for locked race
         for (Companion c : race.get().getCompanions()) {
             if (c.getState().equals(CompanionState.VALIDATED))
@@ -1217,7 +1234,9 @@ public class DatabaseService implements DatabaseServiceInterface {
             if (!performerCredentials.get().getUsername().equals(targetCredentials.get().getUsername()))
                 throw new UnauthorizedRequestException();
         }
-
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
         for (Companion c : race.get().getCompanions()) {
             // Can't remove availability for locked race
             if (c.getState().equals(CompanionState.VALIDATED))
@@ -1259,7 +1278,9 @@ public class DatabaseService implements DatabaseServiceInterface {
         // If performer, race not found: Throw ResourceNotFound
         if (!performerCredentials.isPresent() || !race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
-
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
         Companion perfCompanion = null;
         for (Companion c : race.get().getCompanions()) {
             if (c.getUserDetails().getUsername().equals(performerUsername))
@@ -1302,7 +1323,9 @@ public class DatabaseService implements DatabaseServiceInterface {
         // If race or performer is not present: Throw ResourceNotFound
         if (!line.isPresent() || !race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
-
+        //If race isn't in started state is not modifiable: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.STARTED))
+            throw new BadRequestException("Race not Started yet");
         // If performer user is not one of selected companion for this race or the stop isn't in his route: Throw BadRequest
         boolean companionfound =false;
         for (Companion c : race.get().getCompanions()) {
@@ -1360,7 +1383,9 @@ public class DatabaseService implements DatabaseServiceInterface {
         // If race or performer is not present: Throw ResourceNotFound
         if (!race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
-
+        //If race isn't in started state is not modifiable: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.STARTED))
+            throw new BadRequestException("Race not Started yet");
         // If performer user is not companion for this race or the stop isn't in his route: Throw BadRequest
         for (Companion c : race.get().getCompanions()) {
             if (c.getUserDetails().getName().equals(performerUsername)) {
@@ -1411,7 +1436,9 @@ public class DatabaseService implements DatabaseServiceInterface {
         // If race or performer is not present: Throw ResourceNotFound
         if (!race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
-
+        //If race isn't in started state is not modifiable: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.STARTED))
+            throw new BadRequestException("Race not Started yet");
         // If performer user is not select companion for this race : Throw BadRequest
         for (Companion c : race.get().getCompanions()) {
             if (c.getUserDetails().getName().equals(performerUsername))
@@ -1441,7 +1468,65 @@ public class DatabaseService implements DatabaseServiceInterface {
         // Update the race
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
+    @Override
+    public void startRace(String performerUsername, ClientRace clientRace)
+    {
+        Optional<Race> race;
+        Optional<UserCredentials> performer;
 
+        // Take information from DB
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+            performer = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error in repository lookup");
+        }
+        Date today = Calendar.getInstance().getTime();
+        if (!today.before(clientRace.getDate()))
+            throw new BadRequestException("Race cannot be started before its start time");
+        // If race or performer is not present: Throw ResourceNotFound
+        if (!race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+        //If race isn't in null state cannot be started: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already started yet");
+        // If performer user is not select companion for this race : Throw BadRequest
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getName().equals(performerUsername))
+                if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
+                    throw new BadRequestException("Performer isn't a Validated Companion");
+        }
+
+        race.get().setRaceState(RaceState.STARTED);
+        updateRace(raceToClientRace(race.get()), performerUsername);
+    }
+    @Override
+    public void endRace(String performerUsername, ClientRace clientRace)
+    {
+        Optional<Race> race;
+        Optional<UserCredentials> performer;
+        // Take information from DB
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLineName(), clientRace.getDirection());
+            performer = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error in repository lookup");
+        }
+        // If race or performer is not present: Throw ResourceNotFound
+        if (!race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+        //If race isn't in started state cannot be ended: Throw Bad Request
+        if(!race.get().getRaceState().equals(RaceState.STARTED))
+            throw new BadRequestException("Race not started yet or already ended");
+        // If performer user is not select companion for this race : Throw BadRequest
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getName().equals(performerUsername))
+                if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
+                    throw new BadRequestException("Performer isn't a Validated Companion");
+        }
+        race.get().setRaceState(RaceState.ENDED);
+        updateRace(raceToClientRace(race.get()), performerUsername);
+    }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     private boolean isCompanionOfRace(List<Companion> companions, List<String> roles, Companion companion) {
@@ -1783,8 +1868,10 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<User> performer;
         Optional<Line> targetLine;
         Date today = Calendar.getInstance().getTime();
-        if (!today.before(clientRace.getDate()))
+        //TODO attivare quando finisce la fase di testing
+        /*if (today.before(clientRace.getDate()))
             throw new BadRequestException();
+        */
         try {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
             targetLine = lineRepository.findLineByName(clientRace.getLineName());
@@ -2023,10 +2110,8 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<UserCredentials> performerCredentials;
         Optional<Line> targetLine;
         Optional<Race> targetRace;
-        Date today = Calendar.getInstance().getTime();
         Optional<User> performer;
-        if (today.before(clientRace.getDate()))
-            throw new BadRequestException();
+
         try {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
@@ -2040,7 +2125,8 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         if (!isAdminOfLineOrSysAdmin(performer.get().getLines(), performerCredentials.get().getRoles(), targetLine.get().getName()))
             throw new UnauthorizedRequestException();
-
+        if(!targetRace.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Cannot remove started or ended races");
         try {
             raceRepository.delete(targetRace.get());
         } catch (Exception e) {
@@ -2049,11 +2135,11 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private Race clientRaceToRace(ClientRace clientRace) {
-        return new Race(clientRace.getLineName(), clientRace.getDirection(), clientRace.getDate(), clientPassengersToPassengers(clientRace.getPassengers()), clientCompanionsToCompanions(clientRace.getCompanions()));
+        return new Race(clientRace.getLineName(), clientRace.getDirection(), clientRace.getDate(), clientRace.getRaceState(), clientPassengersToPassengers(clientRace.getPassengers()), clientCompanionsToCompanions(clientRace.getCompanions()));
     }
 
     private ClientRace raceToClientRace(Race race) {
-        return new ClientRace(race.getLineName(), race.getDirection(), race.getDate(), passengersToClientPassengers(race.getPassengers()), companionsToClientCompanions(race.getCompanions()));
+        return new ClientRace(race.getLineName(), race.getDirection(), race.getDate(), race.getRaceState(), passengersToClientPassengers(race.getPassengers()), companionsToClientCompanions(race.getCompanions()));
     }
 
     private ClientPassenger passengerToClientPassenger(Passenger passenger) {

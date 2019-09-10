@@ -21,15 +21,16 @@ public class Race {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private Date date;
 
-    
+    private RaceState raceState;
     private List<Passenger> passengers;
 
     private List<Companion> companions;
 
-    public Race(String lineName, DirectionType direction, Date date, List<Passenger> passengers, List<Companion> companions) {
+    public Race(String lineName, DirectionType direction, Date date, RaceState raceState, List<Passenger> passengers, List<Companion> companions) {
         this.lineName = lineName;
         this.direction = direction;
         this.date = date;
+        this.raceState = raceState;
         this.passengers = passengers;
         this.companions = companions;
     }

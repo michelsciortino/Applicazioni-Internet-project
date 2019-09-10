@@ -83,6 +83,9 @@ public interface DatabaseServiceInterface {
 
     void absentChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
 
+    void startRace(String performerUsername, ClientRace clientRace);
+
+    void endRace(String performerUsername, ClientRace clientRace);
 
     //---------------------------------------------------###Line###---------------------------------------------------//
 

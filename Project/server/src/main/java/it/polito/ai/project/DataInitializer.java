@@ -5,6 +5,7 @@ import it.polito.ai.project.exceptions.BadRequestException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.DatabaseService;
+import it.polito.ai.project.services.database.models.RaceState;
 import it.polito.ai.project.services.database.models.Roles;
 import it.polito.ai.project.services.email.EmailSenderService;
 import org.json.JSONArray;
@@ -129,6 +130,7 @@ public class DataInitializer implements CommandLineRunner {
                         clientRace.setLineName(race.getLineName());
                         clientRace.setDirection(race.getDirection());
                         clientRace.setDate(race.getDate());
+                        clientRace.setRaceState(RaceState.NULL);
                         for (JsonCompanion companion : race.getCompanions()) {
                             ClientPediStop initialStop = new ClientPediStop(companion.getInitialStop().getName(), companion.getInitialStop().getLongitude(), companion.getInitialStop().getLatitude(), companion.getInitialStop().getDelayInMillis());
                             ClientPediStop finalStop = new ClientPediStop(companion.getFinalStop().getName(), companion.getFinalStop().getLongitude(), companion.getFinalStop().getLatitude(), companion.getFinalStop().getDelayInMillis());
