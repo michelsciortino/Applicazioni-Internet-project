@@ -182,12 +182,17 @@ public class DataInitializer implements CommandLineRunner {
                     throw e;
                 }
                 JsonLine line = new ObjectMapper().readValue(jsonLines, JsonLine.class);
+
                 try {
                     db.insertLine(line);
                     for (JsonChild c : line.getSubscribedChildren()) {
                         ClientChild child = new ClientChild(c.getName(), c.getSurname(), c.getCF(), c.getParentId());
                         if (db.getCredentials(child.getParentId()) != null)
                             db.addChildToLine(line.getAdmins().get(0), child, line.getName(), db.getCredentials(line.getAdmins().get(0)).getRoles());
+                    }
+                    for(String admin : line.getAdmins()){
+                        if(!db.getCredentials(admin).getRoles().contains("ROLE_ADMIN"))
+                            db.makeLineAdmin("admin@mail.com",admin,line.getName());
                     }
                 } catch (BadRequestException e) {
                     System.out.println("Line already inserted");
