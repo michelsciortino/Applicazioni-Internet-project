@@ -1900,11 +1900,11 @@ public class DatabaseService implements DatabaseServiceInterface {
     private ClientLine lineToClientLine(Line lineMongo) {
         ArrayList<ClientPediStop> out = new ArrayList<>();
         for (PediStop p : lineMongo.getOutwardStops())
-            out.add(new ClientPediStop(p.getName(), p.getLatitude(), p.getLongitude(), p.getDelayInMillis()));
+            out.add(new ClientPediStop(p.getName(), p.getLongitude(), p.getLatitude(), p.getDelayInMillis()));
 
         ArrayList<ClientPediStop> ret = new ArrayList<>();
         for (PediStop p : lineMongo.getReturnStops())
-            ret.add(new ClientPediStop(p.getName(), p.getLatitude(), p.getLongitude(), p.getDelayInMillis()));
+            ret.add(new ClientPediStop(p.getName(), p.getLongitude(), p.getLatitude(), p.getDelayInMillis()));
 
         List<ClientChild> childList = new ArrayList<>();
         for (Child c : lineMongo.getSubscribedChildren()) {
