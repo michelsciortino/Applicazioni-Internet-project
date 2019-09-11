@@ -14,13 +14,20 @@ import java.util.Date;
 @Data
 public class UserNotification {
     //TODO: da fare con estensioni se si riesce....
-    @Email
     @Id
-    private String username;
+    private String id;
+    @Email
+    private String performerUsername;
+    @Email
+    @Nullable
+    private String targetUsername;
     @NotNull
     private NotificationsType type;
     @NotNull
     private Date date;
+    private boolean broadcast;
+    @Nullable
+    private Race broadcastRace;
     @Nullable
     private Object parameters;
     @Size(min = 2, max = 140)
@@ -28,10 +35,13 @@ public class UserNotification {
     @NotNull
     private Boolean isRead;
 
-    public UserNotification(@Email String username, @NotNull NotificationsType type, @NotNull Date date, @Nullable Object parameters, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
-        this.username = username;
+    public UserNotification(@Email String performerUsername,@Email String targetUsername, @NotNull NotificationsType type, @NotNull Date date, boolean broadcast, Race broadcastRace, @Nullable Object parameters, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
+        this.performerUsername = performerUsername;
+        this.targetUsername = targetUsername;
         this.type = type;
         this.date = date;
+        this.broadcast = broadcast;
+        this.broadcastRace = broadcastRace;
         this.parameters = parameters;
         this.message = message;
         this.isRead = isRead;

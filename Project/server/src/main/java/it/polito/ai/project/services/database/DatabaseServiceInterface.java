@@ -46,8 +46,11 @@ public interface DatabaseServiceInterface {
     void deleteUser(ClientUser user);
 
     //----------------------------------------------###Notification###------------------------------------------------//
+    void insertNotification(String performerUsername, ClientUserNotification clientUserNotification, String targetusername);
 
-    Page<ClientUserNotification> getUserNotificationByUsername(int pageNumber, String username);
+    Page<ClientUserNotification> getBroadcastUserNotification(int pageNumber, ClientRace clientRace);
+
+    Page<ClientUserNotification> getUserNotificationByPerformerUsername(int pageNumber, String username);
 
     //-------------------------------------------------###Parent###---------------------------------------------------//
 
