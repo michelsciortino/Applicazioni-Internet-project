@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 export class UsersPaginatorIntl extends MatPaginatorIntl {
     constructor() {
         super();
-        this.nextPageLabel = 'diocane';
-        this.previousPageLabel = 'dioporco';
+        this.nextPageLabel = 'next';
+        this.previousPageLabel = 'previous';
     }
 }

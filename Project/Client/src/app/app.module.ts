@@ -24,8 +24,6 @@ import { CompanionComponent } from './components/companion/companion.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { LinesComponent } from './components/lines/lines.component';
 import { SettingsComponent } from './components/settings/settings.component';
-import { MakeCompanionComponent } from './components/admin/make-companion/make-companion.component';
-import { MakeAdminComponent } from './components/admin/make-admin/make-admin.component';
 import { RegisterComponent } from './components/admin/register/register.component';
 import { IsMobileService } from './services/bridges/is-mobile.service';
 import { UserManagementComponent } from './components/admin/users-management/users-management.component';
@@ -35,6 +33,9 @@ import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/confirm-dialog.component';
 import { MessageDialogComponent } from './components/dialogs/messege-dialog/messege-dialog.component';
+import { ViewUserDialog } from './components/admin/users-management/view-user-dialog/view-user.dialog';
+import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
+import { EditUserDialog } from './components/admin/users-management/edit-user-dialog/edit-user.dialog';
 
 @NgModule({
   declarations: [
@@ -45,10 +46,10 @@ import { MessageDialogComponent } from './components/dialogs/messege-dialog/mess
     HomeComponent, AdminComponent, CompanionComponent, MessagesComponent, LinesComponent, SettingsComponent,
 
     // admin components
-    MakeCompanionComponent, MakeAdminComponent, UserManagementComponent,
+    UserManagementComponent,
 
     // dialog
-    ConfirmDialogComponent, MessageDialogComponent,
+    ConfirmDialogComponent, MessageDialogComponent,ViewUserDialog,EditUserDialog,
 
     // dumb components
     MessageComponent,
@@ -57,7 +58,7 @@ import { MessageDialogComponent } from './components/dialogs/messege-dialog/mess
     PasswordToggleDirective
   ],
   entryComponents: [
-    ConfirmDialogComponent, MessageDialogComponent
+    ConfirmDialogComponent, MessageDialogComponent,ViewUserDialog,EditUserDialog
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,
@@ -76,7 +77,7 @@ import { MessageDialogComponent } from './components/dialogs/messege-dialog/mess
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-
+    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}}
   ],
   bootstrap: [AppComponent]
 })

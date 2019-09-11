@@ -1,0 +1,50 @@
+<div mat-dialog-content class="no-scroll fit-content">
+    <div>
+        <h3 class="title">User</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Mail</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> {{data.user.mail}}</td>
+                    <td> {{data.user.name}}</td>
+                    <td> {{data.user.surname}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <div>
+            <h3 class="title">Roles</h3>
+            <mat-checkbox [checked]="this.isAdmin" disabled>Administrator</mat-checkbox>
+            <mat-checkbox #ccb (click)="onIsCompanionChanged(ccb)" [(checked)]="isCompanion">Companion</mat-checkbox>
+        </div>
+        <div>
+            <h3 class="title">Administrated Lines</h3>
+            <table>
+                <thead>
+                    <th></th>
+                    <th>Line</th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let line of linesMap | keyvalue">
+                        <td>
+                            <mat-checkbox #lcb [disabled]="!line.value.editable" (change)="onLineChecked(lcb,line.value)" [(checked)]="line.value.admin"></mat-checkbox>
+                        </td>
+                        <td>{{line.value.name}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div mat-dialog-actions>
+        <button mat-button (click)="onClose()" cdkFocusInitial>Close</button>
+    </div>
+</div>

@@ -2,24 +2,24 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { UserInfo } from './models/user';
 import { environment } from 'src/environments/environment';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
+import { UserInfo } from 'src/app/models/user';
 
 const credentialsEndpoint = `${environment.baseEndpoint}/credentials`;
 const userEndpoint = `${environment.baseEndpoint}/users`;
 @Injectable()
 export class UserService implements OnDestroy{
-    private userSbj: Subject<UserInfo>;
+    private userSbj: BehaviorSubject<UserInfo>;
     private userInfo: UserInfo;
     private authSub: Subscription;
 
     constructor(private authSvc: AuthService, private router: Router, private http: HttpClient) {
-        this.userSbj = new Subject();
+        this.userSbj = new BehaviorSubject(null);
         this.userInfo = new UserInfo();
         this.authSub = this.authSvc.observeLoggedStatus().subscribe(
             (status: boolean) => {
-                console.log("logged status changed to:",status)
+                //console.log("logged status changed to:",status)
                 if (status)
                     this.update();
                 else
@@ -44,8 +44,7 @@ export class UserService implements OnDestroy{
                     this.userInfo.surname = data.surname;
                     this.userInfo.contacts = data.contacts;
                     this.userInfo.children = data.children;
-                    this.userInfo.adminlines = data.adminlines;
-                    this.userInfo.companionLines = data.companionLines;
+                    this.userInfo.lines = data.lines;
                     this.userInfo.roles=data.roles;
                     this.userSbj.next(this.userInfo);
                 }

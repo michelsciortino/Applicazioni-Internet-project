@@ -6,7 +6,7 @@
         </button>
         <h1 class="app-name" routerLink="/">Pedibus</h1>
         <span class="fill-remaining-space"></span>
-        <button *ngIf="!isLogged && !mobileQuery.matches" mat-button routerLink="/auth/login">
+        <button *ngIf="!isLogged && !mobileQuery.matches" mat-button routerLink="/auth/login" routerOutlet="content">
             <span>Login</span>
         </button>
         <button *ngIf="isLogged && !mobileQuery.matches" mat-button routerLink="/auth/logout">
@@ -31,11 +31,11 @@
             </mat-nav-list>
         </mat-sidenav>
 
-        <mat-sidenav-content>
+        <mat-sidenav-content class="">
             <div class="full-height">
                 <!-- Content of the selected section -->
                 <div class="main-content">
-                    <router-outlet></router-outlet>
+                    <router-outlet #content></router-outlet>
                 </div>
 
                 <span class="fill-remaining-space"></span>

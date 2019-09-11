@@ -2824,3 +2824,41 @@ th.mat-header-cell {
     top: 0;
     width: auto;
 }
+
+.scroll {
+    overflow: auto;
+}
+
+.block {
+    display: block;
+}
+
+.inline-grid {
+    display: inline-grid;
+}
+
+.fit-content {
+    width: fit-content !important;
+    height: fit-content !important;
+}
+
+.padded {
+    padding: 8px;
+}
+
+.marged {
+    margin: 8px;
+}
+
+.mat-dialog-container {
+    margin: 8px;
+}
+
+td.mat-cell:first-of-type {
+    padding-left: 0px !important;
+    ;
+}
+
+.center-vertical {
+    vertical-align: middle;
+}

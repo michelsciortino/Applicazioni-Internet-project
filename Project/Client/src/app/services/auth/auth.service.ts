@@ -4,7 +4,7 @@ import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map, catchError } from 'rxjs/operators';
 import { ConfirmMail } from 'src/app/models/requests/confirmMail';
-import { AuthenticatedUser } from 'src/app/models/responses/authenticated-user';
+import { AuthenticatedUser } from 'src/app/models/authenticated-user';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 const AUTHENTICATED_USER = 'authenticated_user';
@@ -34,7 +34,7 @@ export class AuthService {
     }
 
     public observeLoggedStatus(): Observable<boolean> {
-        return this.authSbj.asObservable().pipe(map((data) => data != null));
+        return this.authSbj.asObservable().pipe(map((data) => (console.log(data),data != null)));
     }
 
     //#endregion

@@ -1,10 +1,42 @@
 <div class="padded-content">
-    <mat-card class="compact-card">
-        <!-- <mat-form-field>
-            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-        </mat-form-field> -->
+    <mat-card class="compact-card scroll">
+
         <p>Manage Users</p>
-        <table mat-table [dataSource]="dataSource">
+
+        <div>
+            <mat-icon class="center-vertical padded">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAAAmJLR0QA/4ePzL8AAACXSURBVDjLY2AYtOA/EZAyDQwM64FCq7Havhoosx5TWJbhE1DCF0PcEyj6CSiLBRQApR4y8KCIcTHcA4oWYPc4M8MZoGQXilg3UOQMUAYHMGb4w/CbwRDO12X4BRQxxhe8/UATT0FNZGI4BuT1448PXoZHQEXZYHYOkPUIKEIABACVfQSzPgJZAcTGOjI9qoFQ3qCNhgEGAE9bbRZ7ajkdAAAAAElFTkSuQmCC">
+            </mat-icon>
+            <mat-form-field class="fit-content">
+                <mat-label>Filter</mat-label>
+                <mat-select [(ngModel)]="selectedFilter" [placeholder]="selectedFilter">
+                    <mat-option *ngFor="let filter of filters" [value]="filter.value"> {{filter.name}} </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput [(ngModel)]="filterKeyword" placeholder="Keyword">
+            </mat-form-field>
+            <button mat-icon-button (click)="doFilter()" [disabled]="filterKeyword==null || filterKeyword===''">
+                <mat-icon>search</mat-icon>
+            </button>
+            <button mat-icon-button *ngIf="filtered" (click)="clearFilter()">
+                <mat-icon>clear</mat-icon>
+            </button>
+        </div>
+
+        <div class="spinner-container" *ngIf="loading">
+            <mat-spinner [diameter]="70"></mat-spinner>
+        </div>
+        <mat-table [dataSource]="dataSource" *ngIf="!loading">
+            <!-- View-Action Column -->
+            <ng-container matColumnDef="View-Action">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell class="squeeze center" *matCellDef="let element">
+                    <button mat-icon-button (click)="$event.stopPropagation();viewUser(element)">
+                        <mat-icon>info</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
 
             <!-- Mail Column -->
             <ng-container matColumnDef="Mail">
@@ -32,17 +64,19 @@
                 </td>
             </ng-container>
 
-            <!-- Action Column -->
-            <ng-container matColumnDef="Action">
+            <!-- Edit-Action Column -->
+            <ng-container matColumnDef="Edit-Action">
                 <th mat-header-cell *matHeaderCellDef></th>
-                <td mat-cell class="squeeze" *matCellDef="let element">
-                    <img src="../../../assets/edit.png" />
+                <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
+                    <button *ngIf="notSysAdmin(element)" mat-icon-button (click)="$event.stopPropagation();editUser(element)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
                 </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-        <mat-paginator hidePageSize=true [pageSizeOptions]="[10]" pageSize="10"></mat-paginator>
+            <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
+            <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}" (click)="isMobile || viewUser(row)"></tr>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5,10]" [pageSize]=10 [length]="nUsers"></mat-paginator>
     </mat-card>
 </div>

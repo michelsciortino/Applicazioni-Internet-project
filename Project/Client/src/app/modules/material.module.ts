@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   MatButtonModule,
   MatCardModule,
+  MatCheckboxModule,
   MatDialogModule,
   MatIconModule,
   MatInputModule,
@@ -28,6 +29,7 @@ import {
     MatToolbarModule,
     MatButtonModule,
     MatCardModule,
+    MatCheckboxModule,
     MatInputModule,
     MatDialogModule,
     MatTableModule,
@@ -50,6 +52,7 @@ import {
     MatToolbarModule,
     MatButtonModule,
     MatCardModule,
+    MatCheckboxModule,
     MatInputModule,
     MatDialogModule,
     MatTableModule,

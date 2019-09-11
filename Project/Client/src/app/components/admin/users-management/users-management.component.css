@@ -2,9 +2,24 @@ table {
     width: 100%;
 }
 
-td {
+td,
+th {
     text-align: left;
-    min-width: 100px;
+    padding-right: 20px;
+}
+
+tr td:last-child,
+th:last-child {
+    padding-right: 0px;
+}
+
+mat-table>tr:hover.mat-row:not('mobile') {
+    background-color: #e8e8e8;
+    cursor: pointer;
+}
+
+mat-table>tr:active.mat-row:not('mobile') {
+    background-color: #ababab;
 }
 
 td span {
@@ -13,9 +28,27 @@ td span {
 
 .squeeze {
     min-width: 0px;
+    padding: 0px !important;
+}
+
+.center-vertical {
+    vertical-align: middle;
 }
 
 .mat-cell,
 .mat-header-cell {
     padding: 8px;
+}
+
+.spinner-container {
+    margin: 20px;
+    display: inline-block;
+}
+
+td.mobile {
+    visibility: hidden;
+}
+
+th.mobile {
+    visibility: hidden;
 }

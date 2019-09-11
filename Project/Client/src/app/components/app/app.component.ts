@@ -5,8 +5,8 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatSidenav } from '@angular/material';
 import { UserService } from 'src/app/services/user/user.service';
-import { UserInfo } from 'src/app/services/user/models/user';
 import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
+import { UserInfo } from 'src/app/models/user';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +26,7 @@ export class AppComponent implements OnDestroy {
   sidenav: MatSidenav;
 
   constructor(private router: Router, private authSvc: AuthService, private userSvc: UserService, private isMobileSvc: IsMobileService, changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
-    this.mobileQuery = media.matchMedia('(max-width: 600px)');
+    this.mobileQuery = media.matchMedia('(max-width: 690px)');
     this.mobileQueryListener = () => {
       if (this.mobileQuery.matches) {
         this.sidenav.close();
@@ -48,8 +48,8 @@ export class AppComponent implements OnDestroy {
     this.userInfoSub = this.userSvc.getUserInfo().subscribe(
       (info: UserInfo) => {
         if (info != null) {
-          this.isAdmin = info.isAdmin();
-          this.isCompanion = info.isCompanion();
+          this.isAdmin = UserInfo.prototype.isAdmin(info);
+          this.isCompanion = UserInfo.prototype.isCompanion(info);
         }
       }
     );

@@ -14,8 +14,7 @@ import { CompanionComponent } from '../components/companion/companion.component'
 import { WelcomeComponent } from '../components/welcome/welcome.component';
 import { LinesComponent } from '../components/lines/lines.component';
 import { SettingsComponent } from '../components/settings/settings.component';
-import { RegisterComponent } from '../components/admin/register/register.component';
-import { UserRole } from '../services/user/models/roles';
+import { UserRole } from '../models/roles';
 
 const routes: Routes = [
   // basic routes
