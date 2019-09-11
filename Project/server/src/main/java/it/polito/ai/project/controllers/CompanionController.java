@@ -6,7 +6,6 @@ import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.ClientCompanion;
 import it.polito.ai.project.generalmodels.ClientRace;
-import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.requestEntities.*;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.UserCredentials;
@@ -28,8 +27,8 @@ public class CompanionController {
 
     //ATTENZIONE! Dato che questo è il controller per il companion, solo lui è autorizzato e la gestione delle credenziali va fatta a monte
 
-    @RequestMapping(value="/makeCompanion", method = RequestMethod.PUT)
-    public ResponseEntity makeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody MakeCompanionRequest companionRequest)
+    @RequestMapping(value="/makeCompanion", method = RequestMethod.POST)
+    public ResponseEntity makeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody MakeOrRemoveCompanionRequest companionRequest)
     {
         try
         {
@@ -57,12 +56,12 @@ public class CompanionController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
-    @RequestMapping(value="/removeCompanion", method = RequestMethod.PUT)
-    public ResponseEntity removeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientCompanion clientCompanion)
+    @RequestMapping(value="/removeCompanion", method = RequestMethod.POST)
+    public ResponseEntity removeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody MakeOrRemoveCompanionRequest companionRequest)
     {
         try
         {
-            db.removeCompanion(performerUserCredentials.getUsername(), clientCompanion );
+            db.removeCompanion(performerUserCredentials.getUsername(), companionRequest.getTargetName()  );
             return ok(HttpStatus.OK);
         }
         catch(ResourceNotFoundException re)

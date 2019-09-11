@@ -19,19 +19,23 @@ public interface RaceRepository extends MongoRepository<Race, String> {
 
     List<Race> findAllByLineNameAndDate( String lineName, Date data);
 
-    @Query("{'date' : {$gt : ?1, $lt : ?2}}")
+    //@Query("{'date' : {$gt : ?1, $lt : ?2}}")
+    //List<Race> findAllByLineNameAndDateBetween(String lineName, Date fromDate, Date toDate);
     List<Race> findAllByLineNameAndDateBetween(String lineName, Date fromDate, Date toDate);
 
     List<Race> findAllByLineNameAndDirection( String lineName, DirectionType direction);
 
     List<Race> findAllByLineNameAndDirectionAndDate( String lineName, DirectionType direction, Date date);
 
-    @Query("{'date' : {$gt : ?1, $lt : ?2}}")
-    List<Race> findAllByLineNameAndDirectionAndDateBetween(String lineName, DirectionType direction, Date fromDate, Date toDate );
+    //@Query("{'date' : {$gt : ?1, $lt : ?2}}")
+    //List<Race> findAllByLineNameAndDirectionAndDateBetween(String lineName, DirectionType direction, Date fromDate, Date toDate );
+    List<Race> findAllByLineNameAndDirectionAndDateBetween(String lineName, DirectionType direction, Date fromDate, Date toDate);
 
-    @Query("{'companions.userDetails.username' : ?0, 'date':{$gt:?1}}")
-    List<Race> findAllByCompanionsAndDateGreaterThan(String companion, Date date);
+    //@Query("{'companions.userDetails.username' : ?0, 'date':{$gt:?1}}")
+    //List<Race> findAllByCompanionsAndDateGreaterThan(String companion, Date date);
+    List<Race> findAllByCompanionsContainsAndDateAfter(String companion, Date date);
 
-    @Query("{'companions.userDetails.username' : ?0, 'date':{$eq:?1}}")
-    List<Race> findAllByCompanionsAndEqDate(String companion, Date date);
+    //@Query("{'companions.userDetails.username' : ?0, 'date':{$eq:?1}}")
+    //List<Race> findAllByCompanionsAndEqDate(String companion, Date date);
+    List<Race> findAllByCompanionsContainsAndDateEquals(String companion, Date date);
 }

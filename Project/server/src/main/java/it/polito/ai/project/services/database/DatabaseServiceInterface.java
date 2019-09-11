@@ -46,7 +46,8 @@ public interface DatabaseServiceInterface {
     void deleteUser(ClientUser user);
 
     //----------------------------------------------###Notification###------------------------------------------------//
-    void insertNotification(String performerUsername, ClientUserNotification clientUserNotification, String targetusername);
+
+    void insertNotification(String performerUsername, ClientUserNotification clientUserNotification, String targetUsername);
 
     Page<ClientUserNotification> getBroadcastUserNotification(int pageNumber, ClientRace clientRace);
 
@@ -64,7 +65,7 @@ public interface DatabaseServiceInterface {
 
     void makeCompanion(String performerUsername, String targetUsername);
 
-    void removeCompanion( String performerUsername, ClientCompanion clientCompanion);
+    void removeCompanion(String performerUsername, String targetUsername);
 
     void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
 

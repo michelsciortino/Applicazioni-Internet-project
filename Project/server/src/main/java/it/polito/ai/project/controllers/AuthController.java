@@ -104,7 +104,7 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ResponseEntity login(@RequestBody @Validated RegisterRequest registerRequest) {
+    public ResponseEntity register(@RequestBody @Validated RegisterRequest registerRequest) {
         try {
             Map<Object, Object> model = new HashMap<>();
             authService.registerUser(registerRequest.getMail());

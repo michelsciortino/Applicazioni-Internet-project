@@ -10,9 +10,7 @@ import it.polito.ai.project.services.database.repositories.*;
 import it.polito.ai.project.services.email.EmailConfiguration;
 import it.polito.ai.project.services.email.EmailSenderService;
 import it.polito.ai.project.services.email.models.Mail;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -625,7 +623,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         for (Passenger p : race.get().getPassengers()) {
             for (ClientPassenger cp : clientPassengers) {
                 // For each Passenger in list passed check if he is in race
-                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCf())) {
                     {
                         count++;
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.NULL);
@@ -803,7 +801,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Transactional
     @Override
-    public void removeCompanion(String performerUsername, ClientCompanion clientCompanion) {
+    public void removeCompanion(String performerUsername, String targetUsername) {
 
         List<Race> races;
         Optional<UserCredentials> targetCredentials;
@@ -814,8 +812,8 @@ public class DatabaseService implements DatabaseServiceInterface {
         try {
             perfCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
-            targetCredentials = userCredentialsRepository.findByUsername(clientCompanion.getUserDetails().getMail());
-            target = userRepository.findByUsername(clientCompanion.getUserDetails().getMail());
+            targetCredentials = userCredentialsRepository.findByUsername(targetUsername);
+            target = userRepository.findByUsername(targetUsername);
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
@@ -831,7 +829,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         try {
             Date date = simpleDateFormat.parse(stringDate);
-            races = raceRepository.findAllByCompanionsAndDateGreaterThan(clientCompanionToCompanion(clientCompanion).getUserDetails().getUsername(), date);
+            races = raceRepository.findAllByCompanionsContainsAndDateAfter(targetUsername, date);
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
@@ -868,7 +866,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                     if (c.getState() == CompanionState.VALIDATED)
                         lockedrace = true;
                     //put target companion in a local variable
-                    if (c.getUserDetails().getUsername().equals(clientCompanion.getUserDetails().getMail())) {
+                    if (c.getUserDetails().getUsername().equals(targetUsername)) {
                         targetCompanionState = c.getState();
                         targetcompanion = c;
                     }
@@ -892,7 +890,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
                     //TODO modifica in notifica
                     //Format content and send email to each admin
-                    String content = clientCompanion.getUserDetails().getMail() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
+                    String content = targetUsername + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
                     for (String address : line.get().getAdmins())
                         emailSenderService.sendSimpleMail(new Mail(performerUsername, address, "Companion Removed", content));
                 } else if (targetCompanionState.equals(CompanionState.CONFIRMED)) {
@@ -905,7 +903,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         }
                     }
                     //Format content and send email to each admin
-                    String content = clientCompanion.getUserDetails().getMail() + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
+                    String content = targetUsername + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
                     for (String address : line.get().getAdmins())
                         emailSenderService.sendSimpleMail(new Mail(performerUsername, address, "Companion Removed", content));
 
@@ -1137,7 +1135,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (ParseException e) {
             throw new InternalServerErrorException();
         }
-        List<Race> otherRaces = raceRepository.findAllByCompanionsAndEqDate(companion.getUserDetails().getUsername(), date);
+        List<Race> otherRaces = raceRepository.findAllByCompanionsContainsAndDateEquals(companion.getUserDetails().getUsername(), date);
         for (Race r : otherRaces) {
             if (!r.getCompanions().contains(companion))
                 throw new InternalServerErrorException();
@@ -1418,7 +1416,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         for (Passenger p : race.get().getPassengers()) {
             for (ClientPassenger cp : clientPassengers) {
                 // For each Passenger in list passed check if is in race
-                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCf())) {
                     {
                         // If state is not NULL or ABSENT: Throw BadRequest
                         if (!p.getState().equals(PassengerState.NULL) && !p.getState().equals(PassengerState.ABSENT))
@@ -1472,7 +1470,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         for (Passenger p : race.get().getPassengers()) {
             for (ClientPassenger cp : clientPassengers) {
                 // For each Passenger in list passed check if is in race
-                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCf())) {
                     {
                         // If state is not TAKEN: Throw BadRequest
                         if (!p.getState().equals(PassengerState.TAKEN))
@@ -1522,7 +1520,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         for (Passenger p : race.get().getPassengers()) {
             for (ClientPassenger cp : clientPassengers) {
                 // For each Passenger in list passed check if is in race
-                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCF())) {
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCf())) {
                     {
                         // If state is not NULL : Throw BadRequest
                         if (!p.getState().equals(PassengerState.NULL))
@@ -1877,7 +1875,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 throw new UnauthorizedRequestException("Line Admins only can perform this operation");
         }
 
-        Child c = new Child(child.getName(), child.getSurname(), child.getCF(), child.getParentId(), EntryState.ISENABLE);
+        Child c = new Child(child.getName(), child.getSurname(), child.getCf(), child.getParentId(), EntryState.ISENABLE);
 
         if (!l.get().getSubscribedChildren().contains(c)) {
 
@@ -2244,6 +2242,6 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private Child clientChildToChild(ClientChild clientChild) {
-        return new Child(clientChild.getName(), clientChild.getSurname(), clientChild.getCF(), clientChild.getParentId(), EntryState.ISENABLE);
+        return new Child(clientChild.getName(), clientChild.getSurname(), clientChild.getCf(), clientChild.getParentId(), EntryState.ISENABLE);
     }
 }

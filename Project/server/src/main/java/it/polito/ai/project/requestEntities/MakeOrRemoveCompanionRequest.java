@@ -3,14 +3,14 @@ package it.polito.ai.project.requestEntities;
 import lombok.Data;
 
 @Data
-public class MakeCompanionRequest {
+public class MakeOrRemoveCompanionRequest {
 
     private String targetName;
 
-    public MakeCompanionRequest(String targetName) {
+    public MakeOrRemoveCompanionRequest(String targetName) {
         this.targetName = targetName;
     }
-    public MakeCompanionRequest(){
+    public MakeOrRemoveCompanionRequest(){
         this.targetName = null;
     }
 }

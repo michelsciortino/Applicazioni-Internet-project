@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -110,7 +111,7 @@ public class AuthService implements AuthServiceInterface {
                 if (token.getExpirationDate().after(new Date())) {
                     userCredentials.get().setEnable(true);
                     database.modifyUserPassword(userCredentialsToClientUserCredentials(userCredentials.get()),confirmRequest.getPassword());
-                    database.updateCredentials(userCredentialsToClientUserCredentials(userCredentials.get()));
+                    updateCredentials(userCredentials.get());
                     ClientUser user = new ClientUser(mail,confirmRequest.getName(),confirmRequest.getSurname(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),new ArrayList<>());
                     database.updateUser(user);
                     database.deleteToken(token);
@@ -181,7 +182,6 @@ public class AuthService implements AuthServiceInterface {
                 throw new ResourceNotFoundException();
         } else
             throw new BadRequestException("Token is invalid or link is broken!");
-
     }
 
     /**
@@ -199,7 +199,7 @@ public class AuthService implements AuthServiceInterface {
             throw new ConflicException("Invalid mail... Credential already exist");
         } else {
             log.debug("register new credential");
-            ClientUserCredentials credentials = database.insertCredentials(mail, "", Arrays.asList(Roles.prefix + Roles.USER),false);
+            ClientUserCredentials credentials = database.insertCredentials(mail, "", Arrays.asList(Roles.USER),false);
             ClientUser user = new ClientUser(mail, "", "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
             database.insertUser(user);
             Token confirmToken = new Token(mail, ScopeToken.CONFIRM);
@@ -218,6 +218,35 @@ public class AuthService implements AuthServiceInterface {
                 database.deleteUser(user);
                 throw new InternalServerErrorException("Send Mail Error");
             }
+        }
+    }
+
+    /**
+     * Function to update user's credential
+     *
+     * @param userCredentials user new credential
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     */
+    @Transactional
+    public void updateCredentials(UserCredentials userCredentials) {
+        try {
+            Optional<UserCredentials> u = userCredentialsRepository.findByUsername(userCredentials.getUsername());
+            if (u.isPresent()) {
+                u.get().setRoles(userCredentials.getRoles());
+                u.get().setAccountNotExpired(userCredentials.isAccountNotExpired());
+                u.get().setAccountNotLocked(userCredentials.isAccountNotLocked());
+                u.get().setCredentialsNotExpired(userCredentials.isCredentialsNotExpired());
+                u.get().setEnable(userCredentials.isEnable());
+
+                userCredentialsRepository.save(u.get());
+            } else {
+                throw new ResourceNotFoundException();
+            }
+        } catch (ResourceNotFoundException e1) {
+            throw new ResourceNotFoundException();
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
         }
     }
 
