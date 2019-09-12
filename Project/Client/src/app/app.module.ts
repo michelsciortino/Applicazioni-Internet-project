@@ -18,6 +18,7 @@ import { MessageComponent } from './components/message/message.component';
 import { MessageService } from './services/bridges/message.service';
 import { HomeComponent } from './components/home/home.component';
 import { UserService } from './services/user/user.service';
+import { LineService } from './services/lines/line-races.service';
 import { MessagesComponent } from './components/messages/messages.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { CompanionComponent } from './components/companion/companion.component';
@@ -27,6 +28,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { RegisterComponent } from './components/admin/register/register.component';
 import { IsMobileService } from './services/bridges/is-mobile.service';
 import { UserManagementComponent } from './components/admin/users-management/users-management.component';
+import { RacesManagementComponent } from './components/admin/races-management/races-management.component';
 import { AdminService } from './services/admin/admin.service';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
@@ -46,7 +48,7 @@ import { EditUserDialog } from './components/admin/users-management/edit-user-di
     HomeComponent, AdminComponent, CompanionComponent, MessagesComponent, LinesComponent, SettingsComponent,
 
     // admin components
-    UserManagementComponent,
+    UserManagementComponent, RacesManagementComponent,
 
     // dialog
     ConfirmDialogComponent, MessageDialogComponent,ViewUserDialog,EditUserDialog,
@@ -72,6 +74,7 @@ import { EditUserDialog } from './components/admin/users-management/edit-user-di
     AuthService,
     UserService,
     AdminService,
+    LineService,
     MessageService,
     IsMobileService,
     { provide: LocationStrategy, useClass: HashLocationStrategy },

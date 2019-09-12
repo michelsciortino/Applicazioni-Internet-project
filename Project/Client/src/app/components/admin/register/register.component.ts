@@ -21,8 +21,7 @@ export class RegisterComponent implements OnInit {
     errorMessage = '';
     busy = false;
 
-    constructor(public dialog: MatDialog, private authSvc: AuthService, private msgSvc: MessageService, private router: Router, private fb: FormBuilder, private titleService: Title) {
-        this.titleService.setTitle('Register');
+    constructor(public dialog: MatDialog, private authSvc: AuthService, private msgSvc: MessageService, private router: Router, private fb: FormBuilder) {
     }
 
     ngOnInit() {
