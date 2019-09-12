@@ -38,6 +38,7 @@ import { MessageDialogComponent } from './components/dialogs/messege-dialog/mess
 import { ViewUserDialog } from './components/admin/users-management/view-user-dialog/view-user.dialog';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { EditUserDialog } from './components/admin/users-management/edit-user-dialog/edit-user.dialog';
+import { ViewRaceDialog } from './components/admin/races-management/view-race-dialog/view-race.dialog';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,7 @@ import { EditUserDialog } from './components/admin/users-management/edit-user-di
     UserManagementComponent, RacesManagementComponent,
 
     // dialog
-    ConfirmDialogComponent, MessageDialogComponent,ViewUserDialog,EditUserDialog,
+    ConfirmDialogComponent, MessageDialogComponent, ViewUserDialog, EditUserDialog, ViewRaceDialog,
 
     // dumb components
     MessageComponent,
@@ -60,7 +61,7 @@ import { EditUserDialog } from './components/admin/users-management/edit-user-di
     PasswordToggleDirective
   ],
   entryComponents: [
-    ConfirmDialogComponent, MessageDialogComponent,ViewUserDialog,EditUserDialog
+    ConfirmDialogComponent, MessageDialogComponent, ViewUserDialog, EditUserDialog, ViewRaceDialog,
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,
@@ -80,7 +81,7 @@ import { EditUserDialog } from './components/admin/users-management/edit-user-di
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}}
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } }
   ],
   bootstrap: [AppComponent]
 })
