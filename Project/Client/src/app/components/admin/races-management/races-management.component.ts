@@ -7,6 +7,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DirectionType, Race } from 'src/app/models/race';
 import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
 import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material';
+import { ViewRaceDialog } from './view-race-dialog/view-race.dialog';
+import { MessageDialogComponent } from '../../dialogs/messege-dialog/messege-dialog.component';
+import { ConfirmDialogComponent } from '../../dialogs/confirm-dialog/confirm-dialog.component';
 
 @Component({
     selector: 'app-races-management',
@@ -44,9 +48,9 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
         { def: 'Companions' },
         { def: 'Remove-Action' }];
 
-    @ViewChild(MatSort, {static: true}) sort: MatSort;
+    @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor(private lineSvc: LineService, private isMobileSvc: IsMobileService) {
+    constructor(private lineSvc: LineService, public dialog: MatDialog, private isMobileSvc: IsMobileService) {
 
         console.log(this.toDateSelected.toString());
         console.log(this.toDateSelected.toISOString());
@@ -74,8 +78,6 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
                 this.lineSelected = this.lines[0];
                 this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
             })
-
-
     }
 
     ngOnDestroy() {
@@ -95,11 +97,25 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     }
 
     removeRace(race) {
-        console.log("REMOVE RACE:",race)
+        console.log("REMOVE RACE:", race)
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '350px',
+            data: {title: 'Confirm?', message: `Are you sure deleted this race: \n- ${race.lineName}\n- ${race.direction}\n- ${race.date.toISOString()}`}
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                console.log('Yes clicked');
+                // delete race
+                this.lineSvc.deleteRace(race);
+            }
+            else
+                console.log('No clicked')
+        });
     }
 
     viewRace(race) {
-        console.log("VIEW RACE:",race)
+        console.log("VIEW RACE:", race)
+        const dialogRef = this.dialog.open(ViewRaceDialog, { data: { race: race } });
     }
-
 }
+

@@ -9,3 +9,7 @@
     text-align: center;
     margin: 15px 15px 15px 15px!important;
 }
+
+.new-line {
+    white-space: pre-line;
+}

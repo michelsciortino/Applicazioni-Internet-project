@@ -58,6 +58,13 @@ export class LineService {
         }
         return await this.http.get(`${lineEndpoint}/${lineName}/races`, { params }).toPromise();;
     }
+
+    public deleteRace(race: Race) {
+        console.log(`${lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`);
+        return this.http.delete(`${lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`).subscribe(
+            (data)=> console.log(data)
+        );
+    } 
 }
 
 export class RacesDataSource implements DataSource<Race>{
