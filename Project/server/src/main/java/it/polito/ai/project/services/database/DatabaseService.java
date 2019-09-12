@@ -257,7 +257,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 throw new BadRequestException();
 
             if (filterBy.equals("MAIL")) {
-                Page<User> users = userRepository.findAllByUsernameContains(filter, pageable);
+                Page<User> users = userRepository.findAllByUsernameContainsIgnoreCase(filter, pageable);
                 long totalElements = users.getTotalElements();
                 for (User p : users) {
                     Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.getUsername());
@@ -266,7 +266,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 return new PageImpl<>(usersList, pageable, totalElements);
             }
             if (filterBy.equals("NAME")) {
-                Page<User> users = userRepository.findAllByNameContains(filter, pageable);
+                Page<User> users = userRepository.findAllByNameContainsIgnoreCase(filter, pageable);
                 long totalElements = users.getTotalElements();
                 for (User p : users) {
                     Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.getUsername());
@@ -275,7 +275,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 return new PageImpl<>(usersList, pageable, totalElements);
             }
             if (filterBy.equals("SURNAME")) {
-                Page<User> users = userRepository.findAllBySurnameContains(filter, pageable);
+                Page<User> users = userRepository.findAllBySurnameContainsIgnoreCase(filter, pageable);
                 long totalElements = users.getTotalElements();
                 for (User p : users) {
                     Optional<UserCredentials> credentials = userCredentialsRepository.findByUsername(p.getUsername());
@@ -286,7 +286,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             if (filterBy.equals("ROLE")) {
                 Pageable pageableC = PageRequest.of(pageNumber, pageSize);
                 List<String> roles = new ArrayList<>();
-                roles.add(filter);
+                roles.add(filter.toUpperCase());
                 Page<UserCredentials> usersC = userCredentialsRepository.findAllByRolesContains(clientRolesToRoles(roles).get(0), pageableC);
                 long totalElements = usersC.getTotalElements();
                 for (UserCredentials p : usersC) {

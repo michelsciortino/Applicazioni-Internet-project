@@ -11,4 +11,6 @@ public interface UserCredentialsRepository extends MongoRepository<UserCredentia
     Optional<UserCredentials> findByUsername(String username);
 
     Page<UserCredentials> findAllByRolesContains(String role, Pageable pageable);
+
+    Page<UserCredentials> findAllByRolesContainsIgnoreCase(String role, Pageable pageable);
 }

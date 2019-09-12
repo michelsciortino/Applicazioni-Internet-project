@@ -27,7 +27,7 @@ public class AdminController {
     @Autowired
     private DatabaseService db;
 
-    @RequestMapping(value="/makeAdmin", method = RequestMethod.PUT)
+    @RequestMapping(value="/makeAdmin", method = RequestMethod.POST)
     public ResponseEntity makeAdmin(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody MakeOrRemoveAdminRequest makeOrRemoveAdminRequest)
     {
         try

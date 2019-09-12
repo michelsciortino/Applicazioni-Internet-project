@@ -12,6 +12,12 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     Page<User> findAll(Pageable pageable);
 
+    Page<User> findAllByNameContainsIgnoreCase(String filter, Pageable pageable);
+
+    Page<User> findAllBySurnameContainsIgnoreCase(String filter, Pageable pageable);
+
+    Page<User> findAllByUsernameContainsIgnoreCase(String filter, Pageable pageable);
+
     Page<User> findAllByNameContains(String filter, Pageable pageable);
 
     Page<User> findAllBySurnameContains(String filter, Pageable pageable);
