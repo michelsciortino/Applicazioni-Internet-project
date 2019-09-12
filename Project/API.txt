@@ -100,6 +100,11 @@ Return:200 ok
 @RequestMapping(value="/confirmChosen", method = RequestMethod.PUT)
 public ResponseEntity confirmChosen(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
 Return:200 ok
+
+//SE NON SI DEFINISCE LO STATO RITORNA SOLO LE PENDENTI, SE SI SPECIFICA ENDED RITORNA QUELLE FINITE
+@RequestMapping(value = "/companionRequests", method = RequestMethod.GET)
+public ResponseEntity getCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @Nullable @RequestParam(defaultValue = "NULL") RaceState state) 
+Return:200 ok
 --------------------------------------------------------------------------------------------------------
 Admin
 +++++++++++++++++++++++++++
@@ -155,6 +160,10 @@ Return:200 ok
 public ResponseEntity addChildrenToLine(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody AddChildToLineRequest addChildToLineRequest)
 Return:200 ok
    
+//SE NON SI DEFINISCE LO STATO RITORNA SOLO LE PENDENTI DI TUTTI I COMPANION DELLE TUE LINEE, SE SI SPECIFICA ENDED RITORNA QUELLE FINITE
+@RequestMapping(value = "/companionRequests", method = RequestMethod.GET)
+public ResponseEntity getCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @Nullable @RequestParam(defaultValue = "NULL") RaceState state)
+Return:200 ok
 --------------------------------------------------------------------------------------------------------
 Lines and Races
 

@@ -1,5 +1,6 @@
 package it.polito.ai.project.controllers;
 
+import com.mongodb.lang.Nullable;
 import it.polito.ai.project.exceptions.BadRequestException;
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import it.polito.ai.project.requestEntities.MakeOrRemoveAdminRequest;
 import it.polito.ai.project.requestEntities.SelectCompanionRequest;
 import it.polito.ai.project.requestEntities.AddChildToLineRequest;
 import it.polito.ai.project.services.database.DatabaseService;
+import it.polito.ai.project.services.database.models.RaceState;
 import it.polito.ai.project.services.database.models.UserCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -143,6 +145,24 @@ public class AdminController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
+    @RequestMapping(value = "/companionRequests", method = RequestMethod.GET)
+    public ResponseEntity getCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @Nullable @RequestParam(defaultValue = "NULL") RaceState state) {
+        try {
+            return ok(db.getCompanionRequestsByAdmin(performerUserCredentials.getUsername(), state));
+        } catch (ResourceNotFoundException re) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
+        } catch (InternalServerErrorException ie) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
+        } catch (BadRequestException be) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
+        } catch (UnauthorizedRequestException ue) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
     @RequestMapping(value="/selectCompanions", method = RequestMethod.PUT)
     public ResponseEntity selectCompanions(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody SelectCompanionRequest selectCompanionRequest)
     {

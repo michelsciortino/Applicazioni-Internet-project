@@ -10,6 +10,7 @@ import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.RaceState;
+import it.polito.ai.project.services.database.models.UserCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -158,12 +159,18 @@ public class LinesController
         }
     }
     @RequestMapping(value="/{line_name}/races/{date}/{direction}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteLineRace(@AuthenticationPrincipal ClientUserCredentials clientUserCredentials, @PathVariable(value="line_name") String line_name,  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable(value="date") Date date, @PathVariable(value="direction") DirectionType direction)
+    public ResponseEntity deleteLineRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value="line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable(value="date") Date date, @PathVariable(value="direction") DirectionType direction)
     {
         try
         {
+            System.out.println("sono quìììì");
             ClientRace clientRace = new ClientRace(line_name,direction,date, RaceState.NULL, new ArrayList<>(), new ArrayList<>());
-            db.deleteRace(clientRace, clientUserCredentials.getUsername());
+            System.out.println("sono quàààààà");
+
+            db.deleteRace(clientRace, userCredentials.getUsername());
+
+            System.out.println("sono quòòòò");
+
             return ok(HttpStatus.OK);
         }
         catch(ResourceNotFoundException re)

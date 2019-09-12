@@ -1,10 +1,9 @@
 package it.polito.ai.project.services.database;
 
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.models.DirectionType;
-import it.polito.ai.project.services.database.models.Line;
+import it.polito.ai.project.services.database.models.RaceState;
 import it.polito.ai.project.services.database.models.Token;
 import org.springframework.data.domain.Page;
 
@@ -124,6 +123,11 @@ public interface DatabaseServiceInterface {
     Collection<ClientRace> getRacesByLineAndDateAndDirection(String lineName, Date date, DirectionType direction);
 
     Collection<ClientRace> getRacesByLineAndDirectionAndDateInterval(String lineName, DirectionType direction, Date fromDate, Date toDate);
+
+
+    Collection<CompanionRequest> getCompanionRequestsByCompanion(String username, RaceState state);
+
+    Collection<CompanionRequest> getCompanionRequestsByAdmin(String username, RaceState state);
 
 
     void updateRace(ClientRace clientRace, String performerUsername);
