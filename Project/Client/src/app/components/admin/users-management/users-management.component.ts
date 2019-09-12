@@ -106,10 +106,12 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
     editUser(user) {
         const dialogRef = this.dialog.open(EditUserDialog, { data: { user: user } });
         dialogRef.afterClosed().subscribe(result => {
-            if (this.filtered)
-                this.dataSource.loadUsers(this.paginator.pageIndex, this.paginator.pageSize, this.selectedFilter, this.filterKeyword);
-            else
-                this.dataSource.loadUsers(this.paginator.pageIndex, this.paginator.pageSize);
+            if(dialogRef.componentInstance.dirty){
+                if (this.filtered)
+                    this.dataSource.loadUsers(this.paginator.pageIndex, this.paginator.pageSize, this.selectedFilter, this.filterKeyword);
+                else
+                    this.dataSource.loadUsers(this.paginator.pageIndex, this.paginator.pageSize);
+            }
         });
     }
 

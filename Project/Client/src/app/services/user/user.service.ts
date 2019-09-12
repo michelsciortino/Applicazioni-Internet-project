@@ -46,7 +46,12 @@ export class UserService implements OnDestroy{
                     this.userInfo.children = data.children;
                     this.userInfo.lines = data.lines;
                     this.userInfo.roles=data.roles;
-                    this.userSbj.next(this.userInfo);
+                    if(UserInfo.prototype.isSystemAdmin(this.userInfo)){
+                        //get lines from LineService
+                        this.userSbj.next(this.userInfo);
+                    }
+                    else
+                        this.userSbj.next(this.userInfo);
                 }
             )
             .catch((error: any) => {

@@ -13,14 +13,11 @@ import { AdminService } from 'src/app/services/admin/admin.service';
     styleUrls: ['./edit-user.dialog.css']
 })
 export class EditUserDialog implements OnDestroy {
-
+    dirty:boolean;
     isAdmin: boolean;
     isCompanion: boolean;
 
-    adminLineCount: number;
-
     private usrSub: Subscription;
-
 
     linesMap: Map<String, { name: string, editable: boolean, admin: boolean }>;
 
@@ -28,17 +25,16 @@ export class EditUserDialog implements OnDestroy {
         this.linesMap = new Map();
         this.isAdmin = UserInfo.prototype.isAdmin(data.user);
         this.isCompanion = UserInfo.prototype.isCompanion(data.user);
+        this.dirty=false;
 
         this.usrSub = userSvc.getUserInfo().subscribe(
             userInfo => {
-                // TODO: add list loading for sysadmin
                 for (const line of userInfo.lines) {
                     this.linesMap.set(line, { name: line, editable: true, admin: false });
                 }
                 const editableLines = userInfo.lines;
                 if (!data.user.lines) return;
                 for (const line of data.user.lines) {
-                    this.adminLineCount++;
                     const prevLine = this.linesMap.get(line);
                     if (!prevLine)
                         this.linesMap.set(line, { name: line, editable: false, admin: true });
@@ -57,6 +53,7 @@ export class EditUserDialog implements OnDestroy {
         if (!this.isCompanion) {
             this.adminSvc.makeCompanion(this.data.user.mail)
                 .then(() => {
+                    if(!this.dirty) this.dirty=true;
                     this.isCompanion = true;
                     checkbox.checked = true;
                 })
@@ -65,6 +62,7 @@ export class EditUserDialog implements OnDestroy {
         else {
             this.adminSvc.removeCompanion(this.data.user.mail)
                 .then(() => {
+                    if(!this.dirty) this.dirty=true;
                     this.isCompanion = false;
                     checkbox.checked = false;
                 })
