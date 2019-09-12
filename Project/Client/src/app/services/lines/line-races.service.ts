@@ -6,29 +6,31 @@ import { HttpHeaders, HttpClient, HttpParams, HttpErrorResponse } from '@angular
 import { environment } from 'src/environments/environment';
 import { Line } from '../../models/line';
 import { Race, DirectionType } from 'src/app/models/race';
-import { map } from 'rxjs/operators';
+import { map, merge } from 'rxjs/operators';
 import { DataSource } from '@angular/cdk/table';
 import { AdminService } from '../admin/admin.service';
 import { CollectionViewer } from '@angular/cdk/collections';
+import { MatSort } from '@angular/material/sort';
 
 const lineEndpoint = `${environment.baseEndpoint}/lines`;
 @Injectable()
 export class LineService {
-    private linesSubj: Subject<Line[]>
+    private linesSubj: BehaviorSubject<Line[]>
     private racesSubj: Subject<Race[]>
 
 
     constructor(private authSvc: AuthService, private http: HttpClient) {
-        this.linesSubj = new Subject<Line[]>()
+        this.linesSubj = new BehaviorSubject<Line[]>([])
         this.racesSubj = new Subject<Race[]>()
         this._getLines();
     }
 
     //returns lines
     private _getLines() {
-        return this.http.get(lineEndpoint).subscribe(
-            (lines: Line[]) =>
+        this.http.get(lineEndpoint).subscribe(
+            (lines: Line[]) => {
                 this.linesSubj.next(lines)
+            }
         );
     }
 
@@ -44,12 +46,9 @@ export class LineService {
 
         // Parameters obj-
         let params = new HttpParams();
-            //.set('fromDate', fromDate.toISOString())
-            //.set('toDate', toDate.toISOString())
-            //.set('direction', direction);
 
         if (direction != null) {
-                params = params.set('direction', direction);
+            params = params.set('direction', direction);
         }
         if (toDate != null) {
             params = params.set('toDate', toDate.toISOString());
@@ -57,10 +56,7 @@ export class LineService {
         if (fromDate != null) {
             params = params.set('fromDate', fromDate.toISOString());
         }
-
-
         return await this.http.get(`${lineEndpoint}/${lineName}/races`, { params }).toPromise();;
-
     }
 }
 
@@ -68,10 +64,18 @@ export class RacesDataSource implements DataSource<Race>{
     private racesSbj = new BehaviorSubject<Race[]>([]);
     private loadingSbj = new BehaviorSubject<boolean>(false);
 
-    constructor(private lineSvc: LineService) {
+    constructor(private lineSvc: LineService, private sort: MatSort) {
     }
 
     connect(collectionViewer: CollectionViewer): Observable<Race[]> {
+        console.log(this.sort);
+        this.sort.sortChange.subscribe(
+            (data) => {
+                let races = this.racesSbj.getValue();
+                this.racesSbj.next(this.sortRaces(races, data.direction, data.active));
+
+            }
+        )
         return this.racesSbj.asObservable();
     }
 
@@ -88,10 +92,49 @@ export class RacesDataSource implements DataSource<Race>{
             .then((data: Race[]) => {
                 if (data.length == 0) return;
                 data.map(x => x.date = new Date(x.date));
-                //data[0].date=new Date(data[0].date);
+                this.sortRaces(data, "asc", "Date");
                 this.racesSbj.next(data);
-                //console.log(this.racesSbj);
             })
             .finally(() => this.loadingSbj.next(false))
+    }
+
+    sortRaces(data: Race[], direction: string, active: string): Race[] {
+        switch (active) {
+            case "Date":
+                console.log("Sort by date");
+                if (direction === "asc")
+                    return data.sort((a: Race, b: Race) => {
+                        return a.date.getTime() - b.date.getTime();
+                    })
+                else
+                    return data.sort((a: Race, b: Race) => {
+                        return b.date.getTime() - a.date.getTime();
+                    });
+                break;
+            case "Direction":
+                console.log("Sort by Direction");
+                if (direction === "asc")
+                    return data.sort((a: Race, b: Race) => {
+                        return a.direction.localeCompare(b.direction);
+                    });
+                else
+                    return data.sort((a: Race, b: Race) => {
+                        return b.direction.localeCompare(a.direction);
+                    });
+                break;
+            case "LineName":
+                console.log("Sort by LineName");
+                if (direction === "asc")
+                    return data.sort((a: Race, b: Race) => {
+                        return a.lineName.localeCompare(b.lineName);
+                    });
+                else
+                    return data.sort((a: Race, b: Race) => {
+                        return a.lineName.localeCompare(b.lineName);
+                    });
+                break;
+            default: console.log("Error type sort");;
+        }
+
     }
 }

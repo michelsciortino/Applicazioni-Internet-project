@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { LineService, RacesDataSource } from 'src/app/services/lines/line-races.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Line } from 'src/app/models/line';
@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DirectionType, Race } from 'src/app/models/race';
 import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
     selector: 'app-races-management',
@@ -40,7 +41,10 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
         { def: 'Direction' },
         { def: 'Date' },
         { def: 'Passengers' },
-        { def: 'Companions' }];
+        { def: 'Companions' },
+        { def: 'Remove-Action' }];
+
+    @ViewChild(MatSort, {static: true}) sort: MatSort;
 
     constructor(private lineSvc: LineService, private isMobileSvc: IsMobileService) {
 
@@ -50,9 +54,9 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        this.dataSource = new RacesDataSource(this.lineSvc);
+        this.dataSource = new RacesDataSource(this.lineSvc, this.sort);
 
-        this.toDateSelected.setMonth(this.toDateSelected.getMonth() + 1);
+        this.toDateSelected.setMonth(this.toDateSelected.getMonth() + 3);
 
         this.lineSvc.getLines()
             .pipe(
@@ -88,6 +92,14 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     getDisplayedColumns(): string[] {
         return this.columnDefinitions
             .map(cd => cd.def);
+    }
+
+    removeRace(race) {
+        console.log("REMOVE RACE:",race)
+    }
+
+    viewRace(race) {
+        console.log("VIEW RACE:",race)
     }
 
 }
