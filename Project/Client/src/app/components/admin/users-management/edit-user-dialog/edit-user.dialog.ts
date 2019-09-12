@@ -93,7 +93,7 @@ export class EditUserDialog implements OnDestroy {
         }
     }
 
-    onCancel(): void {
+    onClose(): void {
         this.dialogRef.close();
     }
 

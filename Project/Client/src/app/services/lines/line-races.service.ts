@@ -90,7 +90,7 @@ export class RacesDataSource implements DataSource<Race>{
                 data.map(x => x.date = new Date(x.date));
                 //data[0].date=new Date(data[0].date);
                 this.racesSbj.next(data);
-                console.log(this.racesSbj);
+                //console.log(this.racesSbj);
             })
             .finally(() => this.loadingSbj.next(false))
     }

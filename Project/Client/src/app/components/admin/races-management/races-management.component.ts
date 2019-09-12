@@ -63,10 +63,10 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
                 )
             )
             .subscribe((data: Line[]) => {
-                console.log(data[0]);
+                //console.log(data[0]);
                 if (data.length == 0) return;
                 this.lines = data;
-                console.log(this.lines[0].name);
+                //console.log(this.lines[0].name);
                 this.lineSelected = this.lines[0];
                 this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
             })
