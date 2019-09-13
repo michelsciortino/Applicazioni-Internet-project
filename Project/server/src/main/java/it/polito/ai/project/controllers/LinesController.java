@@ -61,7 +61,7 @@ public class LinesController
     }
 
     @RequestMapping(value="/{line_name}/races", method = RequestMethod.GET)
-    public ResponseEntity getLineRaces(@PathVariable(value="line_name") String line_name, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  @RequestParam Date fromDate, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate, @Nullable @RequestParam @Valid DirectionType direction)
+    public ResponseEntity getLineRaces(@PathVariable(value="line_name") String line_name, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  @RequestParam Date fromDate, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date toDate, @Nullable @RequestParam @Valid DirectionType direction)
     {
         try
         {
@@ -159,17 +159,17 @@ public class LinesController
         }
     }
     @RequestMapping(value="/{line_name}/races/{date}/{direction}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteLineRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value="line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable(value="date") Date date, @PathVariable(value="direction") DirectionType direction)
+    public ResponseEntity deleteLineRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value="line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value="date") Date date, @PathVariable(value="direction") DirectionType direction)
     {
         try
         {
-            System.out.println("sono quìììì");
+
             ClientRace clientRace = new ClientRace(line_name,direction,date, RaceState.NULL, new ArrayList<>(), new ArrayList<>());
-            System.out.println("sono quàààààà");
+
 
             db.deleteRace(clientRace, userCredentials.getUsername());
 
-            System.out.println("sono quòòòò");
+
 
             return ok(HttpStatus.OK);
         }
