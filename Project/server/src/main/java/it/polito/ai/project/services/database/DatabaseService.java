@@ -1300,16 +1300,21 @@ public class DatabaseService implements DatabaseServiceInterface {
         //If race is started or endend is not modifiable: Throw Bad Request
         if (!race.get().getRaceState().equals(RaceState.NULL))
             throw new BadRequestException("Race already Started or ended");
+        Companion targetCompanion=null;
         for (Companion c : race.get().getCompanions()) {
             // Can't remove availability for locked race
             if (c.getState().equals(CompanionState.VALIDATED))
                 throw new BadRequestException();
-            // Can't remove avialability if the target companion isn't in state AVAILABLE
-            if (c.getUserDetails().getName().equals(clientCompanion.getUserDetails().getName()))
-                if (!c.getState().equals(CompanionState.AVAILABLE))
+            // Can't remove avialability if the target companion isn't in state AVAILABLE or CHOSEN
+            if (c.getUserDetails().getName().equals(clientCompanion.getUserDetails().getName())) {
+                if (!c.getState().equals(CompanionState.AVAILABLE) || !c.getState().equals(CompanionState.CHOSEN)))
                     throw new BadRequestException();
+                targetCompanion = c;
+            }
         }
-        race.get().getCompanions().remove(clientCompanionToCompanion(clientCompanion));
+        if(targetCompanion==null)
+            throw new InternalServerErrorException("Unexpected Error");
+        race.get().getCompanions().remove(targetCompanion);
         ClientRace finalRace = raceToClientRace(race.get());
 
         updateRace(finalRace, performerUsername);
