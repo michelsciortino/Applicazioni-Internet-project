@@ -8,16 +8,15 @@ import { DirectionType, Race } from 'src/app/models/race';
 import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material';
-import { ViewRaceDialog } from './view-race-dialog/view-race.dialog';
-import { MessageDialogComponent } from '../../dialogs/messege-dialog/messege-dialog.component';
 import { ConfirmDialogComponent } from '../../dialogs/confirm-dialog/confirm-dialog.component';
+import { GiveAvailabilityDialog } from './give-availability-dialog/give-availability.dialog';
 
 @Component({
-    selector: 'app-races-management',
-    templateUrl: './races-management.component.html',
-    styleUrls: ['./races-management.component.css']
+    selector: 'app-races-companion',
+    templateUrl: './races-companion.component.html',
+    styleUrls: ['./races-companion.component.css']
 })
-export class RacesManagementComponent implements OnInit, OnDestroy {
+export class RacesCompanionComponent implements OnInit, OnDestroy {
 
     public isMobile: boolean;
 
@@ -38,26 +37,17 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     fromDateSelected = new Date();
     toDateSelected = new Date();
 
-    races: Race[];
-
     columnDefinitions = [
         { def: 'LineName' },
         { def: 'Direction' },
         { def: 'Date' },
         { def: 'Passengers' },
         { def: 'Companions' },
-        { def: 'Remove-Action' }];
+        { def: 'Availability-Action' }];
 
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(private lineSvc: LineService, public dialog: MatDialog, private isMobileSvc: IsMobileService) {
-
-       // console.log(this.toDateSelected.toString());
-       // console.log(this.toDateSelected.toISOString());
-       // console.log(this.toDateSelected.toDateString());
-       // console.log(this.toDateSelected.toTimeString());
-       // console.log(this.toDateSelected.toLocaleDateString());
-       // console.log(this.toDateSelected.toLocaleTimeString());
     }
 
     ngOnInit() {
@@ -100,27 +90,10 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
             .map(cd => cd.def);
     }
 
-    removeRace(race: Race) {
-        console.log("REMOVE RACE:", race)
-        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-            width: '350px',
-            data: {title: 'Confirm?', message: `Are you sure deleted this race: \n- ${race.lineName}\n- ${race.direction}\n- ${race.date.toISOString()}`}
-        });
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                console.log('Yes clicked');
-                // delete race
-                this.lineSvc.deleteRace(race);
-                this.search();
-            }
-            else
-                console.log('No clicked')
-        });
-    }
+    giveAvailability(race: Race) {
+        console.log("GIVE AVAILABILITY:", race)
+        const dialogRef = this.dialog.open(GiveAvailabilityDialog, { data: { race: race } });
 
-    viewRace(race: Race) {
-        console.log("VIEW RACE:", race)
-        const dialogRef = this.dialog.open(ViewRaceDialog, { data: { race: race } });
     }
 }
 

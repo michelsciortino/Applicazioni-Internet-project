@@ -1,13 +1,90 @@
 <div mat-dialog-content class="no-scroll fit-content">
     <div>
         <h3 class="title">Race</h3>
-
+        <table>
+            <thead>
+                <tr>
+                    <th>LineName</th>
+                    <th>Direction</th>
+                    <th>Data</th>
+                    <th>Hour</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> {{data.race.lineName}}</td>
+                    <td> {{data.race.direction}}</td>
+                    <td> {{data.race.date.toLocaleDateString()}}</td>
+                    <td> {{data.race.date.toLocaleTimeString()}}</td>
+                    <td> {{data.race.raceState}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <div class="row">
+        <div>
+            <h3 class="title">Companions</h3>
 
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>InitialStop</th>
+                        <th>FinalStop</th>
+                        <th>State</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let companion of data.race.companions">
+                        <td>{{companion.userDetails.mail}} </td>
+                        <td>{{companion.initialStop.name}},
+                            {{getTime(data.race.date.getTime()+companion.initialStop.delayInMillis)}} </td>
+                        <td>{{companion.finalStop.name}},
+                            {{getTime(data.race.date.getTime()+companion.finalStop.delayInMillis)}} </td>
+                        <td>{{companion.state}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- TODO: fare expansion row -->
+        <div>
+            <h3 class="title">Passengers</h3>
+            <table>
+               <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>StopReserved</th>
+                        <th>StopTaken</th>
+                        <th>StopDelivered</th>
+                        <th>IsReserved</th>
+                        <th>State</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let passenger of data.race.passengers">
+                        <td> {{passenger.childDetails.name}}</td>
+                        <td> {{passenger.stopReserved.name}}</td>
+                        <td> {{passenger.stopTaken.name}}</td>
+                        <td> {{passenger.stopDelivered.name}}</td>
+
+                        <td *ngIf="passenger.IsReserved">
+                            <mat-icon class="green-icon">check</mat-icon>
+                        </td>
+                        <td *ngIf="!passenger.IsReserved">
+                            <mat-icon class="red-icon">clear</mat-icon>
+                        </td>
+
+                        <td> {{passenger.state}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div mat-dialog-actions>
         <button mat-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
     </div>
+
+</div>

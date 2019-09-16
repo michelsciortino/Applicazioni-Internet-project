@@ -58,6 +58,7 @@ mat-table{
     margin-right: auto;
 }
 
+
 mat-select {
     width: fit-content !important;
     min-width: 100%;
@@ -76,4 +77,9 @@ mat-select {
 ::ng-deep mat-select .mat-select-placeholder {
     width: fit-content;
     min-width: 10ch;
+}
+
+th.center,
+td.center{
+    text-align: center;
 }

@@ -1,0 +1,29 @@
+<div mat-dialog-content class="no-scroll fit-content">
+    <div>
+        <h3 class="title">Give Availability</h3>
+        <!-- InitialStop selection -->
+        <mat-form-field class="block">
+            <mat-label>InitialStop</mat-label>
+            <mat-select [(value)]="initialStop">
+                <mat-option *ngFor="let stop of stops" [value]="stop">
+                    {{stop.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- FinalStop selection -->
+        <mat-form-field class="block">
+            <mat-label>FinalStop</mat-label>
+            <mat-select [(value)]="finalStop">
+                <mat-option *ngFor="let stop of stops" [value]="stop">
+                    {{stop.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div mat-dialog-actions>
+            <button mat-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+            <button mat-button (click)="send()" cdkFocusInitial>Send</button>
+        </div>
+
+    </div>

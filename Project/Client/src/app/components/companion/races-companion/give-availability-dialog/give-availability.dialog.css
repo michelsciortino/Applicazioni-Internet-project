@@ -50,3 +50,36 @@ table {
 .green-icon {
     color: green;
 }
+
+.mat-form-field.block{
+    display: block;
+}   
+
+.mat-form-field.block:first-of-type{
+    margin-top: 30px;
+}   
+
+.mat-form-field.block:last-of-type{
+    margin-bottom: 0px;
+}   
+
+mat-select {
+    width: auto !important;
+    min-width: 100%;
+}
+
+::ng-deep .mat-form-field-infix {
+    min-width: 75px !important;
+    width: auto !important;
+}
+
+::ng-deep mat-select .mat-select-value {
+    min-width: 2ch;
+    padding-right: 8px;
+    max-width: 25ch;
+}
+
+::ng-deep mat-select .mat-select-placeholder {
+    width: auto;
+    min-width: 10ch;
+}

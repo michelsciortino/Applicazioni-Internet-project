@@ -1,5 +1,5 @@
 import { Stop } from './stop';
-import { UserInfo } from './user';
+import { Child } from './child';
 
 export enum PassengerState {
     ABSENT,
@@ -10,10 +10,10 @@ export enum PassengerState {
 }
 
 export class Passenger {
-    public childDetails: UserInfo;
+    public childDetails: Child;
     public stopReserved: Stop;
     public stopTaken: Stop;
     public stopDelivered: Stop;
-    public isReserved: Boolean;
+    public reserved: Boolean;
     public state: PassengerState;
 }

@@ -42,7 +42,8 @@
             <mat-datepicker #pickerTo disabled="false" [startAt]="toDateSelected"></mat-datepicker>
         </mat-form-field>
 
-        <button mat-raised-button [disabled]="lineSelected==null || directionSelected==null" (click)="search()">Search</button>
+        <button mat-raised-button [disabled]="lineSelected==null || directionSelected==null"
+            (click)="search()">Search</button>
 
         <mat-table [dataSource]="dataSource" matSort>
 
@@ -55,7 +56,7 @@
             <!-- Direction Column -->
             <ng-container matColumnDef="Direction">
                 <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> Direction </th>
-                <td class="center-vertical"  mat-cell *matCellDef="let element"> {{element.direction}} </td>
+                <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.direction}} </td>
             </ng-container>
 
             <!-- Date Column -->
@@ -66,28 +67,31 @@
 
             <!-- Passengers Column -->
             <ng-container matColumnDef="Passengers">
-                <th class="center-vertical" mat-header-cell *matHeaderCellDef> Passengers </th>
-                <td mat-cell class="center-vertical" *matCellDef="let element"> {{element.passengers.length}} </td>
+                <th class="center-vertical center" mat-header-cell *matHeaderCellDef> Passengers </th>
+                <td mat-cell class="center-vertical center" *matCellDef="let element">
+                    {{element.passengers.length}} </td>
             </ng-container>
 
             <!-- Companions Column -->
             <ng-container matColumnDef="Companions">
-                <th class="squeeze center-vertical" mat-header-cell *matHeaderCellDef> Companions </th>
-                <td mat-cell class="squeeze center-vertical" *matCellDef="let element"> {{element.companions.length}} </td>
+                <th class="squeeze center-vertical center" mat-header-cell *matHeaderCellDef> Companions
+                </th>
+                <td mat-cell class="squeeze center-vertical center" *matCellDef="let element">
+                    {{element.companions.length}} </td>
             </ng-container>
 
             <!-- Edit-Action Column -->
-            <ng-container matColumnDef="Remove-Action">
+            <ng-container matColumnDef="Availability-Action">
                 <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
-                    <button mat-icon-button (click)="$event.stopPropagation(); removeRace(element)">
-                        <mat-icon>delete_outline</mat-icon>
+                    <button mat-icon-button (click)="$event.stopPropagation(); giveAvailability(element)">
+                        <mat-icon>person_add</mat-icon>
                     </button>
                 </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
-            <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}" (click)="viewRace(row)"></tr>
+            <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"></tr>
         </mat-table>
     </mat-card>
 </div>
