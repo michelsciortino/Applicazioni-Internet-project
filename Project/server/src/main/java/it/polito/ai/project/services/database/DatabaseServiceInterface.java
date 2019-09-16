@@ -74,11 +74,19 @@ public interface DatabaseServiceInterface {
 
     //------------------------------------------------###Companion###-------------------------------------------------//
 
-    void stateCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
+    //void stateCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
 
-    void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
+    //void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
 
-    void confirmChosenState(String performerUsername, ClientRace clientRace);
+    //void confirmChosenState(String performerUsername, ClientRace clientRace);
+
+    void giveCompanionAvailability(String performerUsername, CompanionRequest companionRequest);
+
+    void removeCompanionAvailability(String performerUsername, CompanionRequest companionRequest);
+
+    void confirmChosenState(String performerUsername, CompanionRequest companionRequest);
+
+    void updateCompanionAvailability(String performerUsername, CompanionRequest companionRequest);
 
     void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop takePediStop);
 

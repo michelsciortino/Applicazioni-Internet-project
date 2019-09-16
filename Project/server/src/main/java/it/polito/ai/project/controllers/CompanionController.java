@@ -6,6 +6,7 @@ import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.ClientRace;
+import it.polito.ai.project.generalmodels.CompanionRequest;
 import it.polito.ai.project.requestEntities.*;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.RaceState;
@@ -133,7 +134,7 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/stateAvailability", method = RequestMethod.PUT)
+    /*@RequestMapping(value = "/stateAvailability", method = RequestMethod.PUT)
     public ResponseEntity stateAvailability(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody StateOrRemoveCompanionAvailabilityRequest stateRequest) {
         try {
             db.stateCompanionAvailability(stateRequest.getTargetCompanion(), performerUserCredentials.getUsername(), stateRequest.getClientRace());
@@ -173,6 +174,78 @@ public class CompanionController {
     public ResponseEntity confirmChosen(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace) {
         try {
             db.confirmChosenState(performerUserCredentials.getUsername(), clientRace);
+            return ok(HttpStatus.OK);
+        } catch (ResourceNotFoundException re) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
+        } catch (InternalServerErrorException ie) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
+        } catch (BadRequestException be) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
+        } catch (UnauthorizedRequestException ue) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }*/
+
+    @RequestMapping(value = "/giveAvailability", method = RequestMethod.POST)
+    public ResponseEntity stateAvailability(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody CompanionRequest companionRequest) {
+        try {
+            db.giveCompanionAvailability(performerUserCredentials.getUsername(), companionRequest);
+            return ok(HttpStatus.OK);
+        } catch (ResourceNotFoundException re) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
+        } catch (InternalServerErrorException ie) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
+        } catch (BadRequestException be) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
+        } catch (UnauthorizedRequestException ue) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/removeAvailability", method = RequestMethod.POST)
+    public ResponseEntity removeAvailability(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody CompanionRequest companionRequest) {
+        try {
+            db.removeCompanionAvailability(performerUserCredentials.getUsername(), companionRequest);
+            return ok(HttpStatus.OK);
+        } catch (ResourceNotFoundException re) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
+        } catch (InternalServerErrorException ie) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
+        } catch (BadRequestException be) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
+        } catch (UnauthorizedRequestException ue) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/updateAvailability", method = RequestMethod.POST)
+    public ResponseEntity updateAvailability(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody CompanionRequest companionRequest) {
+        try {
+            db.updateCompanionAvailability(performerUserCredentials.getUsername(), companionRequest);
+            return ok(HttpStatus.OK);
+        } catch (ResourceNotFoundException re) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
+        } catch (InternalServerErrorException ie) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
+        } catch (BadRequestException be) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
+        } catch (UnauthorizedRequestException ue) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/confirmAvailability", method = RequestMethod.POST)
+    public ResponseEntity confirmChosen(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody CompanionRequest companionRequest) {
+        try {
+            db.confirmChosenState(performerUserCredentials.getUsername(), companionRequest);
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());

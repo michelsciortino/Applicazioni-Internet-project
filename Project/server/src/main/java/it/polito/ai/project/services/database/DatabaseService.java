@@ -1,9 +1,6 @@
 package it.polito.ai.project.services.database;
 
-import it.polito.ai.project.exceptions.BadRequestException;
-import it.polito.ai.project.exceptions.InternalServerErrorException;
-import it.polito.ai.project.exceptions.ResourceNotFoundException;
-import it.polito.ai.project.exceptions.UnauthorizedRequestException;
+import it.polito.ai.project.exceptions.*;
 import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.models.*;
 import it.polito.ai.project.services.database.repositories.*;
@@ -1188,8 +1185,8 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     //------------------------------------------------###Companion###-------------------------------------------------//
 
-    //+++++++++++++++++++++++++++++++Also Admin Controller Methods+++++++++++++++++++++++++++++++
-    @Transactional
+    //+++++++++++++++++++++++++++++++Also Admin Controller Methods+++++++++++++++++++++++++++++++//
+    /*@Transactional
     @Override
     public void stateCompanionAvailability(ClientCompanion clientCompanion, String performerUsername, ClientRace clientRace) {
         Optional<Race> race;
@@ -1265,7 +1262,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateRace(finalRace, performerUsername);
     }
 
-    //TODO: da fare
     @Override
     public void removeCompanionAvailability(ClientCompanion clientCompanion, String performerUsername, ClientRace clientRace) {
         Optional<Race> race;
@@ -1320,16 +1316,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateRace(finalRace, performerUsername);
     }
 
-    /**
-     * Function to confirm rounds in Race, this function change companion state for a race in CONFIRMED
-     *
-     * @param performerUsername user that perform operation
-     * @param clientRace        race in witch confirm round
-     * @throws InternalServerErrorException
-     * @throws ResourceNotFoundException
-     * @throws BadRequestException
-     * @throws UnauthorizedRequestException
-     */
     @Override
     @Transactional
     public void confirmChosenState(String performerUsername, ClientRace clientRace) {
@@ -1370,6 +1356,276 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
+*/
+
+    @Transactional
+    @Override
+    public void giveCompanionAvailability(String performerUsername, CompanionRequest companionRequest) {
+        Optional<Race> race;
+        Optional<UserCredentials> targetCredentials;
+        Optional<User> targetUser;
+        Optional<UserCredentials> performerCredentials;
+        Optional<Line> line;
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(companionRequest.getDate(), companionRequest.getLineName(), companionRequest.getDirection());
+            line = lineRepository.findLineByName(companionRequest.getLineName());
+            targetCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            targetUser = userRepository.findByUsername(performerUsername);
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If race, line, targetCredentials or PerformCredentials aren't in db: Throw ResourceNotFound
+        if (!race.isPresent() || !targetCredentials.isPresent() || !targetUser.isPresent() || !performerCredentials.isPresent() || !line.isPresent())
+            throw new ResourceNotFoundException();
+        // If the performer isn't the SysAdmin or the Companion: Throw UnauthorizedRequest
+        if (!isCompanion(performerCredentials.get().getRoles()) && !isSystemAdmin(performerCredentials.get().getRoles()))
+            throw new UnauthorizedRequestException();
+        // If the target isn't a companion: Throw BadRequest
+        if (!isCompanion(targetCredentials.get().getRoles()))
+            throw new BadRequestException("Target isn't a Companion");
+        // If race companions already contains companion: Throw BadRequest
+        if (isCompanionOfRace(race.get().getCompanions(), targetCredentials.get().getRoles(), performerUsername))
+            throw new BadRequestException("Companion already in race");
+        // If the performer is a Companion: check if he is stating availability for himself
+        if (isCompanion(performerCredentials.get().getRoles())) {
+            if (!performerCredentials.get().getUsername().equals(targetCredentials.get().getUsername()))
+                throw new UnauthorizedRequestException();
+        }
+
+        // If stops is null: Throw Bad Request
+        if(companionRequest.getFinalStop()==null || companionRequest.getInitialStop()==null)
+            throw new BadRequestException();
+
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if (!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
+        // Can't be available for locked race
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getState().equals(CompanionState.VALIDATED))
+                throw new BadRequestException();
+        }
+
+        boolean initialStopFlag = false;
+        boolean finalStopFlag = false;
+        if (race.get().getDirection().equals(DirectionType.OUTWARD)) {
+            for (PediStop stop : line.get().getOutwardStops()) {
+                if (stop.getName().equals(companionRequest.getFinalStop().getName()))
+                    finalStopFlag = true;
+                if (stop.getName().equals(companionRequest.getInitialStop().getName())) {
+                    if (finalStopFlag)
+                        throw new BadRequestException("FinalStop preceding InitialStop");
+                    initialStopFlag = true;
+
+                }
+            }
+        } else {
+            for (PediStop stop : line.get().getReturnStops()) {
+                if (stop.getName().equals(companionRequest.getFinalStop().getName()))
+                    finalStopFlag = true;
+                if (stop.getName().equals(companionRequest.getInitialStop().getName())) {
+                    if (finalStopFlag)
+                        throw new BadRequestException("FinalStop preceding InitialStop");
+                    initialStopFlag = true;
+                }
+            }
+        }
+        if (!finalStopFlag || !initialStopFlag)
+            throw new BadRequestException("Stop not Found");
+
+        ClientCompanion c= new ClientCompanion(userToClientUser(targetUser.get(),targetCredentials.get().getRoles()),companionRequest.getInitialStop(),companionRequest.getFinalStop(),CompanionState.AVAILABLE);
+        race.get().getCompanions().add(clientCompanionToCompanion(c));
+        ClientRace finalRace = raceToClientRace(race.get());
+
+        updateRace(finalRace, performerUsername);
+    }
+
+    @Override
+    public void removeCompanionAvailability(String performerUsername, CompanionRequest companionRequest) {
+        Optional<Race> race;
+        Optional<UserCredentials> targetCredentials;
+        Optional<UserCredentials> performerCredentials;
+
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(companionRequest.getDate(), companionRequest.getLineName(), companionRequest.getDirection());
+            targetCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If race, targetCredentials or PerformCredentials aren't in db: Throw ResourceNotFound
+        if (!race.isPresent() || !targetCredentials.isPresent() || !performerCredentials.isPresent())
+            throw new ResourceNotFoundException();
+        // If the performer isn't the SysAdmin or the Companion: Throw UnauthorizedRequest
+        if (!isCompanion(performerCredentials.get().getRoles()) && !isSystemAdmin(performerCredentials.get().getRoles()))
+            throw new UnauthorizedRequestException();
+        // If the target isn't a companion: Throw BadRequest
+        if (!isCompanion(targetCredentials.get().getRoles()))
+            throw new UnauthorizedRequestException();
+        // If race companions doesn't contain companion: Throw BadRequest
+        if (!isCompanionOfRace(race.get().getCompanions(), targetCredentials.get().getRoles(), performerUsername))
+            throw new UnauthorizedRequestException();
+
+        // If the performer is a Companion: check if he is removing availability for himself
+        if (isCompanion(performerCredentials.get().getRoles())) {
+            if (!performerCredentials.get().getUsername().equals(targetCredentials.get().getUsername()))
+                throw new UnauthorizedRequestException();
+        }
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if (!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
+        Companion targetCompanion=null;
+        for (Companion c : race.get().getCompanions()) {
+            // Can't remove availability for locked race
+            if (c.getState().equals(CompanionState.VALIDATED))
+                throw new BadRequestException();
+            // Can't remove avialability if the target companion isn't in state AVAILABLE or CHOSEN
+            if (c.getUserDetails().getUsername().equals(performerUsername)) {
+                if (!c.getState().equals(CompanionState.AVAILABLE) && !c.getState().equals(CompanionState.CHOSEN))
+                    throw new BadRequestException();
+                targetCompanion = c;
+            }
+        }
+        if(targetCompanion==null)
+            throw new InternalServerErrorException("Unexpected Error");
+        race.get().getCompanions().remove(targetCompanion);
+        ClientRace finalRace = raceToClientRace(race.get());
+
+        updateRace(finalRace, performerUsername);
+    }
+
+
+    /**
+     * Function to confirm rounds in Race, this function change companion state for a race in CONFIRMED
+     *
+     * @param performerUsername user that perform operation
+     * @param companionRequest  companionRequest to confirm availability. admin chosen
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     * @throws BadRequestException
+     * @throws UnauthorizedRequestException
+     */
+    @Override
+    @Transactional
+    public void confirmChosenState(String performerUsername, CompanionRequest companionRequest) {
+        Optional<UserCredentials> performerCredentials;
+        Optional<Race> race;
+        Optional<User> performer;
+        try {
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+            performer = userRepository.findByUsername(performerUsername);
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(companionRequest.getDate(), companionRequest.getLineName(), companionRequest.getDirection());
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If performer, race not found: Throw ResourceNotFound
+        if (!performerCredentials.isPresent() || !race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if (!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
+        Companion perfCompanion = null;
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getUsername().equals(performerUsername))
+                perfCompanion = c;
+            if (c.getState().equals(CompanionState.VALIDATED))
+                throw new BadRequestException("Race locked");
+        }
+        if (perfCompanion == null)
+            throw new UnauthorizedRequestException();
+
+        // Set state CONFIRMED
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getUsername().equals(performerUsername))
+                // If state is not CHOSEN: Throw BadRequest
+                if (c.getState().equals(CompanionState.CHOSEN))
+                    race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.CONFIRMED);
+                else
+                    throw new BadRequestException("Companion not in CHOSEN state");
+        }
+        updateRace(raceToClientRace(race.get()), performerUsername);
+    }
+
+    @Override
+    public void updateCompanionAvailability(String performerUsername, CompanionRequest companionRequest) {
+        Optional<Race> race;
+        Optional<UserCredentials> targetCredentials;
+        Optional<User> targetUser;
+        Optional<UserCredentials> performerCredentials;
+        Optional<Line> line;
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(companionRequest.getDate(), companionRequest.getLineName(), companionRequest.getDirection());
+            line = lineRepository.findLineByName(companionRequest.getLineName());
+            targetCredentials = userCredentialsRepository.findByUsername(companionRequest.getUsername());
+            targetUser = userRepository.findByUsername(companionRequest.getUsername());
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If race, line, targetCredentials or PerformCredentials aren't in db: Throw ResourceNotFound
+        if (!race.isPresent() || !targetCredentials.isPresent() || !targetUser.isPresent() || !performerCredentials.isPresent() || !line.isPresent())
+            throw new ResourceNotFoundException();
+        // If the performer isn't the SysAdmin or the Companion: Throw UnauthorizedRequest
+        if (!isCompanion(performerCredentials.get().getRoles()) && !isSystemAdmin(performerCredentials.get().getRoles()))
+            throw new UnauthorizedRequestException();
+        // If the target isn't a companion: Throw BadRequest
+        if (!isCompanion(targetCredentials.get().getRoles()))
+            throw new BadRequestException("Target isn't a Companion");
+        // If race companions already contains companion: Throw BadRequest
+        if (isCompanionOfRace(race.get().getCompanions(), targetCredentials.get().getRoles(), companionRequest.getUsername()))
+            throw new BadRequestException("Companion already in race");
+        // If the performer is a Companion: check if he is stating availability for himself
+        if (isCompanion(performerCredentials.get().getRoles())) {
+            if (!performerCredentials.get().getUsername().equals(targetCredentials.get().getUsername()))
+                throw new UnauthorizedRequestException();
+        }
+
+        // If stops is null: Throw Bad Request
+        if(companionRequest.getFinalStop()==null || companionRequest.getInitialStop()==null)
+            throw new BadRequestException();
+
+        //If race is started or endend is not modifiable: Throw Bad Request
+        if (!race.get().getRaceState().equals(RaceState.NULL))
+            throw new BadRequestException("Race already Started or ended");
+        // Can't be available for locked race
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getState().equals(CompanionState.VALIDATED))
+                throw new BadRequestException();
+        }
+
+        boolean initialStopFlag = false;
+        boolean finalStopFlag = false;
+        if (race.get().getDirection().equals(DirectionType.OUTWARD)) {
+            for (PediStop stop : line.get().getOutwardStops()) {
+                if (stop.getName().equals(companionRequest.getFinalStop().getName()))
+                    finalStopFlag = true;
+                if (stop.getName().equals(companionRequest.getInitialStop().getName())) {
+                    if (finalStopFlag)
+                        throw new BadRequestException("FinalStop preceding InitialStop");
+                    initialStopFlag = true;
+                }
+            }
+        } else {
+            for (PediStop stop : line.get().getReturnStops()) {
+                if (stop.getName().equals(companionRequest.getFinalStop().getName()))
+                    finalStopFlag = true;
+                if (stop.getName().equals(companionRequest.getInitialStop().getName())) {
+                    if (finalStopFlag)
+                        throw new BadRequestException("FinalStop preceding InitialStop");
+                    initialStopFlag = true;
+                }
+            }
+        }
+        if (!finalStopFlag || !initialStopFlag)
+            throw new BadRequestException("Stop not Found");
+
+        ClientCompanion c= new ClientCompanion(userToClientUser(targetUser.get(),targetCredentials.get().getRoles()),companionRequest.getInitialStop(),companionRequest.getFinalStop(),CompanionState.AVAILABLE);
+        race.get().getCompanions().add(clientCompanionToCompanion(c));
+        ClientRace finalRace = raceToClientRace(race.get());
+
+        updateRace(finalRace, performerUsername);
+    }
+
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -1601,6 +1857,15 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!isCompanion(roles)) return false;
         for (Companion c : companions) {
             if (c.getUserDetails().getUsername().equals(companion.getUserDetails().getUsername()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isCompanionOfRace(List<Companion> companions, List<String> roles, String username) {
+        if (!isCompanion(roles)) return false;
+        for (Companion c : companions) {
+            if (c.getUserDetails().getUsername().equals(username))
                 return true;
         }
         return false;
