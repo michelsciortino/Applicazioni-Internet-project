@@ -1307,7 +1307,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 throw new BadRequestException();
             // Can't remove avialability if the target companion isn't in state AVAILABLE or CHOSEN
             if (c.getUserDetails().getName().equals(clientCompanion.getUserDetails().getName())) {
-                if (!c.getState().equals(CompanionState.AVAILABLE) || !c.getState().equals(CompanionState.CHOSEN)))
+                if (!c.getState().equals(CompanionState.AVAILABLE) || !c.getState().equals(CompanionState.CHOSEN))
                     throw new BadRequestException();
                 targetCompanion = c;
             }

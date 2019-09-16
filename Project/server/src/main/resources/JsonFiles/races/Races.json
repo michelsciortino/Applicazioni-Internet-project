@@ -202,7 +202,7 @@
             "longitude": 24,
             "delayInMillis": 1200000
           },
-          "state": "AVAILABLE"
+          "state": "CHOSEN"
         },
         {
           "userDetails": {
@@ -342,6 +342,351 @@
             "delayInMillis": 900000
           },
           "state": "AVAILABLE"
+        }
+      ]
+    },
+    {
+      "lineName": "Bruchi_cantanti",
+      "direction": "OUTWARD",
+      "date": "2019-11-21T10:44:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Benedetta",
+            "surname": "Rossi",
+            "CF": "BNDRSS01C25B919P",
+            "parentId": "rossi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Piazza Mellano",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Aurora",
+            "surname": "Bianchi",
+            "CF": "ARRBNC01C25B919P",
+            "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via primo Alpini",
+            "latitude": 13,
+            "longitude": 24,
+            "delayInMillis": 300000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Matteo",
+            "surname": "Bruno",
+            "CF": "MTTBRN01C25B919P",
+            "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Vigo",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 600000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Giacomo",
+            "surname": "Pantani",
+            "CF": "PNTGCM03A01L219S",
+            "parentId": "pantani@mail.com"
+          },
+          "stopReserved": {
+            "name": "Piazza XXV Aprile",
+            "latitude": 13,
+            "longitude": 24,
+            "delayInMillis": 900000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Jessica",
+            "surname": "Palermo",
+            "CF": "PLRJSC06A46L219G",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "name": "Piazza Mellano",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Piazza Mellano",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Scuola",
+            "latitude": 13,
+            "longitude": 24,
+            "delayInMillis": 1200000
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    },
+    {
+      "lineName": "Bruchi_cantanti",
+      "direction": "RETURN",
+      "date": "2019-11-22T16:54:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Benedetta",
+            "surname": "Rossi",
+            "CF": "BNDRSS01C25B919P",
+            "parentId": "rossi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Aurora",
+            "surname": "Bianchi",
+            "CF": "ARRBNC01C25B919P",
+            "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Matteo",
+            "surname": "Bruno",
+            "CF": "MTTBRN01C25B919P",
+            "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Paolo",
+            "surname": "Albanese",
+            "CF": "LBNPLA07E02L219A",
+            "parentId": "albanese@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Vigo",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 600000
+          },
+          "finalStop": {
+            "name": "Piazza Mellano",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 1200000
+          },
+          "state": "CHOSEN"
+        },
+        {
+          "userDetails": {
+            "username": "pascoli@mail.com",
+            "name": "Sergio",
+            "surname": "Pascoli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Scuola",
+            "latitude": 13,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Via Vigo",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 600000
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    },
+    {
+      "lineName": "Bruchi_cantanti",
+      "direction": "OUTWARD",
+      "date": "2019-12-11T10:44:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Benedetta",
+            "surname": "Rossi",
+            "CF": "BNDRSS01C25B919P",
+            "parentId": "rossi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Piazza Mellano",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Aurora",
+            "surname": "Bianchi",
+            "CF": "ARRBNC01C25B919P",
+            "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Vigo",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 600000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Flavio",
+            "surname": "Serravalle",
+            "CF": "SRRFLV06A19F205Q",
+            "parentId": "serravalle@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Vigo",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 600000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Matteo",
+            "surname": "Bruno",
+            "CF": "MTTBRN01C25B919P",
+            "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "name": "Piazza XXV Aprile",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 900000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Piazza Mellano",
+            "latitude": 12,
+            "longitude": 24,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Via primo Alpini",
+            "latitude": 13,
+            "longitude": 24,
+            "delayInMillis": 300000
+          },
+          "state": "AVAILABLE"
+        },
+        {
+          "userDetails": {
+            "username": "pascoli@mail.com",
+            "name": "Sergio",
+            "surname": "Pascoli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via primo Alpini",
+            "latitude": 13,
+            "longitude": 24,
+            "delayInMillis": 300000
+          },
+          "finalStop": {
+            "name": "Piazza XXV Aprile",
+            "latitude": 13,
+            "longitude": 24,
+            "delayInMillis": 900000
+          },
+          "state": "CONFIRMED"
         }
       ]
     }
