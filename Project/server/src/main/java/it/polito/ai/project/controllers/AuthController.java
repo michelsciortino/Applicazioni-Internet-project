@@ -36,7 +36,7 @@ public class AuthController {
     public ResponseEntity login(@RequestBody @Validated LoginRequest loginRequest) {
         try {
             Map<Object, Object> model = new HashMap<>();
-            String mail = loginRequest.getMail();
+            String mail = loginRequest.getMail().toLowerCase();
             ClientUser user = authService.getUserByUsername(mail);
             String token = authService.loginUser(mail, loginRequest.getPassword());
 //            model.put("mail", mail);
@@ -74,7 +74,7 @@ public class AuthController {
     public ResponseEntity recoveryPassword(@RequestBody @Validated RecoveryRequest recoveryRequest) {
         try {
             Map<Object, Object> model = new HashMap<>();
-            authService.sendRecoveryPassword(recoveryRequest.getMail());
+            authService.sendRecoveryPassword(recoveryRequest.getMail().toLowerCase());
             model.put("username", recoveryRequest.getMail());
             model.put("message", "Mail sent to indicated address.");
             return ok(model);
@@ -107,7 +107,7 @@ public class AuthController {
     public ResponseEntity register(@RequestBody @Validated RegisterRequest registerRequest) {
         try {
             Map<Object, Object> model = new HashMap<>();
-            authService.registerUser(registerRequest.getMail());
+            authService.registerUser(registerRequest.getMail().toLowerCase());
             model.put("username", registerRequest.getMail());
             return ok(model);
         } catch (ResourceNotFoundException re) {
