@@ -26,7 +26,7 @@ public class UserController {
     private DatabaseService db;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity postUsers(@RequestBody ClientUser clientUser) {
+    public ResponseEntity postUser(@RequestBody ClientUser clientUser) {
         try {
             return ok(db.insertUser(clientUser));
         } catch (ResourceNotFoundException re) {
@@ -40,6 +40,21 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "", method = RequestMethod.PUT)
+    public ResponseEntity putUser(@RequestBody ClientUser clientUser) {
+        try {
+
+            return ok( db.controlledUpdateUser(clientUser));
+        } catch (ResourceNotFoundException re) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (InternalServerErrorException ie) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (BadRequestException be) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity getUsers(@RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "MAIL") String sortBy, @RequestParam @Nullable String filterBy, @RequestParam @Nullable  String filter) {
         try {

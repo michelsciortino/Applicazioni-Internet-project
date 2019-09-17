@@ -110,7 +110,7 @@ public class LinesController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    
     //TODO abilitare solo per l'admin o il sysadmin
     @RequestMapping(value="/{line_name}", method = RequestMethod.PUT)
     public ResponseEntity putLine(@PathVariable(value="line_name") String line_name, @RequestBody ClientLine line)

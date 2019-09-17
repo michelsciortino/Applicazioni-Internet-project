@@ -403,6 +403,36 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         throw new ResourceNotFoundException();
     }
+    /**
+     * Function to update User unsensitive fields
+     *
+     * @param user user to update
+     * @throws InternalServerErrorException
+     * @throws ResourceNotFoundException
+     */
+    @Override
+    @Transactional
+    public ClientUser controlledUpdateUser(ClientUser user) {
+        Optional<User> u = userRepository.findByUsername(user.getMail());
+        try {
+            if (u.isPresent()) {
+                u.get().setName(user.getName());
+                u.get().setSurname(user.getSurname());
+                List<Child> children = new ArrayList<>();
+                if (user.getChildren() != null) {
+                    for (ClientChild cc : user.getChildren())
+                        children.add(clientChildToChild(cc));
+                }
+                u.get().setChildren(children);
+                u.get().setContacts(user.getContacts());
+                userRepository.save(u.get());
+                return userToClientUser(u.get(), user.getRoles());
+            }
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        throw new ResourceNotFoundException();
+    }
 
     /**
      * Function to delete user
@@ -631,6 +661,29 @@ public class DatabaseService implements DatabaseServiceInterface {
         // Update the race
         updateRace(raceToClientRace(race.get()), performerUsername);
     }
+
+    @Override
+    public List<ClientRace> getParentRacesFromDate(String performerUsername, Date date)
+    {
+        List<Race> parentRaces = new ArrayList<Race>();
+        Optional<User> performer;
+        Optional<UserCredentials> performerCredentials;
+
+        try{
+            parentRaces = raceRepository.findAllByPassengersContainsAndDateEquals(performerUsername,date);
+        }
+        catch(Exception e)
+        {
+            throw new InternalServerErrorException();
+        }
+        List<ClientRace> clientRaces = new ArrayList<ClientRace>();
+        for (Race r : parentRaces)
+        {
+            clientRaces.add(raceToClientRace(r));
+        }
+        return clientRaces;
+    }
+
 
     //---------------------------------------------------###Admin###--------------------------------------------------//
 
@@ -1823,6 +1876,38 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         race.get().setRaceState(RaceState.STARTED);
         updateRace(raceToClientRace(race.get()), performerUsername);
+    }
+
+    @Override
+    public List<ClientRace> getCompanionRacesFromDate(String performerUsername, Date date)
+    {
+        List<Race> companionRaces = new ArrayList<Race>();
+        Optional<User> performer;
+        Optional<UserCredentials> performerCredentials;
+
+        try{
+            performer = userRepository.findByUsername(performerUsername);
+            companionRaces = raceRepository.findAllByCompanionsContainsAndDateEquals(performerUsername,date);
+            performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+        }
+        catch(Exception e)
+        {
+            throw new InternalServerErrorException();
+        }
+        if(!performer.isPresent() || !performerCredentials.isPresent() )
+            throw new ResourceNotFoundException();
+        if(!isCompanion(performerCredentials.get().getRoles()))
+            throw new BadRequestException();
+        List<ClientRace> clientRaces = new ArrayList<ClientRace>();
+        for (Race r : companionRaces)
+        {
+            for(Companion c : r.getCompanions())
+                if(c.getUserDetails().getUsername().equals(performerUsername))
+                    if(c.getState().equals(CompanionState.VALIDATED))
+                        clientRaces.add(raceToClientRace(r));
+
+        }
+        return clientRaces;
     }
 
     @Override

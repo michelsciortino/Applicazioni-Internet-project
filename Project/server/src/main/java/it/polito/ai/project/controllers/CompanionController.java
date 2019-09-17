@@ -9,14 +9,19 @@ import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.generalmodels.CompanionRequest;
 import it.polito.ai.project.requestEntities.*;
 import it.polito.ai.project.services.database.DatabaseService;
+import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.RaceState;
 import it.polito.ai.project.services.database.models.UserCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
+import java.util.Date;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -28,7 +33,26 @@ public class CompanionController {
     private DatabaseService db;
 
     //ATTENZIONE! Dato che questo è il controller per il companion, solo lui è autorizzato e la gestione delle credenziali va fatta a monte
-
+    @RequestMapping(value="/races", method = RequestMethod.GET)
+    public ResponseEntity getCompanionRaces(@AuthenticationPrincipal UserCredentials performerUserCredential, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  @RequestParam Date date)
+    {
+        try
+        {
+           return ok(db.getCompanionRacesFromDate(performerUserCredential.getUsername(), date));
+        }
+        catch(ResourceNotFoundException re)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        catch(InternalServerErrorException ie)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @RequestMapping(value = "/makeCompanion", method = RequestMethod.POST)
     public ResponseEntity makeCompanion(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody MakeOrRemoveCompanionRequest companionRequest) {
         try {

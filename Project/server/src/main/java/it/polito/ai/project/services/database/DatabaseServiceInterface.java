@@ -1,11 +1,13 @@
 package it.polito.ai.project.services.database;
 
+import ch.qos.logback.core.net.server.Client;
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.RaceState;
 import it.polito.ai.project.services.database.models.Token;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Date;
@@ -42,6 +44,8 @@ public interface DatabaseServiceInterface {
 
     void updateUser(ClientUser user);
 
+    ClientUser controlledUpdateUser(ClientUser user);
+
     void deleteUser(ClientUser user);
 
     //----------------------------------------------###Notification###------------------------------------------------//
@@ -57,6 +61,8 @@ public interface DatabaseServiceInterface {
     void reserveChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> passengers);
 
     //--------------------------------------------------###Admin###---------------------------------------------------//
+
+    List<ClientRace> getParentRacesFromDate(String performerUsername, Date date);
 
     void makeLineAdmin(String performerUsername, String targetUsername, String line);
 
@@ -95,6 +101,8 @@ public interface DatabaseServiceInterface {
     void absentChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
 
     void startRace(String performerUsername, ClientRace clientRace);
+
+    List<ClientRace> getCompanionRacesFromDate(String performerUsername, Date date);
 
     void endRace(String performerUsername, ClientRace clientRace);
 

@@ -40,6 +40,8 @@ public interface RaceRepository extends MongoRepository<Race, String> {
     //List<Race> findAllByCompanionsAndEqDate(String companion, Date date);
     List<Race> findAllByCompanionsContainsAndDateEquals(String companion, Date date);
 
+    List<Race> findAllByPassengersContainsAndDateEquals(String parentId, Date date);
+
     List<Race> findAllByRaceStateIsNot(RaceState state);
 
     List<Race> findAllByRaceStateIs(RaceState state);
