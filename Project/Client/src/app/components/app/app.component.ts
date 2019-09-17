@@ -65,5 +65,6 @@ export class AppComponent implements OnDestroy {
     // tslint:disable-next-line: deprecation
     this.mobileQuery.removeListener(this.mobileQueryListener);
     this.isLoggedSub.unsubscribe();
+    this.userInfoSub.unsubscribe();
   }
 }

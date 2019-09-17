@@ -38,6 +38,13 @@ export class UserService implements OnDestroy {
         return this.userSbj.asObservable();
     }
 
+    public updateUser(user: UserInfo) {
+        console.log("ADD ENDPOINT FOR UPDATE");
+        this.userInfo = user;
+        this.userSbj.next(this.userInfo);
+        return;
+    }
+
     public update(): void {
         this.http.get(`${userEndpoint}/${this.authSvc.getCurrentUser().mail}`).toPromise()
             .then(
@@ -48,6 +55,7 @@ export class UserService implements OnDestroy {
                     this.userInfo.children = data.children;
                     this.userInfo.lines = data.lines;
                     this.userInfo.roles = data.roles;
+                    this.userInfo.mail = data.mail;
                     if (UserInfo.prototype.isSystemAdmin(this.userInfo)) {
                         this.lineSvc.getLines().subscribe(
                             (lines: any) => {

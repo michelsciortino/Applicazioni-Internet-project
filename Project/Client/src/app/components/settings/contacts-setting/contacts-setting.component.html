@@ -1,0 +1,33 @@
+<div class="padded-content">
+    <mat-card class="compact-card centered">
+        <h3>My Contacts</h3>
+        <table *ngIf="contacts && contacts.length>0">
+            <thead>
+                <tr>
+                    <th>Contact</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let contact of contacts">
+                    <td> {{contact}}</td>
+                    <button mat-icon-button (click)="removeContact(contact)">
+                        <mat-icon class="red">remove</mat-icon>
+                    </button>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <!-- Contact Input -->
+            <mat-form-field class="custom-form-field">
+                <input matInput type="text" placeholder="New Contact" [(ngModel)]="contact">
+                <button mat-button *ngIf="contact" matSuffix mat-icon-button aria-label="Clear" (click)="contact=''">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <button mat-icon-button [disabled]="!isComplete()" (click)="addContact();contact=''">
+                <mat-icon class="green">add</mat-icon>
+            </button>
+        </div>
+
+    </mat-card>
+</div>

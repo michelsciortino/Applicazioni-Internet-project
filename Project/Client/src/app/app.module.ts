@@ -42,6 +42,11 @@ import { PendingRequestsComponent } from './components/companion/companion-reque
 import { CompanionService } from './services/companion/companion.service'
 import { RacesCompanionComponent } from './components/companion/races-companion/races-companion.component';
 import { GiveAvailabilityDialog } from './components/companion/races-companion/give-availability-dialog/give-availability.dialog';
+import { ViewRaceDialog } from './components/admin/races-management/view-race-dialog/view-race.dialog';
+import { MyAccountComponent } from './components/settings/my-account/my-account.component';
+import { ChildrenSettingComponent } from './components/settings/children-setting/children-setting.component';
+import { ContactsSettingComponent } from './components/settings/contacts-setting/contacts-setting.component';
+import { AddChildDialog } from './components/settings/children-setting/add-child-dialog/add-child.dialog';
 
 @NgModule({
   declarations: [
@@ -53,19 +58,19 @@ import { GiveAvailabilityDialog } from './components/companion/races-companion/g
     HomeComponent, MessagesComponent,
 
     // Lines
-    LinesComponent,
+    LinesComponent, ViewRaceDialog,
 
     // Companion
-    CompanionComponent, PendingRequestsComponent, RacesCompanionComponent,
+    CompanionComponent, PendingRequestsComponent, RacesCompanionComponent, GiveAvailabilityDialog,
 
     // Admin
     AdminComponent, UserManagementComponent, RacesManagementComponent, ViewUserDialog, EditUserDialog,
 
     // Settings
-    SettingsComponent,
+    SettingsComponent, MyAccountComponent, ChildrenSettingComponent, ContactsSettingComponent, AddChildDialog,
 
     // Dialogs
-    ConfirmDialog, MessageDialogComponent, GiveAvailabilityDialog,
+    ConfirmDialog, MessageDialogComponent, 
 
     // Dumb components
     MessageComponent,
@@ -74,7 +79,7 @@ import { GiveAvailabilityDialog } from './components/companion/races-companion/g
     PasswordToggleDirective
   ],
   entryComponents: [
-    ConfirmDialog, MessageDialogComponent, ViewUserDialog, EditUserDialog, GiveAvailabilityDialog
+    ConfirmDialog, MessageDialogComponent, ViewUserDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog,
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,

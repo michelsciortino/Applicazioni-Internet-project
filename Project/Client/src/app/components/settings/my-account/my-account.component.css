@@ -1,0 +1,48 @@
+td,
+th {
+    text-align: left;
+    padding-right: 10px;
+    vertical-align: top;
+}
+
+tr td:last-child,
+th:last-child {
+    padding-right: 0px;
+}
+
+table {
+    height: 100%;
+    overflow: auto;
+    margin: 0px auto;
+}
+
+.no-scroll {
+    overflow: initial;
+}
+
+.title {
+    text-align: center;
+    margin: 0px 0px 4px 0px;
+    border-bottom: #c8c8c8 1px solid;
+    width: 100%
+}
+
+.row {
+    align-content: center;
+}
+
+.row div {
+    display: inline-grid;
+    border: 1px solid #c8c8c8;
+    padding: 8px;
+    margin: 8px 20px 0px 0;
+    border-radius: 8px;
+}
+
+.row div:last-of-type {
+    margin-right: 0px;
+}
+
+.grey{
+    color: rgb(173, 173, 173);
+}
