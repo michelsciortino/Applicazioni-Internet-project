@@ -42,56 +42,57 @@
             <mat-datepicker #pickerTo disabled="false" [startAt]="toDateSelected"></mat-datepicker>
         </mat-form-field>
 
-        <button mat-raised-button [disabled]="lineSelected==null || directionSelected==null"
-            (click)="search()">Search</button>
+        <button mat-raised-button [disabled]="lineSelected==null || directionSelected==null" (click)="search()">Search</button>
 
-        <mat-table [dataSource]="dataSource" matSort>
+        <div class="overflow-auto">
+            <mat-table class="center-horizontal fit-content" [dataSource]="dataSource" matSort>
 
-            <!-- LineName Column -->
-            <ng-container matColumnDef="LineName">
-                <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> LineName </th>
-                <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.lineName}} </td>
-            </ng-container>
+                <!-- LineName Column -->
+                <ng-container matColumnDef="LineName">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> LineName </th>
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.lineName}} </td>
+                </ng-container>
 
-            <!-- Direction Column -->
-            <ng-container matColumnDef="Direction">
-                <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> Direction </th>
-                <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.direction}} </td>
-            </ng-container>
+                <!-- Direction Column -->
+                <ng-container matColumnDef="Direction">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> Direction </th>
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.direction}} </td>
+                </ng-container>
 
-            <!-- Date Column -->
-            <ng-container matColumnDef="Date">
-                <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
-                <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.date.toDateString()}} </td>
-            </ng-container>
+                <!-- Date Column -->
+                <ng-container matColumnDef="Date">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.date.toDateString()}} </td>
+                </ng-container>
 
-            <!-- Passengers Column -->
-            <ng-container matColumnDef="Passengers">
-                <th class="center-vertical center" mat-header-cell *matHeaderCellDef> Passengers </th>
-                <td mat-cell class="center-vertical center" *matCellDef="let element">
-                    {{element.passengers.length}} </td>
-            </ng-container>
+                <!-- Passengers Column -->
+                <ng-container matColumnDef="Passengers">
+                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> Passengers </th>
+                    <td mat-cell class="center-vertical centered-text" *matCellDef="let element">
+                        {{element.passengers.length}} </td>
+                </ng-container>
 
-            <!-- Companions Column -->
-            <ng-container matColumnDef="Companions">
-                <th class="squeeze center-vertical center" mat-header-cell *matHeaderCellDef> Companions
-                </th>
-                <td mat-cell class="squeeze center-vertical center" *matCellDef="let element">
-                    {{element.companions.length}} </td>
-            </ng-container>
+                <!-- Companions Column -->
+                <ng-container matColumnDef="Companions">
+                    <th class="squeeze center-vertical centered-text" mat-header-cell *matHeaderCellDef> Companions
+                    </th>
+                    <td mat-cell class="squeeze center-vertical centered-text" *matCellDef="let element">
+                        {{element.companions.length}} </td>
+                </ng-container>
 
-            <!-- Edit-Action Column -->
-            <ng-container matColumnDef="Availability-Action">
-                <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
-                <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
-                    <button mat-icon-button (click)="$event.stopPropagation(); giveAvailability(element)">
+                <!-- Edit-Action Column -->
+                <ng-container matColumnDef="Availability-Action">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
+                        <button mat-icon-button (click)="$event.stopPropagation(); giveAvailability(element)">
                         <mat-icon>person_add</mat-icon>
                     </button>
-                </td>
-            </ng-container>
+                    </td>
+                </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
-            <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"></tr>
-        </mat-table>
+                <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
+                <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"></tr>
+            </mat-table>
+        </div>
     </mat-card>
 </div>

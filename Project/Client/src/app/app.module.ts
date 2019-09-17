@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HAMMER_LOADER } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -33,35 +33,48 @@ import { AdminService } from './services/admin/admin.service';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
-import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/confirm-dialog.component';
-import { MessageDialogComponent } from './components/dialogs/messege-dialog/messege-dialog.component';
+import { ConfirmDialog } from './components/dialogs/confirm-dialog/confirm.dialog';
+import { MessageDialogComponent } from './components/dialogs/messege-dialog/messege.dialog';
 import { ViewUserDialog } from './components/admin/users-management/view-user-dialog/view-user.dialog';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { EditUserDialog } from './components/admin/users-management/edit-user-dialog/edit-user.dialog';
-import { ViewRaceDialog } from './components/admin/races-management/view-race-dialog/view-race.dialog';
+import { PendingRequestsComponent } from './components/companion/companion-requests/pending-requests.component';
+import { CompanionService } from './services/companion/companion.service'
+import { RacesCompanionComponent } from './components/companion/races-companion/races-companion.component';
+import { GiveAvailabilityDialog } from './components/companion/races-companion/give-availability-dialog/give-availability.dialog';
 
 @NgModule({
   declarations: [
     AppComponent, WelcomeComponent,
-    // auth components
+    // Auth
     LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent, RegisterComponent,
-    // home
-    HomeComponent, AdminComponent, CompanionComponent, MessagesComponent, LinesComponent, SettingsComponent,
 
-    // admin components
-    UserManagementComponent, RacesManagementComponent,
+    // Home
+    HomeComponent, MessagesComponent,
 
-    // dialog
-    ConfirmDialogComponent, MessageDialogComponent, ViewUserDialog, EditUserDialog, ViewRaceDialog,
+    // Lines
+    LinesComponent,
 
-    // dumb components
+    // Companion
+    CompanionComponent, PendingRequestsComponent, RacesCompanionComponent,
+
+    // Admin
+    AdminComponent, UserManagementComponent, RacesManagementComponent, ViewUserDialog, EditUserDialog,
+
+    // Settings
+    SettingsComponent,
+
+    // Dialogs
+    ConfirmDialog, MessageDialogComponent, GiveAvailabilityDialog,
+
+    // Dumb components
     MessageComponent,
 
-    // directives
+    // Directives
     PasswordToggleDirective
   ],
   entryComponents: [
-    ConfirmDialogComponent, MessageDialogComponent, ViewUserDialog, EditUserDialog, ViewRaceDialog,
+    ConfirmDialog, MessageDialogComponent, ViewUserDialog, EditUserDialog, GiveAvailabilityDialog
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,
@@ -75,13 +88,15 @@ import { ViewRaceDialog } from './components/admin/races-management/view-race-di
     AuthService,
     UserService,
     AdminService,
+    CompanionService,
     LineService,
     MessageService,
     IsMobileService,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } }
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } },
+    { provide: HAMMER_LOADER, useValue: () => new Promise(() => { }) }
   ],
   bootstrap: [AppComponent]
 })

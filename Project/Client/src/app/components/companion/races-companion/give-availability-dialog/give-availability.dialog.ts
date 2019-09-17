@@ -7,6 +7,7 @@ import { Line } from 'src/app/models/line';
 import { Stop } from 'src/app/models/stop';
 import { ConditionalExpr } from '@angular/compiler';
 import { DirectionType } from 'src/app/models/race';
+import { CompanionService } from 'src/app/services/companion/companion.service';
 
 
 @Component({
@@ -20,7 +21,7 @@ export class GiveAvailabilityDialog {
     line: Line;
     stops: Stop[];
 
-    constructor(public dialogRef: MatDialogRef<GiveAvailabilityDialog>, @Inject(MAT_DIALOG_DATA) public data: any, private lineSvc: LineService) {
+    constructor(public dialogRef: MatDialogRef<GiveAvailabilityDialog>, private companionSvc: CompanionService, @Inject(MAT_DIALOG_DATA) public data: any, private lineSvc: LineService) {
         this.lineSvc.getLine(data.race.lineName)
             .pipe(
                 map(
@@ -60,6 +61,8 @@ export class GiveAvailabilityDialog {
     }
 
     send(): void {
-        console.log("SEND AVAILABILITY...")
+        this.companionSvc.giveAvailability(this.data.race.lineName, this.data.race.direction, this.data.race.date, this.initialStop, this.finalStop).toPromise()
+            .then((result) => this.dialogRef.close())
+            .catch((error) => this.dialogRef.close());
     }
 }

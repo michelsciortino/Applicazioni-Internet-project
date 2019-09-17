@@ -6,7 +6,7 @@ import { Title } from '@angular/platform-browser';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MessageService } from 'src/app/services/bridges/message.service';
 import { MatDialog } from '@angular/material';
-import { MessageDialogComponent } from '../../dialogs/messege-dialog/messege-dialog.component';
+import { MessageDialogComponent } from '../../dialogs/messege-dialog/messege.dialog';
 
 @Component({
     selector: 'app-register',

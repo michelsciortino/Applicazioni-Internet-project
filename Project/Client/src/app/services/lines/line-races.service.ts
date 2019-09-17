@@ -12,9 +12,10 @@ import { AdminService } from '../admin/admin.service';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 
-const lineEndpoint = `${environment.baseEndpoint}/lines`;
 @Injectable()
 export class LineService {
+    private static readonly lineEndpoint = `${environment.baseEndpoint}/lines`;
+
     private linesSubj: BehaviorSubject<Line[]>
     private racesSubj: Subject<Race[]>
 
@@ -27,15 +28,15 @@ export class LineService {
 
     //returns lines
     private _getLines() {
-        this.http.get(lineEndpoint).subscribe(
+        this.http.get(LineService.lineEndpoint).subscribe(
             (lines: Line[]) => {
                 this.linesSubj.next(lines)
             }
         );
     }
 
-    private getLine(lineName: String) {
-        return this.http.get(`${lineEndpoint}/${lineName}`);
+    public getLine(lineName: String) {
+        return this.http.get(`${LineService.lineEndpoint}/${lineName}`);
     }
 
     public getLines(): Observable<Line[]> {
@@ -56,15 +57,15 @@ export class LineService {
         if (fromDate != null) {
             params = params.set('fromDate', fromDate.toISOString());
         }
-        return await this.http.get(`${lineEndpoint}/${lineName}/races`, { params }).toPromise();;
+        return await this.http.get(`${LineService.lineEndpoint}/${lineName}/races`, { params }).toPromise();;
     }
 
     public deleteRace(race: Race) {
-        console.log(`${lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`);
-        return this.http.delete(`${lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`).subscribe(
-            (data)=> console.log(data)
+        console.log(`${LineService.lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`);
+        return this.http.delete(`${LineService.lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`).subscribe(
+            (data) => console.log(data)
         );
-    } 
+    }
 }
 
 export class RacesDataSource implements DataSource<Race>{

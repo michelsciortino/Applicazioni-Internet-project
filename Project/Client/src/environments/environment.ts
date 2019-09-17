@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  baseEndpoint: 'http://192.168.0.102:8080'
+  baseEndpoint: 'http://192.168.0.102:8080',
+  // baseEndpoint: 'http://localhost:8080'
 };
 
 /*

@@ -1,17 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
-body {
-    margin: 0px;
-    position: relative;
-    height: auto;
-    min-height: 100vh;
-    font-family: Nunito;
-}
-
-.section-title {
-    text-align: center;
-    font-family: Nunito;
-}
-
 .admin-content {
     text-align: center;
     margin: 2em;
@@ -38,22 +24,4 @@ mat-spinner {
     margin-right: auto;
     margin-top: 16px;
     margin-bottom: 16px;
-}
-
-.register {
-    margin: 0px!important;
-    min-width: 400px;
-    min-height: 200px;
-}
-
-.make-companion {
-    margin: 0px!important;
-    min-width: 400px;
-    min-height: 200px;
-}
-
-.make-admin {
-    margin: 0px!important;
-    min-width: 400px;
-    min-height: 200px;
 }

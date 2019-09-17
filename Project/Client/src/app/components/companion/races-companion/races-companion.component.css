@@ -52,13 +52,6 @@ tr {
     border: 1px solid black;
 }
 
-mat-table{
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-
 mat-select {
     width: fit-content !important;
     min-width: 100%;
@@ -74,12 +67,8 @@ mat-select {
     padding-right: 8px;
     max-width: 25ch;
 }
+
 ::ng-deep mat-select .mat-select-placeholder {
     width: fit-content;
     min-width: 10ch;
-}
-
-th.center,
-td.center{
-    text-align: center;
 }

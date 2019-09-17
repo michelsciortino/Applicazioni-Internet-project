@@ -16,7 +16,7 @@ export class UserInfo {
 
     public isCompanion(userinfo:UserInfo): boolean {
         return userinfo.roles != null &&
-        userinfo.roles.find(r => r === UserRole.COMPANION || r === UserRole.SYSTEM_ADMIN) != null;
+        userinfo.roles.find(r => r === UserRole.COMPANION) != null;
     }
 
     public isSystemAdmin(userinfo:UserInfo): boolean {

@@ -22,16 +22,16 @@
                 <a mat-list-item *ngIf="isLogged && isCompanion" routerLink="./companion">Companion</a>
                 <a mat-list-item routerLink="./lines">Lines</a>
                 <a mat-list-item *ngIf="isLogged" routerLink="./settings">Settings</a>
-                <button *ngIf="!isLogged && mobileQuery.matches" mat-button routerLink="/auth/login">
+                <a *ngIf="!isLogged && mobileQuery.matches" mat-list-item routerLink="/auth/login">
                     <span>Login</span>
-                </button>
-                <button *ngIf="isLogged && mobileQuery.matches" mat-button routerLink="/auth/logout">
+                </a>
+                <a *ngIf="isLogged && mobileQuery.matches" mat-list-item routerLink="/auth/logout">
                     <span>Logout</span>
-                </button>
+                </a>
             </mat-nav-list>
         </mat-sidenav>
 
-        <mat-sidenav-content class="">
+        <mat-sidenav-content>
             <div class="full-height">
                 <!-- Content of the selected section -->
                 <div class="main-content">
@@ -43,20 +43,17 @@
                 <div class="footer">
                     <mat-toolbar color='primary' id="copyright">
                         <span class='spacer'></span>
-                        <h3>© Brucolini19 - Pedibus 2019 progetto Applicazioni Internet</h3>
+                        <h1>© Brucolini19 - Pedibus 2019 progetto Applicazioni Internet</h1>
                         <span class='spacer'></span>
                     </mat-toolbar>
 
                     <mat-toolbar color='secondary' id="contacts">
-                        <p>Pedibus - Politecnico di Torino</p>
+                        <span>Pedibus - Politecnico di Torino</span>
                         <span class='spacer'></span>
-                        <p>Contact: brucolini19@gmail.com</p>
+                        <span>Contact: brucolini19@gmail.com</span>
                     </mat-toolbar>
                 </div>
             </div>
         </mat-sidenav-content>
-
-
     </mat-sidenav-container>
-
 </div>

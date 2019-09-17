@@ -20,7 +20,6 @@ import { UserRole } from 'src/app/models/roles';
 })
 export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy {
 
-
     dataSource: UsersDataSource;
     columnDefinitions = [{ def: 'View-Action', onlyMobile: true },
     { def: 'Mail' },

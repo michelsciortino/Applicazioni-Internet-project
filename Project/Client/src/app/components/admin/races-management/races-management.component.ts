@@ -9,8 +9,8 @@ import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material';
 import { ViewRaceDialog } from './view-race-dialog/view-race.dialog';
-import { MessageDialogComponent } from '../../dialogs/messege-dialog/messege-dialog.component';
-import { ConfirmDialogComponent } from '../../dialogs/confirm-dialog/confirm-dialog.component';
+import { MessageDialogComponent } from '../../dialogs/messege-dialog/messege.dialog';
+import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 
 @Component({
     selector: 'app-races-management',
@@ -52,12 +52,12 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
 
     constructor(private lineSvc: LineService, public dialog: MatDialog, private isMobileSvc: IsMobileService) {
 
-       // console.log(this.toDateSelected.toString());
-       // console.log(this.toDateSelected.toISOString());
-       // console.log(this.toDateSelected.toDateString());
-       // console.log(this.toDateSelected.toTimeString());
-       // console.log(this.toDateSelected.toLocaleDateString());
-       // console.log(this.toDateSelected.toLocaleTimeString());
+        // console.log(this.toDateSelected.toString());
+        // console.log(this.toDateSelected.toISOString());
+        // console.log(this.toDateSelected.toDateString());
+        // console.log(this.toDateSelected.toTimeString());
+        // console.log(this.toDateSelected.toLocaleDateString());
+        // console.log(this.toDateSelected.toLocaleTimeString());
     }
 
     ngOnInit() {
@@ -102,19 +102,22 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
 
     removeRace(race: Race) {
         console.log("REMOVE RACE:", race)
-        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        const dialogRef = this.dialog.open(ConfirmDialog, {
             width: '350px',
-            data: {title: 'Confirm?', message: `Are you sure deleted this race: \n- ${race.lineName}\n- ${race.direction}\n- ${race.date.toISOString()}`}
+            data: {
+                title: 'Confirm?',
+                message: `Are you sure deleted this race: \n- ${race.lineName}\n- ${race.direction}\n- ${race.date.toISOString()}`,
+                YES: true, NO: true
+            }
         });
         dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                console.log('Yes clicked');
-                // delete race
-                this.lineSvc.deleteRace(race);
-                this.search();
+            switch (result) {
+                case "YES":
+                    this.lineSvc.deleteRace(race);
+                    this.search();
+                    break;
+                default: break;
             }
-            else
-                console.log('No clicked')
         });
     }
 

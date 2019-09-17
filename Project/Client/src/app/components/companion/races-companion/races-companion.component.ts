@@ -8,7 +8,7 @@ import { DirectionType, Race } from 'src/app/models/race';
 import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material';
-import { ConfirmDialogComponent } from '../../dialogs/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { GiveAvailabilityDialog } from './give-availability-dialog/give-availability.dialog';
 
 @Component({
@@ -16,12 +16,9 @@ import { GiveAvailabilityDialog } from './give-availability-dialog/give-availabi
     templateUrl: './races-companion.component.html',
     styleUrls: ['./races-companion.component.css']
 })
-export class RacesCompanionComponent implements OnInit, OnDestroy {
+export class RacesCompanionComponent implements OnInit {
 
     public isMobile: boolean;
-
-    isMobileSub: Subscription;
-
     dataSource: RacesDataSource;
 
     lines: Line[];
@@ -74,10 +71,6 @@ export class RacesCompanionComponent implements OnInit, OnDestroy {
             })
     }
 
-    ngOnDestroy() {
-        //this.isMobileSub.unsubscribe();
-    }
-
     public search() {
         if (this.directionSelected.id == null)
             this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
@@ -93,7 +86,6 @@ export class RacesCompanionComponent implements OnInit, OnDestroy {
     giveAvailability(race: Race) {
         console.log("GIVE AVAILABILITY:", race)
         const dialogRef = this.dialog.open(GiveAvailabilityDialog, { data: { race: race } });
-
     }
 }
 

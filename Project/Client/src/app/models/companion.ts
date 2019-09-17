@@ -2,10 +2,10 @@ import { Stop } from './stop';
 import { UserInfo } from './user';
 
 export enum CompanionState {
-    AVAILABLE,
-    CHOSEN,
-    CONFIRMED,
-    VALIDATED
+    AVAILABLE = "AVAILABLE",
+    CHOSEN = "CHOSEN",
+    CONFIRMED = "CONFIRMED",
+    VALIDATED = "VALIDATED"
 }
 
 export class Companion {

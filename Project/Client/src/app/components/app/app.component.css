@@ -67,20 +67,29 @@ h1.app-name {
     flex: 1 1 auto;
 }
 
-#copyright {}
-
 #contacts {
-    height: 30px;
+    height: fit-content;
     color: darkgrey;
     font-size: 14px;
 }
 
 .footer {
     bottom: 0px;
+    height: fit-content;
+}
+
+.footer * {
+    white-space: pre-wrap;
+    height: fit-content;
 }
 
 .full-height {
     display: flex;
     flex-flow: column;
     height: 100%;
+    flex-grow: 1;
+}
+
+.footer span {
+    padding: 0 10px;
 }
