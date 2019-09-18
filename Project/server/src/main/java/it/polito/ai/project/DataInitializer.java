@@ -195,7 +195,7 @@ public class DataInitializer implements CommandLineRunner {
                             db.makeLineAdmin("admin@mail.com",admin,line.getName());
                     }
                 } catch (BadRequestException e) {
-                    System.out.println("Line already inserted");
+                    System.out.println(e.getMessage());
                 }
             } else {
                 throw new IOException("Error in lines' data stream");

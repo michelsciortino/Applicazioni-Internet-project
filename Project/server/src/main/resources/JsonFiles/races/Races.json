@@ -13,9 +13,9 @@
             "parentId": "rossi@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -29,9 +29,9 @@
             "parentId": "bianchi@mail.com"
           },
           "stopReserved": {
-            "name": "Via primo Alpini",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
             "delayInMillis": 300000
           },
           "reserved": false,
@@ -45,9 +45,9 @@
             "parentId": "bruno@mail.com"
           },
           "stopReserved": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "reserved": false,
@@ -61,9 +61,9 @@
             "parentId": "pantani@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza XXV Aprile",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
             "delayInMillis": 900000
           },
           "reserved": false,
@@ -77,9 +77,9 @@
             "parentId": "palermo@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -96,15 +96,15 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "finalStop": {
             "name": "Scuola",
-            "latitude": 13,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 1200000
           },
           "state": "AVAILABLE"
@@ -125,8 +125,8 @@
           },
           "stopReserved": {
             "name": "Scuola",
-            "latitude": 12,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -141,8 +141,8 @@
           },
           "stopReserved": {
             "name": "Scuola",
-            "latitude": 12,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -157,8 +157,8 @@
           },
           "stopReserved": {
             "name": "Scuola",
-            "latitude": 12,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -173,8 +173,8 @@
           },
           "stopReserved": {
             "name": "Scuola",
-            "latitude": 12,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -191,15 +191,15 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "finalStop": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 1200000
           },
           "state": "CHOSEN"
@@ -214,14 +214,14 @@
           },
           "initialStop": {
             "name": "Scuola",
-            "latitude": 13,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "finalStop": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "state": "AVAILABLE"
@@ -241,9 +241,9 @@
             "parentId": "rossi@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -257,9 +257,9 @@
             "parentId": "bianchi@mail.com"
           },
           "stopReserved": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "reserved": false,
@@ -273,9 +273,9 @@
             "parentId": "serravalle@mail.com"
           },
           "stopReserved": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "reserved": false,
@@ -289,9 +289,9 @@
             "parentId": "bruno@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza XXV Aprile",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
             "delayInMillis": 900000
           },
           "reserved": false,
@@ -308,15 +308,15 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "finalStop": {
-            "name": "Via primo Alpini",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
             "delayInMillis": 300000
           },
           "state": "AVAILABLE"
@@ -330,15 +330,15 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Via primo Alpini",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
             "delayInMillis": 300000
           },
           "finalStop": {
-            "name": "Piazza XXV Aprile",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
             "delayInMillis": 900000
           },
           "state": "AVAILABLE"
@@ -358,9 +358,9 @@
             "parentId": "rossi@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -374,9 +374,9 @@
             "parentId": "bianchi@mail.com"
           },
           "stopReserved": {
-            "name": "Via primo Alpini",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
             "delayInMillis": 300000
           },
           "reserved": false,
@@ -390,9 +390,9 @@
             "parentId": "bruno@mail.com"
           },
           "stopReserved": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "reserved": false,
@@ -406,9 +406,9 @@
             "parentId": "pantani@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza XXV Aprile",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
             "delayInMillis": 900000
           },
           "reserved": false,
@@ -422,9 +422,9 @@
             "parentId": "palermo@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -441,15 +441,15 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "finalStop": {
             "name": "Scuola",
-            "latitude": 13,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 1200000
           },
           "state": "CONFIRMED"
@@ -470,8 +470,8 @@
           },
           "stopReserved": {
             "name": "Scuola",
-            "latitude": 12,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -486,8 +486,8 @@
           },
           "stopReserved": {
             "name": "Scuola",
-            "latitude": 12,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -502,8 +502,8 @@
           },
           "stopReserved": {
             "name": "Scuola",
-            "latitude": 12,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -518,8 +518,8 @@
           },
           "stopReserved": {
             "name": "Scuola",
-            "latitude": 12,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -536,15 +536,15 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "finalStop": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 1200000
           },
           "state": "CHOSEN"
@@ -559,14 +559,14 @@
           },
           "initialStop": {
             "name": "Scuola",
-            "latitude": 13,
-            "longitude": 24,
+            "latitude": 45.080868,
+            "longitude": 7.659967,
             "delayInMillis": 0
           },
           "finalStop": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "state": "CONFIRMED"
@@ -586,9 +586,9 @@
             "parentId": "rossi@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "reserved": false,
@@ -602,9 +602,9 @@
             "parentId": "bianchi@mail.com"
           },
           "stopReserved": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "reserved": false,
@@ -618,9 +618,9 @@
             "parentId": "serravalle@mail.com"
           },
           "stopReserved": {
-            "name": "Via Vigo",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
             "delayInMillis": 600000
           },
           "reserved": false,
@@ -634,9 +634,9 @@
             "parentId": "bruno@mail.com"
           },
           "stopReserved": {
-            "name": "Piazza XXV Aprile",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
             "delayInMillis": 900000
           },
           "reserved": false,
@@ -653,15 +653,15 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Piazza Mellano",
-            "latitude": 12,
-            "longitude": 24,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "finalStop": {
-            "name": "Via primo Alpini",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
             "delayInMillis": 300000
           },
           "state": "AVAILABLE"
@@ -675,16 +675,238 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Via primo Alpini",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
             "delayInMillis": 300000
           },
           "finalStop": {
-            "name": "Piazza XXV Aprile",
-            "latitude": 13,
-            "longitude": 24,
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
             "delayInMillis": 900000
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    },
+    {
+      "lineName": "Coccinelle_felici",
+      "direction": "OUTWARD",
+      "date": "2019-11-25T09:05:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Giacomo",
+            "surname": "Pantani",
+            "CF": "PNTGCM03A01L219S",
+            "parentId": "pantani@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Stefano Clemente 19",
+            "latitude": 45.078289,
+            "longitude": 7.658898,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Jessica",
+            "surname": "Palermo",
+            "CF": "PLRJSC06A46L219G",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Morghen 28",
+            "latitude": 45.079025,
+            "longitude": 7.657551,
+            "delayInMillis": 300000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Giovanni",
+            "surname": "Palermo",
+            "CF": "PLRGNN00A13L219F",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "name": "Corso Tassoni 32",
+            "latitude": 45.080138,
+            "longitude": 7.656366,
+            "delayInMillis": 600000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Alice",
+            "surname": "Argentero",
+            "CF": "RGNLCA12L70F205J",
+            "parentId": "argentero@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Cibrario 61",
+            "latitude": 45.080711,
+            "longitude": 7.658034,
+            "delayInMillis": 900000
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Paolo",
+            "surname": "Albanese",
+            "CF": "LBNPLA07E02L219A",
+            "parentId": "albanese@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Stefano Clemente 19",
+            "latitude": 45.078289,
+            "longitude": 7.658898,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Stefano Clemente 19",
+            "latitude": 45.078289,
+            "longitude": 7.658898,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 1200000
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    },
+    {
+      "lineName": "Coccinelle_felici",
+      "direction": "RETURN",
+      "date": "2019-11-25T16:05:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Giacomo",
+            "surname": "Pantani",
+            "CF": "PNTGCM03A01L219S",
+            "parentId": "pantani@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Jessica",
+            "surname": "Palermo",
+            "CF": "PLRJSC06A46L219G",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Giovanni",
+            "surname": "Palermo",
+            "CF": "PLRGNN00A13L219F",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Alice",
+            "surname": "Argentero",
+            "CF": "RGNLCA12L70F205J",
+            "parentId": "argentero@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        },
+        {
+          "childDetails": {
+            "name": "Paolo",
+            "surname": "Albanese",
+            "CF": "LBNPLA07E02L219A",
+            "parentId": "albanese@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "ABSENT"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Stefano Clemente 19",
+            "latitude": 45.078289,
+            "longitude": 7.658898,
+            "delayInMillis": 1200000
+          },
+          "finalStop": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
           },
           "state": "CONFIRMED"
         }
