@@ -1,0 +1,44 @@
+agm-map {
+  height: inherit;
+  width: inherit;
+}
+
+.select-box {
+  position: absolute;
+  z-index: 1;
+  height: fit-content;
+  width: fit-content;
+  right: 0px;
+}
+
+.mat-select-card {
+  margin: 8px;
+  padding: 5px 8px 1px 8px;
+}
+
+.select-box-mobile {
+  position: absolute;
+  z-index: 1;
+  height: fit-content;
+  width: 100%;
+}
+
+.map-card {
+  overflow: hidden;
+  padding: 0px;
+  min-width: 200px;
+  min-height: 200px;
+  height: 700px;
+}
+
+.mat-form-field-underline {
+  position: initial !important;
+}
+
+.mat-form-field-wrapper {
+  padding-bottom: 0px !important;
+}
+
+.perc_85 {
+  width: 85%;
+}

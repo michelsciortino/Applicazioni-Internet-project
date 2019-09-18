@@ -1,0 +1,27 @@
+<div class="center-horizontal expanded" [ngClass]="{ 'expanded' : isMobile, 'perc_85': !isMobile }">
+    <mat-card class="map-card expanded">
+        <div class="select-box" [ngClass]="{ 'select-box-mobile' : isMobile }">
+            <mat-card class="mat-select-card">
+                <mat-form-field class="expanded">
+                    <mat-label>Select a line</mat-label>
+                    <mat-select [formControl]="lineControl" (selectionChange)="onLineSelected($event)"
+                        [(value)]="lineSelected">
+                        <mat-option *ngFor="let line of lines" [value]="line">{{line.name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </mat-card>
+        </div>
+        <agm-map [latitude]="centerLat" [longitude]="centerLng" [zoom]="zoom" (mapReady)="onMapReady($event)"
+            (mapClick)="addMarker($event.coords.lat, $event.coords.lng)">
+            <agm-marker *ngFor="let marker of markers" [latitude]="marker.lat" [longitude]="marker.lng"
+                [iconUrl]="marker.icon" [opacity]="marker.alpha" [title]="marker.options.title"
+                [markerDraggable]="false" (markerClick)="selectMarker($event)">
+            </agm-marker>
+            <!--<agm-direction [origin]="origin" [destination]="destination" [waypoints]="waypoints">
+                    </agm-direction>-->
+        </agm-map>
+        <!--<p *ngIf="selectedMarker">
+                Lat: {{ selectedMarker.lat }} Lng: {{ selectedMarker.lng }}
+            </p>-->
+    </mat-card>
+</div>

@@ -47,6 +47,10 @@ import { MyAccountComponent } from './components/settings/my-account/my-account.
 import { ChildrenSettingComponent } from './components/settings/children-setting/children-setting.component';
 import { ContactsSettingComponent } from './components/settings/contacts-setting/contacts-setting.component';
 import { AddChildDialog } from './components/settings/children-setting/add-child-dialog/add-child.dialog';
+import { AgmCoreModule, GoogleMapsAPIWrapper } from '@agm/core';
+import { ViewMapComponent } from './components/lines/view-map/view-map.component';
+import { AgmDirectionModule } from 'agm-direction';   // agm-direction
+
 
 @NgModule({
   declarations: [
@@ -58,7 +62,7 @@ import { AddChildDialog } from './components/settings/children-setting/add-child
     HomeComponent, MessagesComponent,
 
     // Lines
-    LinesComponent, ViewRaceDialog,
+    LinesComponent, ViewRaceDialog, ViewMapComponent,
 
     // Companion
     CompanionComponent, PendingRequestsComponent, RacesCompanionComponent, GiveAvailabilityDialog,
@@ -70,7 +74,7 @@ import { AddChildDialog } from './components/settings/children-setting/add-child
     SettingsComponent, MyAccountComponent, ChildrenSettingComponent, ContactsSettingComponent, AddChildDialog,
 
     // Dialogs
-    ConfirmDialog, MessageDialogComponent, 
+    ConfirmDialog, MessageDialogComponent,
 
     // Dumb components
     MessageComponent,
@@ -87,7 +91,11 @@ import { AddChildDialog } from './components/settings/children-setting/add-child
     AppRoutingModule,
     FormsModule, ReactiveFormsModule,
     HttpClientModule,
-    AngularSvgIconModule
+    AngularSvgIconModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyA039REtD8cDNtCN-VMciUzLgkbUH87JCg'
+    }),
+    AgmDirectionModule,
   ],
   providers: [
     AuthService,
@@ -97,6 +105,7 @@ import { AddChildDialog } from './components/settings/children-setting/add-child
     LineService,
     MessageService,
     IsMobileService,
+    { provide: GoogleMapsAPIWrapper, useClass: GoogleMapsAPIWrapper },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
