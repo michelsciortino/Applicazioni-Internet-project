@@ -11,7 +11,7 @@ export class IsMobileService implements OnDestroy {
 
     constructor(applicationRef: ApplicationRef, media: MediaMatcher) {
         this.mobileQuery = media.matchMedia('(max-width: 690px)');
-        this.isMobileSbj=new BehaviorSubject(this.mobileQuery.matches);
+        this.isMobileSbj = new BehaviorSubject(this.mobileQuery.matches);
         this.mobileQueryListener = () => {
             this.isMobileSbj.next(this.mobileQuery.matches)
         };

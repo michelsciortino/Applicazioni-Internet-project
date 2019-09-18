@@ -53,7 +53,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
 
     ngOnInit() {
         this.selectedFilter = this.filters[0].value;
-        this.isMobileSub = this.isMobileSvc.getIsMobile().subscribe((isMobile) => this.isMobile = isMobile);
+        this.isMobileSub = this.isMobileSvc.isMobile.subscribe((isMobile) => this.isMobile = isMobile);
 
         this.loading = false;
         this.nUsers = 0;
@@ -105,7 +105,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
     editUser(user) {
         const dialogRef = this.dialog.open(EditUserDialog, { data: { user: user } });
         dialogRef.afterClosed().subscribe(result => {
-            if(dialogRef.componentInstance.dirty){
+            if (dialogRef.componentInstance.dirty) {
                 if (this.filtered)
                     this.dataSource.loadUsers(this.paginator.pageIndex, this.paginator.pageSize, this.selectedFilter, this.filterKeyword);
                 else
