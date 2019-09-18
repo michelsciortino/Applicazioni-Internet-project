@@ -7,6 +7,7 @@ import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
 import { UserInfo } from 'src/app/models/user';
 import { LineService } from '../lines/line-races.service';
 import { Line } from 'src/app/models/line';
+import { debug } from 'util';
 
 const credentialsEndpoint = `${environment.baseEndpoint}/credentials`;
 const userEndpoint = `${environment.baseEndpoint}/users`;
@@ -40,9 +41,14 @@ export class UserService implements OnDestroy {
 
     public updateUser(user: UserInfo) {
         console.log("ADD ENDPOINT FOR UPDATE");
-        this.userInfo = user;
-        this.userSbj.next(this.userInfo);
-        return;
+        return this.http.put(`${userEndpoint}`, user).toPromise()
+            .then(
+                (result) => {
+                    this.userInfo = user;
+                    this.userSbj.next(this.userInfo);
+                    return result;
+                }
+            ).catch((error) => console.debug(error));
     }
 
     public update(): void {

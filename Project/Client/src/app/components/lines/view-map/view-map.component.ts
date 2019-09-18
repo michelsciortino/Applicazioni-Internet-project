@@ -11,7 +11,6 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { FormControl, Validators } from "@angular/forms";
 import { GoogleMapsAPIWrapper, MarkerManager } from "@agm/core";
-import { LatLng } from "@agm/core/services/google-maps-types";
 import { Stop } from "src/app/models/stop";
 import { Subscription } from 'rxjs';
 import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
@@ -64,9 +63,8 @@ export class ViewMapComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        this.isMobileSub = this.isMobileSvc.isMobile.subscribe(
-            (bool: Boolean) => { this.isMobile = bool; }
-        )
+        this.isMobileSub = this.isMobileSvc.getIsMobile()
+            .subscribe((isMobile) => this.isMobile = isMobile);
 
         this.lineSvc
             .getLines()

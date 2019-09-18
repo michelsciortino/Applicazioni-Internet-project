@@ -53,7 +53,9 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
 
     ngOnInit() {
         this.selectedFilter = this.filters[0].value;
-        this.isMobileSub = this.isMobileSvc.isMobile.subscribe((isMobile) => this.isMobile = isMobile);
+
+        this.isMobileSub = this.isMobileSvc.getIsMobile()
+            .subscribe((isMobile) => this.isMobile = isMobile);
 
         this.loading = false;
         this.nUsers = 0;
