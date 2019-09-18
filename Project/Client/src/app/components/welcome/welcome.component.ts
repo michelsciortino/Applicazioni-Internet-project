@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
+import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -8,15 +8,14 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./welcome.component.css', '../common.css']
 })
 export class WelcomeComponent implements OnInit, OnDestroy {
-    isMobile: Boolean;
+    isMobile: boolean;
     isMobileSub: Subscription;
 
     constructor(private isMobileSvc: IsMobileService) { }
 
     ngOnInit() {
-        this.isMobileSub = this.isMobileSvc.isMobile.subscribe(
-            (bool: Boolean) => { this.isMobile = bool; }
-        )
+        this.isMobileSub = this.isMobileSvc.getIsMobile()
+            .subscribe((isMobile) => this.isMobile = isMobile);
     }
 
     ngOnDestroy() {

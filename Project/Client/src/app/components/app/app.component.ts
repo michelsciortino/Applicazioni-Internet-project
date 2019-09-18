@@ -1,11 +1,11 @@
-import { Component, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild, OnInit, AfterViewInit, AfterContentInit } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatSidenav } from '@angular/material';
 import { UserService } from 'src/app/services/user/user.service';
-import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
+import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
 import { UserInfo } from 'src/app/models/user';
 
 @Component({
@@ -13,35 +13,23 @@ import { UserInfo } from 'src/app/models/user';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnDestroy {
-  mobileQuery: MediaQueryList;
-  private mobileQueryListener: () => void;
+export class AppComponent implements OnInit, OnDestroy {
   private isLoggedSub: Subscription;
   private userInfoSub: Subscription;
+  private isMobileSub: Subscription;
+
   isLogged: boolean;
   isAdmin: boolean;
   isCompanion: boolean;
 
+  isMobile: boolean;
+
   @ViewChild('snav', { static: true })
   sidenav: MatSidenav;
 
-  constructor(private router: Router, private authSvc: AuthService, private userSvc: UserService, private isMobileSvc: IsMobileService, changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
-    this.mobileQuery = media.matchMedia('(max-width: 690px)');
-    this.mobileQueryListener = () => {
-      if (this.mobileQuery.matches) {
-        this.sidenav.close();
-        this.isMobileSvc.setIsMobile(true);
-      }
-      else {
-        this.sidenav.open();
-        this.isMobileSvc.setIsMobile(false);
-      }
-      changeDetectorRef.detectChanges();
-    };
+  constructor(private router: Router, private authSvc: AuthService, private userSvc: UserService, private isMobileSvc: IsMobileService) { }
 
-    // tslint:disable-next-line: deprecation
-    this.mobileQuery.addListener(this.mobileQueryListener);
-
+  ngOnInit() {
     this.isLoggedSub = this.authSvc.observeLoggedStatus().subscribe(
       (value: boolean) => this.isLogged = value);
 
@@ -54,16 +42,24 @@ export class AppComponent implements OnDestroy {
       }
     );
 
+    this.isMobileSub = this.isMobileSvc.getIsMobile()
+      .subscribe((isMobile) => {
+        this.isMobile = isMobile;
+        if (isMobile) {
+          console.log("closing sidenav")
+          this.sidenav.close();
+        }
+        else this.sidenav.open();
+      })
+
     this.router.events.subscribe(event => {
       // close sidenav on routing
-      if (this.mobileQuery.matches)
+      if (this.isMobile)
         this.sidenav.close();
     });
   }
 
   ngOnDestroy(): void {
-    // tslint:disable-next-line: deprecation
-    this.mobileQuery.removeListener(this.mobileQueryListener);
     this.isLoggedSub.unsubscribe();
     this.userInfoSub.unsubscribe();
   }

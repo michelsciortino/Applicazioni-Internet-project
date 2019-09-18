@@ -26,7 +26,7 @@ import { WelcomeComponent } from './components/welcome/welcome.component';
 import { LinesComponent } from './components/lines/lines.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { RegisterComponent } from './components/admin/register/register.component';
-import { IsMobileService } from './services/bridges/is-mobile.service';
+import { IsMobileService } from './services/is-mobile/is-mobile.service';
 import { UserManagementComponent } from './components/admin/users-management/users-management.component';
 import { RacesManagementComponent } from './components/admin/races-management/races-management.component';
 import { AdminService } from './services/admin/admin.service';

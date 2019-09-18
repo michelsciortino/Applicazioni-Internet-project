@@ -6,7 +6,7 @@ import { tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { ViewUserDialog } from './view-user-dialog/view-user.dialog';
 import { EditUserDialog } from './edit-user-dialog/edit-user.dialog';
-import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
+import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
 import { UserRole } from 'src/app/models/roles';
 
 @Component({
@@ -53,7 +53,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
 
     ngOnInit() {
         this.selectedFilter = this.filters[0].value;
-        this.isMobileSub = this.isMobileSvc.isMobile.subscribe((isMobile) => this.isMobile = isMobile);
+        this.isMobileSub = this.isMobileSvc.getIsMobile().subscribe((isMobile) => this.isMobile = isMobile);
 
         this.loading = false;
         this.nUsers = 0;

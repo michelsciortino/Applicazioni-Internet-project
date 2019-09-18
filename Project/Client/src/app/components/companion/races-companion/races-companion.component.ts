@@ -5,7 +5,7 @@ import { Line } from 'src/app/models/line';
 import { map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DirectionType, Race } from 'src/app/models/race';
-import { IsMobileService } from 'src/app/services/bridges/is-mobile.service';
+import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
