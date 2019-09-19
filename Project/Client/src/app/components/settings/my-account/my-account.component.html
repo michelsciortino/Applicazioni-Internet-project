@@ -1,6 +1,6 @@
 <div class="padded-content">
     <mat-card class="compact-card centered">
-        <h3>My Account</h3>
+        <p>My Account</p>
         <div>
             <table>
                 <thead>
@@ -20,10 +20,8 @@
             </table>
         </div>
         <div class="row">
-
             <div class="inline">
-                <h3 class="title">Roles</h3>
-
+                <p class="title">Roles</p>
                 <table>
                     <tbody>
                         <tr *ngFor="let role of myInfo.roles">
@@ -32,21 +30,15 @@
                     </tbody>
                 </table>
             </div>
-
-            <div *ngIf="myInfo.lines && myInfo.lines.length>0">
-                <h3 class="title">Administrated Lines</h3>
+            <div *ngIf="myInfo.lines && myInfo.isAdmin(myInfo)">
+                <p class="title">Administrated Lines</p>
                 <table>
-                    <tbody>
+                    <tbody *ngIf="myInfo.lines.length>0">
                         <tr *ngFor="let line of myInfo.lines">
                             <td>{{line}}</td>
                         </tr>
                     </tbody>
-                </table>
-            </div>
-            <div *ngIf="myInfo.lines && myInfo.lines.length==0 && myInfo.isAdmin">
-                <h3 class="title">Administrated Lines</h3>
-                <table>
-                    <tbody>
+                    <tbody *ngIf="myInfo.lines.length==0">
                         <tr>
                             <td class="grey">NO LINES</td>
                         </tr>
