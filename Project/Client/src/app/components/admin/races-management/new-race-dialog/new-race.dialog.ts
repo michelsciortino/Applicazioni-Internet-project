@@ -64,7 +64,7 @@ export class NewRaceDialog implements OnInit, OnDestroy {
         race.lineName = this.lineSelected.name;
         race.direction = this.direction.id;
         race.date = this.date;
-        race.raceState = RaceState.NULL;
+        race.raceState = RaceState.SCHEDULED;
         race.passengers = [];
         race.companions = [];
         if (!this.dirty)

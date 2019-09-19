@@ -3,13 +3,21 @@ import { Companion } from './companion';
 
 export class Race {
     public lineName: string;
-    public direction: string;
+    public direction: DirectionType;
     public date: Date;
     public passengers: Passenger[];
-    public Companions: Companion[];
+    public companions: Companion[];
+    public raceState: RaceState;
 }
 
 export enum DirectionType {
-    OUTWARD="OUTWARD",
-    RETURN="RETURN"
+    OUTWARD = "OUTWARD",
+    RETURN = "RETURN"
+}
+
+export enum RaceState {
+    SCHEDULED = "SCHEDULED",
+    VALIDATED = "VALIDATED",
+    STARTED = "STARTED",
+    ENDED = "ENDED"
 }
