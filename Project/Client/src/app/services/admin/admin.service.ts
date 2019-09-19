@@ -7,6 +7,8 @@ import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Users } from 'src/app/models/users_paginated';
 import { DataSource, CollectionViewer } from '@angular/cdk/collections';
+import { CompanionRequest } from 'src/app/models/companion-request';
+import { CompanionState } from 'src/app/models/companion';
 
 export enum UserSearchFilter {
     MAIL,
@@ -66,6 +68,40 @@ export class AdminService {
     public removeCompanion(user: string) {
         return this.http.post(`${AdminService.adminEndpoint}/removeCompanion`, { targetName: user }).toPromise();
     }
+
+    public getCompanionRequests(){
+        return this.http.get(`${AdminService.adminEndpoint}/companionRequests`) as Observable<CompanionRequest[]>;
+    }
+
+    public acceptCompanionRequest(lineName:string,direction:string, date: Date,username:string){
+        return this.http.post(`${AdminService.adminEndpoint}/acceptCompanionRequest`,
+        {
+            lineName:lineName,
+            direction:direction,
+            date:date,
+            username:username
+        });
+    }
+
+    public unAcceptCompanionRequest(lineName:string,direction:string, date: Date,username:string){
+        return this.http.post(`${AdminService.adminEndpoint}/unAcceptCompanionRequest`,
+        {
+            lineName:lineName,
+            direction:direction,
+            date:date,
+            username:username
+        });
+    }
+
+    public rejectCompanionRequest(lineName:string,direction:string, date: Date,username:string){
+        return this.http.post(`${AdminService.adminEndpoint}/rejectCompanionRequest`,
+        {
+            lineName:lineName,
+            direction:direction,
+            date:date,
+            username:username
+        });
+    }
 }
 
 export class UsersDataSource implements DataSource<UserInfo>{
@@ -101,5 +137,41 @@ export class UsersDataSource implements DataSource<UserInfo>{
                 this.usersSbj.next(users.content);
                 this.nUsersSbj.next(users.totalElements)
             });
+    }
+}
+
+export class CompanionRequestsDataSource {
+    private requestsSbj = new BehaviorSubject<CompanionRequest[]>([]);
+
+    constructor(private adminSvc: AdminService) {
+        this.adminSvc.getCompanionRequests().subscribe((requests: CompanionRequest[]) => this.requestsSbj.next(requests));
+    }
+
+    disconnect(collectionViewer: CollectionViewer): void {
+    }
+
+    public getPendingRequests(): Observable<CompanionRequest[]> {
+        return this.requestsSbj.asObservable()
+            .pipe(
+                map(requests => requests.filter(request => request.state == CompanionState.AVAILABLE))
+            );
+    }
+
+    public getAcceptedRequests(): Observable<CompanionRequest[]> {
+        return this.requestsSbj.asObservable()
+            .pipe(
+                map(requests => requests.filter(request => request.state == CompanionState.CHOSEN))
+            );
+    }
+
+    public getConfirmedRequests(): Observable<CompanionRequest[]> {
+        return this.requestsSbj.asObservable()
+            .pipe(
+                map(requests => requests.filter(request => request.state == CompanionState.CONFIRMED))
+            );
+    }
+
+    public reload() {
+        this.adminSvc.getCompanionRequests().subscribe((requests: CompanionRequest[]) => this.requestsSbj.next(requests));
     }
 }

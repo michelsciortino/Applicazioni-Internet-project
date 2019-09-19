@@ -49,12 +49,14 @@ import { ContactsSettingComponent } from './components/settings/contacts-setting
 import { AddChildDialog } from './components/settings/children-setting/add-child-dialog/add-child.dialog';
 import { AgmCoreModule, GoogleMapsAPIWrapper } from '@agm/core';
 import { ViewMapComponent } from './components/lines/view-map/view-map.component';
-import { AgmDirectionModule } from 'agm-direction';   // agm-direction
+import { AgmDirectionModule } from 'agm-direction';
+import { CompanionRequestsManagementComponent } from './components/admin/companion-requests/companion-requests.component';
 
 
 @NgModule({
   declarations: [
     AppComponent, WelcomeComponent,
+
     // Auth
     LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent, RegisterComponent,
 
@@ -68,7 +70,7 @@ import { AgmDirectionModule } from 'agm-direction';   // agm-direction
     CompanionComponent, PendingRequestsComponent, RacesCompanionComponent, GiveAvailabilityDialog,
 
     // Admin
-    AdminComponent, UserManagementComponent, RacesManagementComponent, ViewUserDialog, EditUserDialog,
+    AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, ViewUserDialog, EditUserDialog,
 
     // Settings
     SettingsComponent, MyAccountComponent, ChildrenSettingComponent, ContactsSettingComponent, AddChildDialog,
@@ -81,6 +83,7 @@ import { AgmDirectionModule } from 'agm-direction';   // agm-direction
 
     // Directives
     PasswordToggleDirective
+
   ],
   entryComponents: [
     ConfirmDialog, MessageDialogComponent, ViewUserDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog,

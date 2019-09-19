@@ -1,0 +1,69 @@
+<div class="padded-content">
+    <mat-card class="compact-card scroll">
+        <p>Accompanying Requests</p>
+
+        <div class="spinner-container" *ngIf="loading">
+            <mat-spinner [diameter]="70"></mat-spinner>
+        </div>
+
+        <div style="border: 1px solid rgba(0, 0, 0, .12); border-radius: 4px; overflow: hidden;">
+            <nav mat-tab-nav-bar [backgroundColor]="background">
+                <a mat-tab-link (click)="switchToTab(RequestsTab.PENDING)" [active]="activeTab === RequestsTab.PENDING || false">Pending</a>
+                <a mat-tab-link (click)="switchToTab(RequestsTab.ACCEPTED)" [active]="activeTab === RequestsTab.ACCEPTED || false">Accepted</a>
+                <a mat-tab-link (click)="switchToTab(RequestsTab.CONFIRMED)" [active]="activeTab === RequestsTab.CONFIRMED || false">Confirmed</a>
+            </nav>
+
+            <div class="marged overflow-auto">
+                <table *ngIf="requests.length>0" class="expanded mat-table">
+                    <thead>
+                        <tr class="mat-header-row">
+                            <th class="mat-header-cell">Line</th>
+                            <th class="mat-header-cell">Direction</th>
+                            <th class="mat-header-cell">Date</th>
+                            <th class="mat-header-cell">Initial Stop</th>
+                            <th class="mat-header-cell">Final Stop</th>
+                            <th *ngIf="activeTab === RequestsTab.PENDING" class="mat-header-cell mat-cell-button">Accept</th>
+                            <th *ngIf="activeTab === RequestsTab.PENDING" class="mat-header-cell mat-cell-button">Reject</th>
+                            <th *ngIf="activeTab === RequestsTab.ACCEPTED" class="mat-header-cell mat-cell-button">Un-Accept</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let request of requests" class="mat-row">
+                            <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted"> {{request.lineName}}
+                            </td>
+                            <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted"> {{request.direction}}
+                            </td>
+                            <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                                {{request.date | date}}
+                            </td>
+                            <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                                {{request.initialStop.name}}
+                            </td>
+                            <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                                {{request.finalStop.name}} </td>
+                            <td *ngIf="activeTab === RequestsTab.PENDING" class="mat-cell mat-cell-button">
+                                <button mat-icon-button class="green" (click)="acceptRequest(request)">
+                                    <mat-icon>check</mat-icon>
+                                </button>
+                            </td>
+                            <td *ngIf="activeTab === RequestsTab.PENDING" class="mat-cell mat-cell-button">
+                                <button mat-icon-button (click)="rejectRequest(request)">
+                                        <mat-icon class="red">clear</mat-icon>
+                                </button>
+                            </td>
+                            <td *ngIf="activeTab === RequestsTab.ACCEPTED" class="mat-cell mat-cell-button">
+                                <button mat-icon-button (click)="unAcceptRequest(request)">
+                                        <mat-icon class="red">clear</mat-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div *ngIf="requests.length==0" class="marged padded">
+                    No requests.
+                </div>
+            </div>
+        </div>
+    </mat-card>
+</div>
