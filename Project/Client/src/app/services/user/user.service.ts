@@ -25,8 +25,10 @@ export class UserService implements OnDestroy {
                 //console.log("logged status changed to:",status)
                 if (status)
                     this.update();
-                else
+                else {
                     this.userInfo = new UserInfo();
+                    this.userSbj.next(this.userInfo);
+                }
             }
         );
     }
