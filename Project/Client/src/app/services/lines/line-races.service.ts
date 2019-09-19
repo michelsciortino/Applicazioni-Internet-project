@@ -17,12 +17,12 @@ export class LineService {
     private static readonly lineEndpoint = `${environment.baseEndpoint}/lines`;
 
     private linesSubj: BehaviorSubject<Line[]>
-    private racesSubj: Subject<Race[]>
+    private racesSubj: BehaviorSubject<Race[]>
 
 
     constructor(private authSvc: AuthService, private http: HttpClient) {
         this.linesSubj = new BehaviorSubject<Line[]>([])
-        this.racesSubj = new Subject<Race[]>()
+        this.racesSubj = new BehaviorSubject<Race[]>([])
         this._getLines();
     }
 

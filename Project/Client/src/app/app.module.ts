@@ -51,6 +51,7 @@ import { AgmCoreModule, GoogleMapsAPIWrapper } from '@agm/core';
 import { ViewMapComponent } from './components/lines/view-map/view-map.component';
 import { AgmDirectionModule } from 'agm-direction';
 import { CompanionRequestsManagementComponent } from './components/admin/companion-requests/companion-requests.component';
+import { NewRaceDialog } from './components/admin/races-management/new-race-dialog/new-race.dialog';
 
 
 @NgModule({
@@ -64,7 +65,7 @@ import { CompanionRequestsManagementComponent } from './components/admin/compani
     HomeComponent, MessagesComponent,
 
     // Lines
-    LinesComponent, ViewRaceDialog, ViewMapComponent,
+    LinesComponent, ViewRaceDialog, ViewMapComponent, NewRaceDialog,
 
     // Companion
     CompanionComponent, PendingRequestsComponent, RacesCompanionComponent, GiveAvailabilityDialog,
@@ -86,7 +87,7 @@ import { CompanionRequestsManagementComponent } from './components/admin/compani
 
   ],
   entryComponents: [
-    ConfirmDialog, MessageDialogComponent, ViewUserDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog,
+    ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog,
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,

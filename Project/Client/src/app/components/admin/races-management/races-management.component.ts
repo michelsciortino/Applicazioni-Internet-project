@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 import { ViewRaceDialog } from './view-race-dialog/view-race.dialog';
 import { MessageDialogComponent } from '../../dialogs/messege-dialog/messege.dialog';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
+import { NewRaceDialog } from './new-race-dialog/new-race.dialog';
 
 @Component({
     selector: 'app-races-management',
@@ -124,6 +125,15 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     viewRace(race: Race) {
         console.log("VIEW RACE:", race)
         const dialogRef = this.dialog.open(ViewRaceDialog, { data: { race: race } });
+    }
+
+    openAddRacesDialog(): void {
+        console.log("OPEN DIALOG ADD RACE")
+        const dialogRef = this.dialog.open(NewRaceDialog, { data: { date: this.fromDateSelected } });
+        dialogRef.afterClosed().subscribe(result => {
+            if (dialogRef.componentInstance.dirty)
+                this.search();
+        });
     }
 }
 

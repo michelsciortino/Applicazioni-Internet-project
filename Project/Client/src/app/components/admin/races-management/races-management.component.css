@@ -72,3 +72,10 @@ mat-select {
     width: fit-content;
     min-width: 10ch;
 }
+
+.add-button{
+    position: absolute;
+    z-index: 1;
+    right: 8px;
+    float: right;
+}

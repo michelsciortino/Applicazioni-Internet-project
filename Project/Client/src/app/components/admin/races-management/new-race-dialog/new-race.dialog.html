@@ -1,0 +1,42 @@
+<div mat-dialog-content class="no-scroll fit-content">
+    <div>
+        <h3 class="title">New Race</h3>
+
+        <!-- LineName selection -->
+        <mat-form-field>
+            <mat-label>LineName</mat-label>
+            <mat-select [(value)]="lineSelected">
+                <mat-option *ngFor="let line of lines" [value]="line">
+                    {{line.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- direction selection -->
+        <mat-form-field>
+            <mat-label>Direction</mat-label>
+            <mat-select [(value)]="direction">
+                <mat-option *ngFor="let dir of directions" [value]="dir">
+                    {{dir.text}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Date selection -->
+        <mat-form-field class="block">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="date">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker disabled="false" [startAt]="date"></mat-datepicker>
+        </mat-form-field>
+
+        <ngx-timepicker-field class="block center-horizontal" [controlOnly]="true" [format]="24" [defaultTime]="hour"
+            [(ngModel)]="hour">
+        </ngx-timepicker-field>
+
+        <div mat-dialog-actions>
+            <button mat-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+            <button mat-button [disabled]="!isComplete()" (click)="addRace()" cdkFocusInitial>Add</button>
+        </div>
+
+    </div>

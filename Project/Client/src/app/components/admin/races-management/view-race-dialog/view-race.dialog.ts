@@ -11,7 +11,7 @@ import { Race } from 'src/app/models/race';
 })
 export class ViewRaceDialog {
 
-    constructor(public dialogRef: MatDialogRef<ViewRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {  
+    constructor(public dialogRef: MatDialogRef<ViewRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: Race) {
 
         // console.log(data.race.date.toLocaleDateString())
         // console.log(data.race.date.toLocaleTimeString())
