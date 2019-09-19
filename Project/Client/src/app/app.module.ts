@@ -87,7 +87,7 @@ import { NewRaceDialog } from './components/admin/races-management/new-race-dial
 
   ],
   entryComponents: [
-    ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog,
+    ConfirmDialog, MessageDialogComponent, ViewUserDialog, ViewRaceDialog, NewRaceDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog,
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,
