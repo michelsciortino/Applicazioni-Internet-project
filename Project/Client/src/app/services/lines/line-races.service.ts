@@ -60,8 +60,19 @@ export class LineService {
         return await this.http.get(`${LineService.lineEndpoint}/${lineName}/races`, { params }).toPromise();;
     }
 
+    public addRace(race: Race) {
+        console.log(`${LineService.lineEndpoint}/${race.lineName}/races`);
+        return this.http.post(`${LineService.lineEndpoint}/${race.lineName}/races`, race).toPromise()
+            .then(
+                (result) => {
+                    console.log(result);
+                    return result;
+                }
+            ).catch((error) => console.debug(error));
+    }
+
     public deleteRace(race: Race) {
-        console.log(`${LineService.lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`);
+        //console.log(`${LineService.lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`);
         return this.http.delete(`${LineService.lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`).subscribe(
             (data) => console.log(data)
         );
@@ -102,6 +113,7 @@ export class RacesDataSource implements DataSource<Race>{
                 data.map(x => x.date = new Date(x.date));
                 this.sortRaces(data, "asc", "Date");
                 this.racesSbj.next(data);
+                //console.log(data);
             })
             .finally(() => this.loadingSbj.next(false))
     }

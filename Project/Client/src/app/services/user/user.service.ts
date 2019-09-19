@@ -40,10 +40,10 @@ export class UserService implements OnDestroy {
     }
 
     public updateUser(user: UserInfo) {
-        console.log("ADD ENDPOINT FOR UPDATE");
         return this.http.put(`${userEndpoint}`, user).toPromise()
             .then(
                 (result) => {
+                    console.log(result);
                     this.userInfo = user;
                     this.userSbj.next(this.userInfo);
                     return result;

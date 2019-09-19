@@ -39,27 +39,28 @@ export class ChildrenSettingComponent implements OnInit, OnDestroy {
         this.userInfoSub.unsubscribe();
     }
 
-    openAddChildDialog():void{
+    openAddChildDialog(): void {
         console.log("OPEN DIALOG ADD CHILD")
-        this.dialog.open(AddChildDialog, { data: { user: this.userInfo} });
+        this.dialog.open(AddChildDialog, { data: { user: this.userInfo } });
     }
 
-    removeChild(child:Child):void{
-        console.log("REMOVE CHILD:",child)
-        
-        const dialogRef = this.dialog.open(ConfirmDialog, {
+    removeChild(child: Child): void {
+        console.log("REMOVE CHILD:", child)
+
+        this.dialog.open(ConfirmDialog, {
             width: '300px',
-            data: {title: 'Remove Child', message: `Are you sure deleted this child? \n- ${child.name} ${child.surname}\n`}
-        });
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                console.log('Yes clicked');
-                // remove child
-                this.localInfo.children.splice( this.localInfo.children.indexOf(child), 1 );
-                this.userSvc.updateUser(this.localInfo);
-            }
-            else
-                console.log('No clicked')
-        });
+            data: { title: 'Remove Child', message: `Are you sure deleted this child? \n- ${child.name} ${child.surname}\n`, YES: true, CANCEL: true }
+        })
+            .afterClosed().subscribe(result => {
+                switch (result) {
+                    case "YES":
+                        //console.log('Yes clicked', this.localInfo.children.map(function (e) { return e.cf; }).indexOf(child.cf));
+                        this.localInfo.children.splice(this.localInfo.children.map((x) => { return x.cf; }).indexOf(child.cf), 1);
+                        this.userSvc.updateUser(this.localInfo);
+                        break;
+                    default:
+                        break;
+                }
+            });
     }
 }

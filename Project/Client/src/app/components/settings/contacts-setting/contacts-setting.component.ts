@@ -39,18 +39,18 @@ export class ContactsSettingComponent implements OnInit, OnDestroy {
 
     //TODO: Endpoint not present
     addContact(): void {
-        console.log("ADD CONTACT")
+        //console.log("ADD CONTACT", this.contact)
         this.localInfo.contacts.push(this.contact);
         this.userSvc.updateUser(this.localInfo);
     }
 
-    removeContact(): void {
-        console.log("REMOVE CONTACT:", this.contact)
-        this.localInfo.contacts.splice(this.localInfo.contacts.indexOf(this.contact), 1);
+    removeContact(contact: string): void {
+        //console.log("REMOVE CONTACT:", contact)
+        this.localInfo.contacts.splice(this.localInfo.contacts.indexOf(contact), 1);
         this.userSvc.updateUser(this.localInfo);
     }
-    
-    isComplete(): boolean{
-        return this.contact!=null;
+
+    isComplete(): boolean {
+        return this.contact != null && this.contact.length > 3;
     }
 }
