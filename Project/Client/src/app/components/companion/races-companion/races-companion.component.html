@@ -86,7 +86,8 @@
                 <ng-container matColumnDef="Availability-Action">
                     <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
                     <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
-                        <button mat-icon-button (click)="$event.stopPropagation(); giveAvailability(element)">
+                        <button *ngIf="element.companion==null" mat-icon-button
+                            (click)="$event.stopPropagation(); giveAvailability(element)">
                             <mat-icon>person_add</mat-icon>
                         </button>
                     </td>
