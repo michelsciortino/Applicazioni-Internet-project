@@ -90,7 +90,8 @@
                 <ng-container matColumnDef="Remove-Action">
                     <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
                     <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
-                        <button mat-icon-button (click)="$event.stopPropagation(); removeRace(element)">
+                        <button *ngIf="isAdminOfLine(element)" mat-icon-button
+                            (click)="$event.stopPropagation(); removeRace(element)">
                             <mat-icon>delete_outline</mat-icon>
                         </button>
                     </td>

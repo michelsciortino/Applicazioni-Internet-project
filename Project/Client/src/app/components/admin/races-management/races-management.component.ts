@@ -9,9 +9,10 @@ import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material';
 import { ViewRaceDialog } from '../../dialogs/view-race-dialog/view-race.dialog';
-import { MessageDialogComponent } from '../../dialogs/messege-dialog/messege.dialog';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { NewRaceDialog } from './new-race-dialog/new-race.dialog';
+import { UserService } from 'src/app/services/user/user.service';
+import { UserInfo } from 'src/app/models/user';
 
 @Component({
     selector: 'app-races-management',
@@ -21,6 +22,9 @@ import { NewRaceDialog } from './new-race-dialog/new-race.dialog';
 export class RacesManagementComponent implements OnInit, OnDestroy {
 
     public isMobile: boolean;
+
+    userInfo: UserInfo;
+    private userInfoSub: Subscription;
 
     isMobileSub: Subscription;
 
@@ -51,8 +55,7 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
 
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor(private lineSvc: LineService, public dialog: MatDialog, private isMobileSvc: IsMobileService) {
-
+    constructor(private lineSvc: LineService, private userSvc: UserService, public dialog: MatDialog, private isMobileSvc: IsMobileService) {
         // console.log(this.toDateSelected.toString());
         // console.log(this.toDateSelected.toISOString());
         // console.log(this.toDateSelected.toDateString());
@@ -67,6 +70,15 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
 
         this.toDateSelected.setMonth(this.toDateSelected.getMonth() + 3);
 
+        this.userInfoSub = this.userSvc.getUserInfo().subscribe(
+            (info: UserInfo) => {
+                if (info != null) {
+                    //console.log(info);
+                    this.userInfo = info;
+                }
+            }
+        );
+
         this.lineSvc.getLines()
             .pipe(
                 map(
@@ -76,17 +88,17 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
                 )
             )
             .subscribe((data: Line[]) => {
-                //console.log(data[0]);
+                console.log(data);
                 if (data.length == 0) return;
                 this.lines = data;
                 //console.log(this.lines[0].name);
                 this.lineSelected = this.lines[0];
                 this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
-            })
+            });
     }
 
-    ngOnDestroy() {
-        //this.isMobileSub.unsubscribe();
+    ngOnDestroy(): void {
+        this.userInfoSub.unsubscribe();
     }
 
     public search() {
@@ -138,6 +150,10 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
             if (dialogRef.componentInstance.dirty)
                 this.search();
         });
+    }
+
+    isAdminOfLine(race: Race) {
+        return this.userInfo.lines.find((line) => line === race.line.name) != null;
     }
 }
 
