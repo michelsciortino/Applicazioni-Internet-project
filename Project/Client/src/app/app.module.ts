@@ -54,6 +54,7 @@ import { CompanionRequestsManagementComponent } from './components/admin/compani
 import { NewRaceDialog } from './components/admin/races-management/new-race-dialog/new-race.dialog';
 import { EditRaceDialog } from './components/admin/edit-race/edit-race.dialog';
 import { CompanionTodayLinesComponent } from './components/home/companion/today-reces/today-races.component';
+import { ParentComponent } from './components/parent/parent.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,9 @@ import { CompanionTodayLinesComponent } from './components/home/companion/today-
 
     // Home
     HomeComponent, MessagesComponent, CompanionTodayLinesComponent,
+
+    // Parent
+    ParentComponent,
 
     // Lines
     LinesComponent, ViewMapComponent,

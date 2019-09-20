@@ -15,6 +15,7 @@ import { WelcomeComponent } from '../components/welcome/welcome.component';
 import { LinesComponent } from '../components/lines/lines.component';
 import { SettingsComponent } from '../components/settings/settings.component';
 import { UserRole } from '../models/roles';
+import { ParentComponent } from '../components/parent/parent.component';
 
 const routes: Routes = [
   // basic routes
@@ -44,6 +45,11 @@ const routes: Routes = [
     component: CompanionComponent,
     canActivate: [AuthGuard],
     data: { roles: [UserRole.COMPANION] }
+  },
+  {
+    path: 'parent',
+    component: ParentComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'auth/login',
