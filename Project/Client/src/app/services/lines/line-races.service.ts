@@ -35,7 +35,7 @@ export class LineService {
         );
     }
 
-    public getLine(lineName: String) {
+    public getLine(lineName: string) {
         return this.http.get(`${LineService.lineEndpoint}/${lineName}`);
     }
 
@@ -43,7 +43,7 @@ export class LineService {
         return this.linesSubj.asObservable();
     }
 
-    public async getRaces(lineName: String, fromDate: Date, toDate: Date, direction: string) {
+    public async getRaces(lineName: string, fromDate: Date, toDate: Date, direction: string) {
 
         // Parameters obj-
         let params = new HttpParams();
@@ -69,6 +69,10 @@ export class LineService {
                     return result;
                 }
             ).catch((error) => console.debug(error));
+    }
+
+    public getRace(lineName: string, date: Date, direction: string): Promise<Race> {
+        return this.http.get(`${LineService.lineEndpoint}/${lineName}/races/${date.toISOString()}/${direction}`).toPromise() as Promise<Race>;
     }
 
     public deleteRace(race: Race) {
@@ -103,7 +107,7 @@ export class RacesDataSource implements DataSource<Race>{
         this.loadingSbj.complete();
     }
 
-    loadRaces(lineName: String, fromDate: Date, toDate: Date, direction: string) {
+    loadRaces(lineName: string, fromDate: Date, toDate: Date, direction: string) {
 
         this.loadingSbj.next(true);
 
