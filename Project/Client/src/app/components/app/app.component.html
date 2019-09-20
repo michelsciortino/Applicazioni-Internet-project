@@ -21,6 +21,7 @@
                 <a mat-list-item *ngIf="isLogged" routerLink="./home">Home</a>
                 <a mat-list-item *ngIf="isLogged && isAdmin" routerLink="./admin">Admin</a>
                 <a mat-list-item *ngIf="isLogged && isCompanion" routerLink="./companion">Companion</a>
+                <a mat-list-item *ngIf="isLogged" routerLink="./parent">Parent</a>
                 <a mat-list-item routerLink="./lines">Lines</a>
                 <a mat-list-item *ngIf="isLogged" routerLink="./settings">Settings</a>
                 <a *ngIf="!isLogged && isMobile" mat-list-item routerLink="/auth/login">

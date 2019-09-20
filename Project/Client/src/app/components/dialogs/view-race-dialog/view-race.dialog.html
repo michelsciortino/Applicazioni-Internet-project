@@ -35,7 +35,7 @@
                         <th>State</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody *ngIf="data.race.companions.length>0">
                     <tr *ngFor="let companion of data.race.companions">
                         <td>{{companion.userDetails.mail}} </td>
                         <td>
@@ -45,6 +45,11 @@
                             {{companion.finalStop.name}},{{getTime(data.race.date.getTime()+companion.finalStop.delayInMillis)}}
                         </td>
                         <td>{{companion.state}} </td>
+                    </tr>
+                </tbody>
+                <tbody *ngIf="data.race.companions.length==0">
+                    <tr class="grey">
+                        <td colspan="6" class="centered-text">NO COMPANIONS</td>
                     </tr>
                 </tbody>
             </table>
@@ -63,7 +68,7 @@
                         <th>State</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody *ngIf="data.race.passengers.length>0">
                     <tr *ngFor="let passenger of data.race.passengers">
                         <td>{{passenger.childDetails.name}}</td>
                         <td>{{passenger.stopReserved.name}}</td>
@@ -76,6 +81,11 @@
                             <mat-icon class="red opacity50">clear</mat-icon>
                         </td>
                         <td>{{passenger.state}}</td>
+                    </tr>
+                </tbody>
+                <tbody *ngIf="data.race.passengers.length==0">
+                    <tr class="grey">
+                        <td colspan="6" class="centered-text">NO PASSENGERS</td>
                     </tr>
                 </tbody>
             </table>

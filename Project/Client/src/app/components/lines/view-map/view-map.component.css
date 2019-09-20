@@ -8,6 +8,7 @@ agm-map {
   z-index: 1;
   height: fit-content;
   width: fit-content;
+  min-width: 180px;
   right: 0px;
 }
 
