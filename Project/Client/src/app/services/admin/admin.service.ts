@@ -134,7 +134,8 @@ export class UsersDataSource implements DataSource<UserInfo>{
                 })
             ).subscribe((users: Users) => {
                 //console.log(users)
-                this.usersSbj.next(users.content);
+                const usrs=users.content.map( user => new UserInfo(user));
+                this.usersSbj.next(usrs);
                 this.nUsersSbj.next(users.totalElements)
             });
     }
