@@ -5,10 +5,9 @@ import { map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Line } from 'src/app/models/line';
 import { Stop } from 'src/app/models/stop';
-import { ConditionalExpr } from '@angular/compiler';
 import { DirectionType } from 'src/app/models/race';
 import { CompanionService } from 'src/app/services/companion/companion.service';
-
+import Utils from 'src/app/utils/utils';
 
 @Component({
     selector: 'give-availability-dialog',
@@ -16,6 +15,7 @@ import { CompanionService } from 'src/app/services/companion/companion.service';
     styleUrls: ['./give-availability.dialog.css']
 })
 export class GiveAvailabilityDialog {
+    dirty: boolean;
     initialStop: Stop;
     finalStop: Stop;
     line: Line;
@@ -47,14 +47,9 @@ export class GiveAvailabilityDialog {
             })
     }
 
-    getTime(millisec: number) {
-        var options = { hour: '2-digit', minute: '2-digit' };
-        return new Date(millisec).toLocaleTimeString([], options)
-    }
+    getTime = Utils.getTime;
 
-    getTimeWithSecond(millisec: number) {
-        return new Date(millisec).toLocaleTimeString('it-IT')
-    }
+    getTimeWithSecond = Utils.getTimeWithSecond;
 
     onCancel(): void {
         this.dialogRef.close();
@@ -62,7 +57,11 @@ export class GiveAvailabilityDialog {
 
     send(): void {
         this.companionSvc.giveAvailability(this.data.race.lineName, this.data.race.direction, this.data.race.date, this.initialStop, this.finalStop).toPromise()
-            .then((result) => this.dialogRef.close())
+            .then((result) => {
+                if (!this.dirty)
+                    this.dirty = true;
+                this.dialogRef.close()
+            })
             .catch((error) => this.dialogRef.close());
     }
 }

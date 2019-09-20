@@ -107,7 +107,7 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
             width: '350px',
             data: {
                 title: 'Confirm?',
-                message: `Are you sure deleted this race: \n- ${race.lineName}\n- ${race.direction}\n- ${race.date.toISOString()}`,
+                message: `Are you sure deleted this race: \n- ${race.line}\n- ${race.direction}\n- ${race.date.toISOString()}`,
                 YES: true, NO: true
             }
         });

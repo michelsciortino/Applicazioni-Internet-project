@@ -1,5 +1,6 @@
 import { Passenger } from './passenger';
 import { Companion } from './companion';
+import { Line } from './line';
 
 export enum DirectionType {
     OUTWARD = "OUTWARD",
@@ -14,7 +15,7 @@ export enum RaceState {
 }
 
 export class Race {
-    public lineName: string;
+    public line: Line;
     public direction: DirectionType;
     public date: Date;
     public passengers: Passenger[];

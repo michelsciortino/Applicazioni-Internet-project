@@ -61,8 +61,8 @@ export class LineService {
     }
 
     public addRace(race: Race) {
-        console.log(`${LineService.lineEndpoint}/${race.lineName}/races`);
-        return this.http.post(`${LineService.lineEndpoint}/${race.lineName}/races`, race).toPromise()
+        console.log(`${LineService.lineEndpoint}/${race.line}/races`);
+        return this.http.post(`${LineService.lineEndpoint}/${race.line}/races`, race).toPromise()
             .then(
                 (result) => {
                     console.log(result);
@@ -77,7 +77,7 @@ export class LineService {
 
     public deleteRace(race: Race) {
         //console.log(`${LineService.lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`);
-        return this.http.delete(`${LineService.lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`).subscribe(
+        return this.http.delete(`${LineService.lineEndpoint}/${race.line}/races/${race.date.toISOString()}/${race.direction}`).subscribe(
             (data) => console.log(data)
         );
     }
@@ -117,7 +117,7 @@ export class RacesDataSource implements DataSource<Race>{
                 data.map(x => x.date = new Date(x.date));
                 this.sortRaces(data, "asc", "Date");
                 this.racesSbj.next(data);
-                //console.log(data);
+                console.log("aaaaaaa", data);
             })
             .finally(() => this.loadingSbj.next(false))
     }
@@ -150,11 +150,11 @@ export class RacesDataSource implements DataSource<Race>{
                 console.log("Sort by LineName");
                 if (direction === "asc")
                     return data.sort((a: Race, b: Race) => {
-                        return a.lineName.localeCompare(b.lineName);
+                        return a.line.name.localeCompare(b.line.name);
                     });
                 else
                     return data.sort((a: Race, b: Race) => {
-                        return a.lineName.localeCompare(b.lineName);
+                        return a.line.name.localeCompare(b.line.name);
                     });
                 break;
             default: console.log("Error type sort");;

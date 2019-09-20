@@ -13,7 +13,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>{{race?.lineName}}</td>
+                    <td>{{race?.line.name}}</td>
                     <td>{{race?.direction}}</td>
                     <td>{{race?.date?.toLocaleDateString()}}</td>
                     <td>{{race?.date?.toLocaleTimeString()}}</td>
@@ -44,10 +44,14 @@
                         <td>{{companion.finalStop.name}} </td>
                         <td>{{companion.state}}</td>
                         <td>
-                            <button mat-icon-button><mat-icon class="green">check</mat-icon></button>
+                            <button mat-icon-button>
+                                <mat-icon class="green">check</mat-icon>
+                            </button>
                         </td>
                         <td>
-                            <button mat-icon-button><mat-icon class="red">clear</mat-icon></button>
+                            <button mat-icon-button>
+                                <mat-icon class="red">clear</mat-icon>
+                            </button>
                         </td>
                     </tr>
                 </tbody>

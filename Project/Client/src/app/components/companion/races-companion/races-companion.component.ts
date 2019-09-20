@@ -10,6 +10,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { GiveAvailabilityDialog } from './give-availability-dialog/give-availability.dialog';
+import { ViewRaceDialog } from '../../dialogs/view-race-dialog/view-race.dialog';
 
 @Component({
     selector: 'app-races-companion',
@@ -86,6 +87,15 @@ export class RacesCompanionComponent implements OnInit {
     giveAvailability(race: Race) {
         console.log("GIVE AVAILABILITY:", race)
         const dialogRef = this.dialog.open(GiveAvailabilityDialog, { data: { race: race } });
+        dialogRef.afterClosed().subscribe(result => {
+            if (dialogRef.componentInstance.dirty)
+                this.search();
+        });
+    }
+
+    viewRace(race: Race) {
+        console.log("VIEW RACE:", race)
+        const dialogRef = this.dialog.open(ViewRaceDialog, { data: { race: race } });
     }
 }
 
