@@ -53,7 +53,7 @@ import { AgmDirectionModule } from 'agm-direction';
 import { CompanionRequestsManagementComponent } from './components/admin/companion-requests/companion-requests.component';
 import { NewRaceDialog } from './components/admin/races-management/new-race-dialog/new-race.dialog';
 import { EditRaceDialog } from './components/admin/edit-race/edit-race.dialog';
-import { CompanionTodayLinesComponent } from './components/home/companion/today-reces/today-races.component';
+import { CompanionTodayLinesComponent } from './components/home/companion/today-races/today-races.component';
 import { ParentComponent } from './components/parent/parent.component';
 
 @NgModule({
