@@ -13,7 +13,7 @@ import { AdminComponent } from '../components/admin/admin.component';
 import { CompanionComponent } from '../components/companion/companion.component';
 import { WelcomeComponent } from '../components/welcome/welcome.component';
 import { LinesComponent } from '../components/lines/lines.component';
-import { SettingsComponent } from '../components/settings/settings.component';
+import { AccountComponent } from '../components/account/account.component';
 import { UserRole } from '../models/roles';
 import { ParentComponent } from '../components/parent/parent.component';
 
@@ -30,8 +30,8 @@ const routes: Routes = [
   },
   { path: 'lines', component: LinesComponent },
   {
-    path: 'settings',
-    component: SettingsComponent,
+    path: 'account',
+    component: AccountComponent,
     canActivate: [AuthGuard],
   },
   {

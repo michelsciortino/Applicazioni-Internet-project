@@ -4,11 +4,11 @@ import { UserService } from 'src/app/services/user/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-my-account',
-    templateUrl: './my-account.component.html',
-    styleUrls: ['./my-account.component.css']
+    selector: 'app-me',
+    templateUrl: './me.component.html',
+    styleUrls: ['./me.component.css']
 })
-export class MyAccountComponent implements OnInit, OnDestroy {
+export class MeComponent implements OnInit, OnDestroy {
     myInfo: UserInfo = new UserInfo;
     private userInfoSub: Subscription;
 

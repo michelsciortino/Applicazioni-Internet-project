@@ -24,7 +24,7 @@ import { AdminComponent } from './components/admin/admin.component';
 import { CompanionComponent } from './components/companion/companion.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { LinesComponent } from './components/lines/lines.component';
-import { SettingsComponent } from './components/settings/settings.component';
+import { AccountComponent } from './components/account/account.component';
 import { RegisterComponent } from './components/admin/register/register.component';
 import { IsMobileService } from './services/is-mobile/is-mobile.service';
 import { UserManagementComponent } from './components/admin/users-management/users-management.component';
@@ -43,10 +43,10 @@ import { CompanionService } from './services/companion/companion.service'
 import { RacesCompanionComponent } from './components/companion/races-companion/races-companion.component';
 import { GiveAvailabilityDialog } from './components/companion/races-companion/give-availability-dialog/give-availability.dialog';
 import { ViewRaceDialog } from './components/dialogs/view-race-dialog/view-race.dialog';
-import { MyAccountComponent } from './components/settings/my-account/my-account.component';
-import { ChildrenSettingComponent } from './components/settings/children-setting/children-setting.component';
-import { ContactsSettingComponent } from './components/settings/contacts-setting/contacts-setting.component';
-import { AddChildDialog } from './components/settings/children-setting/add-child-dialog/add-child.dialog';
+import { MeComponent } from './components/account/me/me.component';
+import { ChildrenSettingComponent } from './components/account/children-setting/children-setting.component';
+import { ContactsSettingComponent } from './components/account/contacts-setting/contacts-setting.component';
+import { AddChildDialog } from './components/account/children-setting/add-child-dialog/add-child.dialog';
 import { AgmCoreModule, GoogleMapsAPIWrapper } from '@agm/core';
 import { ViewMapComponent } from './components/lines/view-map/view-map.component';
 import { AgmDirectionModule } from 'agm-direction';
@@ -79,7 +79,7 @@ import { ParentComponent } from './components/parent/parent.component';
     AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, NewRaceDialog, ViewUserDialog, EditUserDialog, ViewRaceDialog, EditRaceDialog,
 
     // Settings
-    SettingsComponent, MyAccountComponent, ChildrenSettingComponent, ContactsSettingComponent, AddChildDialog,
+    AccountComponent, MeComponent, ChildrenSettingComponent, ContactsSettingComponent, AddChildDialog,
 
     // Dialogs
     ConfirmDialog, MessageDialogComponent,
