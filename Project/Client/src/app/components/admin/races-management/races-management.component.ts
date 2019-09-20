@@ -8,7 +8,7 @@ import { DirectionType, Race } from 'src/app/models/race';
 import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material';
-import { ViewRaceDialog } from './view-race-dialog/view-race.dialog';
+import { ViewRaceDialog } from '../../dialogs/view-race-dialog/view-race.dialog';
 import { MessageDialogComponent } from '../../dialogs/messege-dialog/messege.dialog';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { NewRaceDialog } from './new-race-dialog/new-race.dialog';
