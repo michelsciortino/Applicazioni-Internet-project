@@ -90,6 +90,7 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     }
 
     public search() {
+        console.log("SEARCH")
         if (this.directionSelected.id == null)
             this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
         else
@@ -107,15 +108,18 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
             width: '350px',
             data: {
                 title: 'Confirm?',
-                message: `Are you sure deleted this race: \n- ${race.line}\n- ${race.direction}\n- ${race.date.toISOString()}`,
+                message: `Are you sure deleted this race: \n- ${race.line.name}\n- ${race.direction}\n- ${race.date.toISOString()}`,
                 YES: true, NO: true
             }
         });
         dialogRef.afterClosed().subscribe(result => {
             switch (result) {
                 case "YES":
-                    this.lineSvc.deleteRace(race);
-                    this.search();
+                    this.lineSvc.deleteRace(race)
+                        .then(() => this.search())
+                        .catch((error) => {
+                            console.log(error);
+                        });
                     break;
                 default: break;
             }

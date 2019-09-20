@@ -61,11 +61,11 @@ export class LineService {
     }
 
     public addRace(race: Race) {
-        console.log(`${LineService.lineEndpoint}/${race.line}/races`);
-        return this.http.post(`${LineService.lineEndpoint}/${race.line}/races`, race).toPromise()
+        // console.log(`${LineService.lineEndpoint}/${race.line.name}/races`);
+        return this.http.post(`${LineService.lineEndpoint}/${race.line.name}/races`, race).toPromise()
             .then(
                 (result) => {
-                    console.log(result);
+                    // console.log(result);
                     return result;
                 }
             ).catch((error) => console.debug(error));
@@ -76,10 +76,8 @@ export class LineService {
     }
 
     public deleteRace(race: Race) {
-        //console.log(`${LineService.lineEndpoint}/${race.lineName}/races/${race.date.toISOString()}/${race.direction}`);
-        return this.http.delete(`${LineService.lineEndpoint}/${race.line}/races/${race.date.toISOString()}/${race.direction}`).subscribe(
-            (data) => console.log(data)
-        );
+        return this.http.delete(`${LineService.lineEndpoint}/${race.line.name}/races/${race.date.toISOString()}/${race.direction}`)
+            .toPromise();
     }
 }
 
@@ -91,7 +89,7 @@ export class RacesDataSource implements DataSource<Race>{
     }
 
     connect(collectionViewer: CollectionViewer): Observable<Race[]> {
-        console.log(this.sort);
+        // console.log(this.sort);
         this.sort.sortChange.subscribe(
             (data) => {
                 let races = this.racesSbj.getValue();
@@ -108,16 +106,13 @@ export class RacesDataSource implements DataSource<Race>{
     }
 
     loadRaces(lineName: string, fromDate: Date, toDate: Date, direction: string) {
-
         this.loadingSbj.next(true);
-
         this.lineSvc.getRaces(lineName, fromDate, toDate, direction)
             .then((data: Race[]) => {
-                if (data.length == 0) return;
                 data.map(x => x.date = new Date(x.date));
                 this.sortRaces(data, "asc", "Date");
                 this.racesSbj.next(data);
-                console.log("aaaaaaa", data);
+                // console.log("LOAD_RACES", data);
             })
             .finally(() => this.loadingSbj.next(false))
     }
@@ -125,7 +120,7 @@ export class RacesDataSource implements DataSource<Race>{
     sortRaces(data: Race[], direction: string, active: string): Race[] {
         switch (active) {
             case "Date":
-                console.log("Sort by date");
+                // console.log("Sort by date");
                 if (direction === "asc")
                     return data.sort((a: Race, b: Race) => {
                         return a.date.getTime() - b.date.getTime();
@@ -136,7 +131,7 @@ export class RacesDataSource implements DataSource<Race>{
                     });
                 break;
             case "Direction":
-                console.log("Sort by Direction");
+                // console.log("Sort by Direction");
                 if (direction === "asc")
                     return data.sort((a: Race, b: Race) => {
                         return a.direction.localeCompare(b.direction);
@@ -147,7 +142,7 @@ export class RacesDataSource implements DataSource<Race>{
                     });
                 break;
             case "LineName":
-                console.log("Sort by LineName");
+                // console.log("Sort by LineName");
                 if (direction === "asc")
                     return data.sort((a: Race, b: Race) => {
                         return a.line.name.localeCompare(b.line.name);
@@ -157,7 +152,7 @@ export class RacesDataSource implements DataSource<Race>{
                         return a.line.name.localeCompare(b.line.name);
                     });
                 break;
-            default: console.log("Error type sort");;
+            default: // console.log("Error type sort");;
         }
 
     }

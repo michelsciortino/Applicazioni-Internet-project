@@ -22,7 +22,7 @@ export class GiveAvailabilityDialog {
     stops: Stop[];
 
     constructor(public dialogRef: MatDialogRef<GiveAvailabilityDialog>, private companionSvc: CompanionService, @Inject(MAT_DIALOG_DATA) public data: any, private lineSvc: LineService) {
-        this.lineSvc.getLine(data.race.lineName)
+        this.lineSvc.getLine(data.race.line.name)
             .pipe(
                 map(
                     (data: any) => data,
@@ -56,7 +56,7 @@ export class GiveAvailabilityDialog {
     }
 
     send(): void {
-        this.companionSvc.giveAvailability(this.data.race.lineName, this.data.race.direction, this.data.race.date, this.initialStop, this.finalStop).toPromise()
+        this.companionSvc.giveAvailability(this.data.race.line.name, this.data.race.direction, this.data.race.date, this.initialStop, this.finalStop).toPromise()
             .then((result) => {
                 if (!this.dirty)
                     this.dirty = true;

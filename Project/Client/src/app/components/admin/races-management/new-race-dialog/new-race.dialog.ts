@@ -61,6 +61,7 @@ export class NewRaceDialog implements OnInit, OnDestroy {
         let race = new Race();
         let array = this.hour.split(":");
         this.date.setHours(parseInt(array[0]), parseInt(array[1]));
+        console.log(race, this.lineSelected)
         race.line.name = this.lineSelected.name;
         race.direction = this.direction.id;
         race.date = this.date;

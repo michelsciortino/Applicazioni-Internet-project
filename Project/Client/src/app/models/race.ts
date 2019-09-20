@@ -21,4 +21,8 @@ export class Race {
     public passengers: Passenger[];
     public companions: Companion[];
     public raceState: RaceState;
+    public companion: Companion;
+    constructor() {
+        this.line = new Line();
+    }
 }
