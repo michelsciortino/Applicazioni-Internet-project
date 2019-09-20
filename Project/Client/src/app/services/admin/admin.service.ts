@@ -69,38 +69,38 @@ export class AdminService {
         return this.http.post(`${AdminService.adminEndpoint}/removeCompanion`, { targetName: user }).toPromise();
     }
 
-    public getCompanionRequests(){
+    public getCompanionRequests() {
         return this.http.get(`${AdminService.adminEndpoint}/companionRequests`) as Observable<CompanionRequest[]>;
     }
 
-    public acceptCompanionRequest(lineName:string,direction:string, date: Date,username:string){
+    public acceptCompanionRequest(lineName: string, direction: string, date: Date, username: string) {
         return this.http.post(`${AdminService.adminEndpoint}/acceptCompanionRequest`,
-        {
-            lineName:lineName,
-            direction:direction,
-            date:date,
-            username:username
-        });
+            {
+                lineName: lineName,
+                direction: direction,
+                date: date,
+                companion: username
+            });
     }
 
-    public unAcceptCompanionRequest(lineName:string,direction:string, date: Date,username:string){
+    public unAcceptCompanionRequest(lineName: string, direction: string, date: Date, username: string) {
         return this.http.post(`${AdminService.adminEndpoint}/unAcceptCompanionRequest`,
-        {
-            lineName:lineName,
-            direction:direction,
-            date:date,
-            username:username
-        });
+            {
+                lineName: lineName,
+                direction: direction,
+                date: date,
+                companion: username
+            });
     }
 
-    public rejectCompanionRequest(lineName:string,direction:string, date: Date,username:string){
+    public rejectCompanionRequest(lineName: string, direction: string, date: Date, username: string) {
         return this.http.post(`${AdminService.adminEndpoint}/rejectCompanionRequest`,
-        {
-            lineName:lineName,
-            direction:direction,
-            date:date,
-            username:username
-        });
+            {
+                lineName: lineName,
+                direction: direction,
+                date: date,
+                companion: username
+            });
     }
 }
 
@@ -153,7 +153,10 @@ export class CompanionRequestsDataSource {
     public getPendingRequests(): Observable<CompanionRequest[]> {
         return this.requestsSbj.asObservable()
             .pipe(
-                map(requests => requests.filter(request => request.state == CompanionState.AVAILABLE))
+                map(requests => requests.map( req =>{
+                    req.date= new Date(req.date);
+                    return req;
+                }).filter(request => request.state == CompanionState.AVAILABLE))
             );
     }
 

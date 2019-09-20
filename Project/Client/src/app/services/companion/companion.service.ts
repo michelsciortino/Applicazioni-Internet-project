@@ -1,13 +1,15 @@
 import { Injectable } from "@angular/core";
 import { environment } from 'src/environments/environment';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { CompanionRequest } from 'src/app/models/companion-request';
 import { HttpClient } from '@angular/common/http';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, finalize } from 'rxjs/operators';
 import { CompanionState, Companion } from 'src/app/models/companion';
 import { DataSource } from '@angular/cdk/table';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { Stop } from 'src/app/models/stop';
+import { Race } from 'src/app/models/race';
+import { CompanionRace } from 'src/app/models/companionRace';
 
 @Injectable()
 export class CompanionService {
@@ -47,7 +49,17 @@ export class CompanionService {
                 initialStop: initialStop,
                 finalStop: finalStop,
                 date: date
-            });
+            }
+        );
+    }
+
+    public getRaces(date: Date) {
+        return this.http.get(`${CompanionService.companionEndpoint}/races?date=${date.toISOString()}`).pipe(
+            map((races: CompanionRace[]) => races.map(race => {
+                race.date = new Date(race.date)
+                return race;
+            }))
+        );
     }
 }
 
@@ -84,5 +96,39 @@ export class CompanionRequestsDataSource {
 
     public reload() {
         this.companionSvc.getRequests().subscribe((requests: CompanionRequest[]) => this.requestsSbj.next(requests));
+    }
+}
+
+export class CompanionRacesDataSource implements DataSource<Race>{
+    private racesSbj: BehaviorSubject<Race[]>;
+    private loadingSbj: BehaviorSubject<boolean>;
+    public loading$: Observable<boolean>;
+
+    constructor(private companionSvc: CompanionService) {
+        this.racesSbj = new BehaviorSubject<Race[]>([]);
+        this.loadingSbj = new BehaviorSubject<boolean>(false);
+        this.loading$ = this.loadingSbj.asObservable();
+    }
+
+    connect(collectionViewer: CollectionViewer): Observable<Race[]> {
+        return this.racesSbj.asObservable();
+    }
+
+    disconnect(collectionViewer: CollectionViewer): void {
+    }
+
+    loadRaces(date: Date) {
+        this.loadingSbj.next(true);
+        this.companionSvc.getRaces(date)
+            .pipe(
+                catchError(() => of([])),
+                finalize(() => {
+                    console.log(this.racesSbj.value);
+                    this.loadingSbj.next(false);
+                })
+            ).subscribe((races: Race[]) => {
+                console.log(races)
+                this.racesSbj.next(races);
+            });
     }
 }

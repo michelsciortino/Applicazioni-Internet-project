@@ -1,0 +1,30 @@
+<div class="padded-content">
+    <mat-card class="scroll">
+        <p>Today Races</p>
+        <div class="spinner-container" *ngIf="loading">
+            <mat-spinner [diameter]="70"></mat-spinner>
+        </div>
+        <div class="marged overflow-auto">
+            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource" *ngIf="!loading">
+                <ng-container matColumnDef="lineName">
+                    <th mat-header-cell *matHeaderCellDef>Line</th>
+                    <td mat-cell *matCellDef="let race">{{race.line.name}}</td>
+                </ng-container>
+                <ng-container matColumnDef="initialStop">
+                    <th mat-header-cell *matHeaderCellDef>Initial stop</th>
+                    <td mat-cell *matCellDef="let race">{{race.companion.initialStop.name}}</td>
+                </ng-container>
+                <ng-container matColumnDef="finalStop">
+                    <th mat-header-cell *matHeaderCellDef>Final stop</th>
+                    <td mat-cell *matCellDef="let race">{{race.companion.finalStop.name}}</td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let race">{{race.raceState}}</td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
+                <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" (click)="viewRace(row)"></tr>
+            </mat-table>
+        </div>
+    </mat-card>
+</div>

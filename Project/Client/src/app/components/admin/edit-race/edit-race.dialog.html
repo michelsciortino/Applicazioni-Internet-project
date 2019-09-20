@@ -1,0 +1,62 @@
+<div mat-dialog-content class="no-scroll fit-content">
+    <div>
+        <p class="title">Race</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>LineName</th>
+                    <th>Direction</th>
+                    <th>Data</th>
+                    <th>Hour</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{race?.lineName}}</td>
+                    <td>{{race?.direction}}</td>
+                    <td>{{race?.date?.toLocaleDateString()}}</td>
+                    <td>{{race?.date?.toLocaleTimeString()}}</td>
+                    <td>{{race?.raceState}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+        <div>
+            <h3 class="title">Companions</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Initial Stop</th>
+                        <th>Final Stop</th>
+                        <th>State</th>
+                        <th>Accept</th>
+                        <th>Reject</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let companion of race?.companions">
+                        <td class="mat-cell">{{companion.userDetails.mail}} </td>
+                        <td>{{companion.initialStop.name}} </td>
+                        <td>{{companion.finalStop.name}} </td>
+                        <td>{{companion.state}}</td>
+                        <td>
+                            <button mat-icon-button><mat-icon class="green">check</mat-icon></button>
+                        </td>
+                        <td>
+                            <button mat-icon-button><mat-icon class="red">clear</mat-icon></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- TODO: fare expansion row -->
+    </div>
+
+    <div mat-dialog-actions>
+        <button mat-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+    </div>
+</div>

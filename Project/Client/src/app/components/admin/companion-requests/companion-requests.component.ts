@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { CompanionRequestsDataSource, AdminService } from 'src/app/services/admin/admin.service';
+import { EditRaceDialog } from '../edit-race/edit-race.dialog';
 
 
 enum RequestsType {
@@ -18,16 +19,13 @@ enum RequestsType {
     styleUrls: ['companion-requests.component.css']
 })
 export class CompanionRequestsManagementComponent {
-    //dataSource: RequestsDataSource;
-
     RequestsTab = RequestsType;
+    
     activeTab: RequestsType;
-    requestsSub: Subscription;
-
     requests: CompanionRequest[];
-
     datasource: CompanionRequestsDataSource;
 
+    requestsSub: Subscription;
 
     columnDefinitions = ["line", "direction", "date", "initialStop", "finalStop"];
 
@@ -107,5 +105,16 @@ export class CompanionRequestsManagementComponent {
                     break;
             }
         })
+    }
+
+    manageRequest(request:CompanionRequest){
+        console.log(request);
+        const dialogRef = this.dialog.open(EditRaceDialog, {
+            data: {
+                lineName:request.lineName,
+                date:request.date,
+                direction:request.direction
+            }
+        });
     }
 }

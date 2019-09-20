@@ -17,6 +17,7 @@
                 <table *ngIf="requests.length>0" class="expanded mat-table">
                     <thead>
                         <tr class="mat-header-row">
+                            <th class="mat-header-cell">Companion</th>
                             <th class="mat-header-cell">Line</th>
                             <th class="mat-header-cell">Direction</th>
                             <th class="mat-header-cell">Date</th>
@@ -29,7 +30,9 @@
                     </thead>
 
                     <tbody>
-                        <tr *ngFor="let request of requests" class="mat-row">
+                        <tr *ngFor="let request of requests" class="mat-row" (click)="manageRequest(request)">
+                            <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted"> {{request.username}}
+                            </td>
                             <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted"> {{request.lineName}}
                             </td>
                             <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted"> {{request.direction}}
@@ -43,17 +46,17 @@
                             <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
                                 {{request.finalStop.name}} </td>
                             <td *ngIf="activeTab === RequestsTab.PENDING" class="mat-cell mat-cell-button">
-                                <button mat-icon-button class="green" (click)="acceptRequest(request)">
+                                <button mat-icon-button class="green" (click)="$event.stopPropagation();acceptRequest(request)">
                                     <mat-icon>check</mat-icon>
                                 </button>
                             </td>
                             <td *ngIf="activeTab === RequestsTab.PENDING" class="mat-cell mat-cell-button">
-                                <button mat-icon-button (click)="rejectRequest(request)">
+                                <button mat-icon-button (click)="$event.stopPropagation();rejectRequest(request)">
                                         <mat-icon class="red">clear</mat-icon>
                                 </button>
                             </td>
                             <td *ngIf="activeTab === RequestsTab.ACCEPTED" class="mat-cell mat-cell-button">
-                                <button mat-icon-button (click)="unAcceptRequest(request)">
+                                <button mat-icon-button (click)="$event.stopPropagation();unAcceptRequest(request)">
                                         <mat-icon class="red">clear</mat-icon>
                                 </button>
                             </td>

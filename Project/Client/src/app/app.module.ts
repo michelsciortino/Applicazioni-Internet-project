@@ -42,7 +42,7 @@ import { PendingRequestsComponent } from './components/companion/companion-reque
 import { CompanionService } from './services/companion/companion.service'
 import { RacesCompanionComponent } from './components/companion/races-companion/races-companion.component';
 import { GiveAvailabilityDialog } from './components/companion/races-companion/give-availability-dialog/give-availability.dialog';
-import { ViewRaceDialog } from './components/admin/races-management/view-race-dialog/view-race.dialog';
+import { ViewRaceDialog } from './components/dialogs/view-race-dialog/view-race.dialog';
 import { MyAccountComponent } from './components/settings/my-account/my-account.component';
 import { ChildrenSettingComponent } from './components/settings/children-setting/children-setting.component';
 import { ContactsSettingComponent } from './components/settings/contacts-setting/contacts-setting.component';
@@ -52,7 +52,8 @@ import { ViewMapComponent } from './components/lines/view-map/view-map.component
 import { AgmDirectionModule } from 'agm-direction';
 import { CompanionRequestsManagementComponent } from './components/admin/companion-requests/companion-requests.component';
 import { NewRaceDialog } from './components/admin/races-management/new-race-dialog/new-race.dialog';
-
+import { EditRaceDialog } from './components/admin/edit-race/edit-race.dialog';
+import { CompanionTodayLinesComponent } from './components/home/companion/today-reces/today-races.component';
 
 @NgModule({
   declarations: [
@@ -62,16 +63,16 @@ import { NewRaceDialog } from './components/admin/races-management/new-race-dial
     LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent, RegisterComponent,
 
     // Home
-    HomeComponent, MessagesComponent,
+    HomeComponent, MessagesComponent, CompanionTodayLinesComponent,
 
     // Lines
-    LinesComponent, ViewRaceDialog, ViewMapComponent, NewRaceDialog,
+    LinesComponent, ViewMapComponent,
 
     // Companion
     CompanionComponent, PendingRequestsComponent, RacesCompanionComponent, GiveAvailabilityDialog,
 
     // Admin
-    AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, ViewUserDialog, EditUserDialog,
+    AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, NewRaceDialog, ViewUserDialog, EditUserDialog, ViewRaceDialog, EditRaceDialog,
 
     // Settings
     SettingsComponent, MyAccountComponent, ChildrenSettingComponent, ContactsSettingComponent, AddChildDialog,
@@ -87,7 +88,7 @@ import { NewRaceDialog } from './components/admin/races-management/new-race-dial
 
   ],
   entryComponents: [
-    ConfirmDialog, MessageDialogComponent, ViewUserDialog, ViewRaceDialog, NewRaceDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog,
+    ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ViewRaceDialog, EditRaceDialog
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,
