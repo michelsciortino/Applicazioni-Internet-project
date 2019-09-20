@@ -9,7 +9,6 @@ import { DataSource } from '@angular/cdk/table';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { Stop } from 'src/app/models/stop';
 import { Race } from 'src/app/models/race';
-import { CompanionRace } from 'src/app/models/companionRace';
 
 @Injectable()
 export class CompanionService {
@@ -55,7 +54,7 @@ export class CompanionService {
 
     public getRaces(date: Date) {
         return this.http.get(`${CompanionService.companionEndpoint}/races?date=${date.toISOString()}`).pipe(
-            map((races: CompanionRace[]) => races.map(race => {
+            map((races: Race[]) => races.map(race => {
                 race.date = new Date(race.date)
                 return race;
             }))
