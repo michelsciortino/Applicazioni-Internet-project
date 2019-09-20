@@ -36,8 +36,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userInfoSub = this.userSvc.getUserInfo().subscribe(
       (info: UserInfo) => {
         if (info != null) {
-          this.isAdmin = UserInfo.prototype.isAdmin(info);
-          this.isCompanion = UserInfo.prototype.isCompanion(info);
+          this.isAdmin = info.isAdmin();
+          this.isCompanion = info.isCompanion();
         }
       }
     );

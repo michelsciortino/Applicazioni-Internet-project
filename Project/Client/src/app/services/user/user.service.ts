@@ -57,14 +57,8 @@ export class UserService implements OnDestroy {
         this.http.get(`${userEndpoint}/${this.authSvc.getCurrentUser().mail}`).toPromise()
             .then(
                 (data: UserInfo) => {
-                    this.userInfo.name = data.name;
-                    this.userInfo.surname = data.surname;
-                    this.userInfo.contacts = data.contacts;
-                    this.userInfo.children = data.children;
-                    this.userInfo.lines = data.lines;
-                    this.userInfo.roles = data.roles;
-                    this.userInfo.mail = data.mail;
-                    if (UserInfo.prototype.isSystemAdmin(this.userInfo)) {
+                    this.userInfo = new UserInfo(data);
+                    if (this.userInfo.isSystemAdmin()) {
                         this.lineSvc.getLines().subscribe(
                             (lines: any) => {
                                 this.userInfo.lines = lines.map(line => line.name);

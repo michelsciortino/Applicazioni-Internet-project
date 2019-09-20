@@ -23,8 +23,8 @@ export class EditUserDialog implements OnDestroy {
 
     constructor(private userSvc: UserService, private adminSvc: AdminService, public dialogRef: MatDialogRef<EditUserDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.linesMap = new Map();
-        this.isAdmin = UserInfo.prototype.isAdmin(data.user);
-        this.isCompanion = UserInfo.prototype.isCompanion(data.user);
+        this.isAdmin = data.user.isAdmin();
+        this.isCompanion = data.user.isCompanion();
         this.dirty=false;
 
         this.usrSub = userSvc.getUserInfo().subscribe(

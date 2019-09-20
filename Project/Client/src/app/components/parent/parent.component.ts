@@ -19,7 +19,7 @@ export class ParentComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.userSub = this.userSvc.getUserInfo().subscribe(
-            (info) => { if (info) this.isCompanion = UserInfo.prototype.isCompanion(info); }
+            (info) => { if (info) this.isCompanion = info.isCompanion(); }
         )
     }
 

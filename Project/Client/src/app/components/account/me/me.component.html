@@ -30,7 +30,7 @@
                     </tbody>
                 </table>
             </div>
-            <div *ngIf="myInfo.lines && myInfo.isAdmin(myInfo)">
+            <div *ngIf="myInfo.lines && myInfo.isAdmin()">
                 <p class="title">Administrated Lines</p>
                 <table>
                     <tbody *ngIf="myInfo.lines.length>0">

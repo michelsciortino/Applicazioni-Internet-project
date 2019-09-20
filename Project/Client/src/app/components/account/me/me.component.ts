@@ -20,7 +20,7 @@ export class MeComponent implements OnInit, OnDestroy {
             (info: UserInfo) => {
                 if (info != null) {
                     //console.log(info);
-                    this.myInfo = info;
+                    this.myInfo=new UserInfo(info);
                 }
             }
         );
