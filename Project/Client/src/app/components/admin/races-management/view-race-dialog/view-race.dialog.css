@@ -42,11 +42,3 @@ table {
 .row div:last-of-type {
     margin-right: 0px;
 }
-
-.red-icon {
-    color: red;
-}
-
-.green-icon {
-    color: green;
-}
