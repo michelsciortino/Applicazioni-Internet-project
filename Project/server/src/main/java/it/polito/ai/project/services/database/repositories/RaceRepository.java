@@ -18,11 +18,13 @@ public interface RaceRepository extends MongoRepository<Race, String> {
 
     List<Race> findAllByLineName( String lineName);
 
-    List<Race> findAllByLineNameAndDate( String lineName, Date data);
+    List<Race> findAllByLineNameAndDate( String lineName, Date date);
 
     //@Query("{'date' : {$gt : ?1, $lt : ?2}}")
     //List<Race> findAllByLineNameAndDateBetween(String lineName, Date fromDate, Date toDate);
     List<Race> findAllByLineNameAndDateBetween(String lineName, Date fromDate, Date toDate);
+
+    List<Race> findAllByAndDateBetween(Date fromDate, Date toDate);
 
     List<Race> findAllByLineNameAndDirection( String lineName, DirectionType direction);
 
@@ -32,15 +34,18 @@ public interface RaceRepository extends MongoRepository<Race, String> {
     //List<Race> findAllByLineNameAndDirectionAndDateBetween(String lineName, DirectionType direction, Date fromDate, Date toDate );
     List<Race> findAllByLineNameAndDirectionAndDateBetween(String lineName, DirectionType direction, Date fromDate, Date toDate);
 
-    //@Query("{'companions.userDetails.username' : ?0, 'date':{$gt:?1}}")
-    //List<Race> findAllByCompanionsAndDateGreaterThan(String companion, Date date);
-    List<Race> findAllByCompanionsContainsAndDateAfter(String companion, Date date);
+    @Query("{'companions.userDetails.username' : ?0, 'date':{$gt:?1}}")
+    List<Race> findAllByCompanionsAndDateGreaterThan(String companion, Date date);
+    //List<Race> findAllByCompanionsContainsAndDateAfter(String companion, Date date);
 
-    //@Query("{'companions.userDetails.username' : ?0, 'date':{$eq:?1}}")
-    //List<Race> findAllByCompanionsAndEqDate(String companion, Date date);
-    List<Race> findAllByCompanionsContainsAndDateEquals(String companion, Date date);
+    @Query("{'companions.userDetails.username' : ?0, 'date':{$eq:?1}}")
+    List<Race> findAllByCompanionsAndEqDate(String companion, Date date);
+    //List<Race> findAllByCompanionsContainsAndDateEquals(String companion, Date date);
 
-    List<Race> findAllByPassengersContainsAndDateEquals(String parentId, Date date);
+    //List<Race> findAllByPassengersContainsAndDateEquals(String parentId, Date date);
+
+    @Query("{'passengers.childDetails.parentId' : ?0, 'date':{$eq:?1}}")
+    List<Race> findAllByPassengersAndEqDate(String companion, Date date);
 
     List<Race> findAllByRaceStateIsNot(RaceState state);
 

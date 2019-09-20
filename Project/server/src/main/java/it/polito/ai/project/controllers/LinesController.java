@@ -1,12 +1,12 @@
 package it.polito.ai.project.controllers;
 
 import com.mongodb.lang.Nullable;
+import it.polito.ai.project.exceptions.BadRequestException;
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.ClientLine;
 import it.polito.ai.project.generalmodels.ClientRace;
-import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.RaceState;
@@ -28,168 +28,142 @@ import static org.springframework.http.ResponseEntity.ok;
 @CrossOrigin
 @RestController
 @RequestMapping("/lines")
-public class LinesController
-{
+public class LinesController {
 
     @Autowired
     private DatabaseService db;
 
-    @RequestMapping(value="", method = RequestMethod.GET)
-    public ResponseEntity getLines()
-    {
-        try
-        {
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public ResponseEntity getLines() {
+        try {
             return ok(db.getLines());
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @RequestMapping(value="/{line_name}", method = RequestMethod.GET)
-    public ResponseEntity getLine(@PathVariable(value="line_name") String line_name)
-    {
-        try
-        {
+    @RequestMapping(value = "/{line_name}", method = RequestMethod.GET)
+    public ResponseEntity getLine(@PathVariable(value = "line_name") String line_name) {
+        try {
             return ok(db.getLinebyName(line_name));
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
 
-    @RequestMapping(value="/{line_name}/races", method = RequestMethod.GET)
-    public ResponseEntity getLineRaces(@PathVariable(value="line_name") String line_name, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  @RequestParam Date fromDate, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date toDate, @Nullable @RequestParam @Valid DirectionType direction)
-    {
-        try
-        {
-            if(fromDate == null)
-            {
-                if(toDate != null)
-                   throw new  ResponseStatusException(HttpStatus.BAD_REQUEST);
+    @RequestMapping(value = "/{line_name}/races", method = RequestMethod.GET)
+    public ResponseEntity getLineRaces(@AuthenticationPrincipal UserCredentials performerUserCredentials, @PathVariable(value = "line_name") String line_name, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam Date fromDate, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date toDate, @Nullable @RequestParam @Valid DirectionType direction) {
+        try {
+            if (fromDate == null) {
+                if (toDate != null)
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-                if(direction == null)
-                   return ok(db.getRacesByLine(line_name));
+                if (direction == null)
+                    return ok(db.getRacesByLine(performerUserCredentials, line_name));
                 else
-                   return ok(db.getRacesByLineAndDirection(line_name, direction));
-
-            }
-            else
-                {
-                    if(toDate == null)
-                    {
-                        if(direction == null)
-                            return ok(db.getRacesByDateAndLine(fromDate, line_name));
-                        else
-                            return ok(db.getRacesByLineAndDateAndDirection(line_name, fromDate, direction));
-                    }
+                    return ok(db.getRacesByLineAndDirection(performerUserCredentials, line_name, direction));
+            } else {
+                if (toDate == null) {
+                    if (direction == null)
+                        return ok(db.getRacesByDateAndLine(performerUserCredentials, fromDate, line_name));
                     else
-                    {
-                        if(direction == null)
-                            return ok(db.getRacesByLineAndDateInterval(line_name, fromDate, toDate));
-                        else
-                            return ok(db.getRacesByLineAndDirectionAndDateInterval(line_name, direction, fromDate, toDate));
-
-                    }
-
-
+                        return ok(db.getRacesByLineAndDateAndDirection(performerUserCredentials, line_name, fromDate, direction));
+                } else {
+                    if (direction == null)
+                        return ok(db.getRacesByLineAndDateInterval(performerUserCredentials, line_name, fromDate, toDate));
+                    else
+                        return ok(db.getRacesByLineAndDirectionAndDateInterval(performerUserCredentials, line_name, direction, fromDate, toDate));
                 }
-        }
-        catch(ResourceNotFoundException re)
-        {
+            }
+        } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        catch(InternalServerErrorException ie)
-        {
+        } catch (InternalServerErrorException ie) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     //TODO abilitare solo per l'admin o il sysadmin
-    @RequestMapping(value="/{line_name}", method = RequestMethod.PUT)
-    public ResponseEntity putLine(@PathVariable(value="line_name") String line_name, @RequestBody ClientLine line)
-    {
-        try
-        {
+    @RequestMapping(value = "/{line_name}", method = RequestMethod.PUT)
+    public ResponseEntity putLine(@PathVariable(value = "line_name") String line_name, @RequestBody ClientLine line) {
+        try {
             return ok(db.updateLine(line));
-        }
-        catch(ResourceNotFoundException re)
-        {
+        } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        catch(InternalServerErrorException ie)
-        {
+        } catch (InternalServerErrorException ie) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //TODO può essere chiamata da admin o sysadmin. In caso di admin viene verificato che sia l'admin della linea specificata
-    @RequestMapping(value="/{line_name}/races", method = RequestMethod.POST)
-    public ResponseEntity postLineRace(@PathVariable(value="line_name") String line_name, @RequestBody ClientRace clientRace, @AuthenticationPrincipal ClientUserCredentials clientUserCredentials)
-    {
-        try
-        {
-         return ok(db.insertRace(clientRace,clientUserCredentials.getUsername()));
-        }
-        catch(ResourceNotFoundException re)
-        {
+    @RequestMapping(value = "/{line_name}/races", method = RequestMethod.POST)
+    public ResponseEntity postLineRace(@PathVariable(value = "line_name") String line_name, @RequestBody ClientRace clientRace, @AuthenticationPrincipal UserCredentials userCredentials) {
+        try {
+            return ok(db.insertRace(clientRace, userCredentials.getUsername()));
+        } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        catch(InternalServerErrorException ie)
-        {
+        } catch (InternalServerErrorException ie) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        catch(UnauthorizedRequestException ue)
-        {
+        } catch (UnauthorizedRequestException ue) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
-        catch(Exception e)
-        {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
-    @RequestMapping(value="/{line_name}/races/{date}/{direction}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteLineRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value="line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value="date") Date date, @PathVariable(value="direction") DirectionType direction)
-    {
-        try
-        {
 
-            ClientRace clientRace = new ClientRace(line_name,direction,date, RaceState.NULL, new ArrayList<>(), new ArrayList<>());
-
-
+    @RequestMapping(value = "/{line_name}/races/{date}/{direction}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteLineRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value = "line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date, @PathVariable(value = "direction") DirectionType direction) {
+        try {
+            ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(),null);
             db.deleteRace(clientRace, userCredentials.getUsername());
-
-
-
             return ok(HttpStatus.OK);
-        }
-        catch(ResourceNotFoundException re)
-        {
+        } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        catch(InternalServerErrorException ie)
-        {
+        } catch (InternalServerErrorException ie) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        catch(UnauthorizedRequestException ue)
-        {
+        } catch (UnauthorizedRequestException ue) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @RequestMapping(value = "/{line_name}/races/{date}/{direction}/validate", method = RequestMethod.POST)
+    public ResponseEntity validRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value = "line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date, @PathVariable(value = "direction") DirectionType direction) {
+        try {
+            ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, null, new ArrayList<>(), new ArrayList<>(),null);
+            db.validRace(userCredentials.getUsername(), clientRace);
+            return ok(HttpStatus.OK);
+        } catch (ResourceNotFoundException re) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
+        } catch (InternalServerErrorException ie) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
+        } catch (BadRequestException be) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
+        } catch (UnauthorizedRequestException ue) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/{line_name}/races/{date}/{direction}", method = RequestMethod.GET)
+    public ResponseEntity getLineRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value = "line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date, @PathVariable(value = "direction") DirectionType direction) {
+        try {
+            ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(),null);
+            return ok(db.getRace(userCredentials, clientRace));
+        } catch (ResourceNotFoundException re) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (InternalServerErrorException ie) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (UnauthorizedRequestException ue) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

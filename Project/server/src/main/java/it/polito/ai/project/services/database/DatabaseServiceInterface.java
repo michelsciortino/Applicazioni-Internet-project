@@ -6,6 +6,7 @@ import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.RaceState;
 import it.polito.ai.project.services.database.models.Token;
+import it.polito.ai.project.services.database.models.UserCredentials;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,11 +73,19 @@ public interface DatabaseServiceInterface {
 
     void removeCompanion(String performerUsername, String targetUsername);
 
-    void selectCompanion(String performerUsername, ClientRace clientRace, List<String> companions);
+    void selectCompanions(String performerUsername, ClientRace clientRace, List<String> companions);
+
+    void acceptCompanion(String performerUsername, ClientRace clientRace, String companion);
 
     void unselectCompanions(String performerUsername, ClientRace clientRace);
 
+    void unAcceptCompanion(String performerUsername, ClientRace clientRace, String companion);
+
+    void rejectCompanion(String performerUsername, ClientRace clientRace, String companion);
+
     void validCompanions(String performerUsername, ClientRace clientRace);
+
+    void validRace(String performerUsername, ClientRace clientRace);
 
     //------------------------------------------------###Companion###-------------------------------------------------//
 
@@ -126,19 +135,19 @@ public interface DatabaseServiceInterface {
 
     Collection<ClientRace> getRaces();
 
-    ClientRace getRace(ClientRace clientRace);
+    ClientRace getRace(UserCredentials performer, ClientRace clientRace);
 
-    Collection<ClientRace> getRacesByLine(String lineName);
+    Collection<ClientRace> getRacesByLine(UserCredentials performer, String lineName);
 
-    Collection<ClientRace> getRacesByDateAndLine(Date date, String lineName);
+    Collection<ClientRace> getRacesByDateAndLine(UserCredentials performer, Date date, String lineName);
 
-    Collection<ClientRace> getRacesByLineAndDateInterval(String lineName, Date fromDate, Date toDate);
+    Collection<ClientRace> getRacesByLineAndDateInterval(UserCredentials performer, String lineName, Date fromDate, Date toDate);
 
-    Collection<ClientRace> getRacesByLineAndDirection(String lineName, DirectionType direction);
+    Collection<ClientRace> getRacesByLineAndDirection(UserCredentials performer, String lineName, DirectionType direction);
 
-    Collection<ClientRace> getRacesByLineAndDateAndDirection(String lineName, Date date, DirectionType direction);
+    Collection<ClientRace> getRacesByLineAndDateAndDirection(UserCredentials performer, String lineName, Date date, DirectionType direction);
 
-    Collection<ClientRace> getRacesByLineAndDirectionAndDateInterval(String lineName, DirectionType direction, Date fromDate, Date toDate);
+    Collection<ClientRace> getRacesByLineAndDirectionAndDateInterval(UserCredentials performer, String lineName, DirectionType direction, Date fromDate, Date toDate);
 
 
     Collection<CompanionRequest> getCompanionRequestsByCompanion(String username, RaceState state);

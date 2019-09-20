@@ -26,4 +26,8 @@ public class ClientLine {
         this.subscribedChildren = subscribedChildren;
         this.admins = admins;
     }
+
+    public ClientLine(@Size(min = 1, max = 30) String name) {
+        this.name = name;
+    }
 }

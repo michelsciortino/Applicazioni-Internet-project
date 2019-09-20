@@ -5,8 +5,7 @@ import it.polito.ai.project.exceptions.BadRequestException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.generalmodels.*;
 import it.polito.ai.project.services.database.DatabaseService;
-import it.polito.ai.project.services.database.models.RaceState;
-import it.polito.ai.project.services.database.models.Roles;
+import it.polito.ai.project.services.database.models.*;
 import it.polito.ai.project.services.email.EmailSenderService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +24,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -124,13 +125,16 @@ public class DataInitializer implements CommandLineRunner {
                 }
                 JsonRaces races = new ObjectMapper().readValue(jsonReservations, JsonRaces.class);
 
+                ClientUserCredentials admin=db.getCredentials("admin@mail.com");
+
                 for (JsonRace race : races.races) {
-                    if (db.getRacesByLineAndDateAndDirection(race.getLineName(), race.getDate(), race.getDirection()).isEmpty()) {
+                    if (db.getRacesByLineAndDateAndDirection(ClientUserCredentialsToUserCredentials(admin),race.getLineName(), race.getDate(), race.getDirection()).isEmpty()) {
                         ClientRace clientRace = new ClientRace();
-                        clientRace.setLineName(race.getLineName());
+                        ClientLine line=db.getLinebyName(race.getLineName());
+                        clientRace.setLine(line);
                         clientRace.setDirection(race.getDirection());
                         clientRace.setDate(race.getDate());
-                        clientRace.setRaceState(RaceState.NULL);
+                        clientRace.setRaceState(RaceState.SCHEDULED);
                         for (JsonCompanion companion : race.getCompanions()) {
                             ClientPediStop initialStop = new ClientPediStop(companion.getInitialStop().getName(), companion.getInitialStop().getLongitude(), companion.getInitialStop().getLatitude(), companion.getInitialStop().getDelayInMillis());
                             ClientPediStop finalStop = new ClientPediStop(companion.getFinalStop().getName(), companion.getFinalStop().getLongitude(), companion.getFinalStop().getLatitude(), companion.getFinalStop().getDelayInMillis());
@@ -255,6 +259,29 @@ public class DataInitializer implements CommandLineRunner {
                 throw new IOException("Error in users' data stream.");
             }
         } else throw new IOException("Wrong location for users' json file.");
+    }
+
+    /**
+     * Function to convert UserCredentials to ClientUserCredentials
+     *
+     * @param uc UserCredentials to convert
+     * @return ClientUserCredentials converted
+     */
+    private UserCredentials ClientUserCredentialsToUserCredentials(ClientUserCredentials uc) {
+        UserCredentials user= new UserCredentials();
+        user.setUsername(uc.getUsername());
+        user.setRoles(uc.getRoles());
+        return user;
+    }
+
+    /**
+     * Function to convert Roles to ClientRoles
+     *
+     * @param roles list of roles
+     * @return list<ClientRoles>: converted client user
+     */
+    private List<String> rolesToClientRoles(List<String> roles) {
+        return roles.stream().map((role) -> ClientRoles.valueOf((role.substring(Roles.prefix.length()))).toString()).collect(Collectors.toList());
     }
 
 }

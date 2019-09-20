@@ -5,11 +5,9 @@ import it.polito.ai.project.exceptions.BadRequestException;
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.exceptions.UnauthorizedRequestException;
+import it.polito.ai.project.generalmodels.ClientLine;
 import it.polito.ai.project.generalmodels.ClientRace;
-import it.polito.ai.project.requestEntities.MakeOrRemoveCompanionRequest;
-import it.polito.ai.project.requestEntities.MakeOrRemoveAdminRequest;
-import it.polito.ai.project.requestEntities.SelectCompanionRequest;
-import it.polito.ai.project.requestEntities.AddChildToLineRequest;
+import it.polito.ai.project.requestEntities.*;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.RaceState;
 import it.polito.ai.project.services.database.models.UserCredentials;
@@ -19,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -147,7 +147,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/companionRequests", method = RequestMethod.GET)
-    public ResponseEntity getCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @Nullable @RequestParam(defaultValue = "NULL") RaceState state) {
+    public ResponseEntity getCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @Nullable @RequestParam(defaultValue = RaceState._SCHEDULED) RaceState state) {
         try {
             return ok(db.getCompanionRequestsByAdmin(performerUserCredentials.getUsername(), state));
         } catch (ResourceNotFoundException re) {
@@ -163,12 +163,12 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(value="/selectCompanions", method = RequestMethod.PUT)
-    public ResponseEntity selectCompanions(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody SelectCompanionRequest selectCompanionRequest)
+    @RequestMapping(value="/selectCompanions", method = RequestMethod.POST)
+    public ResponseEntity selectCompanions(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody SelectCompanionsRequest selectCompanionsRequest)
     {
         try
         {
-            db.selectCompanion(performerUserCredentials.getUsername(), selectCompanionRequest.getClientRace(), selectCompanionRequest.getCompanions());
+            db.selectCompanions(performerUserCredentials.getUsername(), selectCompanionsRequest.getClientRace(), selectCompanionsRequest.getCompanions());
             return ok(HttpStatus.OK);
         }
         catch(ResourceNotFoundException re)
@@ -193,12 +193,75 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(value="/unselectCompanions", method = RequestMethod.PUT)
-    public ResponseEntity unselectCompanions(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
+    @RequestMapping(value="/acceptCompanionRequest", method = RequestMethod.POST)
+    public ResponseEntity acceptCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AcceptCompanionRequest acceptCompanionRequest)
     {
         try
         {
-            db.unselectCompanions(performerUserCredentials.getUsername(), clientRace);
+            ClientRace clientRace=new ClientRace(new ClientLine(acceptCompanionRequest.getLineName()),acceptCompanionRequest.getDirection(),acceptCompanionRequest.getDate(),null,new ArrayList<>(),new ArrayList<>(),null);
+            db.acceptCompanion(performerUserCredentials.getUsername(), clientRace, acceptCompanionRequest.getCompanion());
+            return ok(HttpStatus.OK);
+        }
+        catch(ResourceNotFoundException re)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
+        }
+        catch(InternalServerErrorException ie)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
+        }
+        catch(BadRequestException be)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
+        }
+        catch(UnauthorizedRequestException ue)
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value="/unAcceptCompanionRequest", method = RequestMethod.POST)
+    public ResponseEntity unAcceptCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AcceptCompanionRequest acceptCompanionRequest)
+    {
+        try
+        {
+            ClientRace clientRace=new ClientRace(new ClientLine(acceptCompanionRequest.getLineName()),acceptCompanionRequest.getDirection(),acceptCompanionRequest.getDate(),null,new ArrayList<>(),new ArrayList<>(),null);
+            db.unAcceptCompanion(performerUserCredentials.getUsername(), clientRace, acceptCompanionRequest.getCompanion());
+            return ok(HttpStatus.OK);
+        }
+        catch(ResourceNotFoundException re)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
+        }
+        catch(InternalServerErrorException ie)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
+        }
+        catch(BadRequestException be)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
+        }
+        catch(UnauthorizedRequestException ue)
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value="/rejectCompanionRequest", method = RequestMethod.POST)
+    public ResponseEntity rejectCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AcceptCompanionRequest acceptCompanionRequest)
+    {
+        try
+        {
+            ClientRace clientRace=new ClientRace(new ClientLine(acceptCompanionRequest.getLineName()),acceptCompanionRequest.getDirection(),acceptCompanionRequest.getDate(),null,new ArrayList<>(),new ArrayList<>(),null);
+            db.rejectCompanion(performerUserCredentials.getUsername(), clientRace, acceptCompanionRequest.getCompanion());
             return ok(HttpStatus.OK);
         }
         catch(ResourceNotFoundException re)
@@ -252,6 +315,7 @@ public class AdminController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
     @RequestMapping(value="/addChildrenToLine", method = RequestMethod.PUT)
     public ResponseEntity addChildrenToLine(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AddChildToLineRequest addChildToLineRequest)
     {

@@ -9,6 +9,7 @@ import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.generalmodels.CompanionRequest;
 import it.polito.ai.project.requestEntities.*;
 import it.polito.ai.project.services.database.DatabaseService;
+import it.polito.ai.project.services.database.models.CompanionState;
 import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.RaceState;
 import it.polito.ai.project.services.database.models.UserCredentials;
@@ -142,7 +143,7 @@ public class CompanionController {
     }
 
     @RequestMapping(value = "/companionRequests", method = RequestMethod.GET)
-    public ResponseEntity getCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @Nullable @RequestParam(defaultValue = "NULL") RaceState state) {
+    public ResponseEntity getCompanionRequest(@AuthenticationPrincipal UserCredentials performerUserCredentials, @Nullable @RequestParam RaceState state) {
         try {
             return ok(db.getCompanionRequestsByCompanion(performerUserCredentials.getUsername(), state));
         } catch (ResourceNotFoundException re) {

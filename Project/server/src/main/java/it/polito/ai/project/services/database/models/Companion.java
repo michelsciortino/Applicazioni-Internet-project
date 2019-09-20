@@ -15,4 +15,7 @@ public class Companion {
         this.finalStop = finalStop;
         this.state = state;
     }
+
+    public Companion() {
+    }
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SelectCompanionRequest {
+public class SelectCompanionsRequest {
     private ClientRace clientRace;
     private List<String> companions;
 }
