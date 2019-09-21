@@ -666,20 +666,29 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Override
     public List<ClientRace> getParentRacesFromDate(String performerUsername, Date date) {
-        List<Race> parentRaces = new ArrayList<Race>();
-        Optional<User> performer;
-        Optional<UserCredentials> performerCredentials;
+        List<ClientRace> parentRaces;
+        List<Race> races;
+
 
         try {
-            parentRaces = raceRepository.findAllByPassengersAndEqDate(performerUsername, date);
+
+            races = raceRepository.findAllByAndDateBetween(removeTime(date), midnightTime(date));
+
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-        List<ClientRace> clientRaces = new ArrayList<ClientRace>();
-        for (Race r : parentRaces) {
-            clientRaces.add(raceToClientRace(r,null));
-        }
-        return clientRaces;
+
+        parentRaces = races.stream()
+                .filter(
+                        race -> race.getPassengers().stream()
+                                .filter(passenger -> passenger.getChildDetails().getParentId().equals(performerUsername))
+                                .count() > 0
+                ).map(
+                        race -> {
+                            return raceToClientRace(race, null);
+                        }
+                ).collect(Collectors.toList());
+        return parentRaces;
     }
 
 
