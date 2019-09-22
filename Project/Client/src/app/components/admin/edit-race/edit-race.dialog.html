@@ -1,12 +1,12 @@
 <div mat-dialog-content class="no-scroll fit-content">
     <div>
-        <p class="title">Race</p>
+        <h3 class="title">Race</h3>
         <table>
             <thead>
                 <tr>
                     <th>LineName</th>
                     <th>Direction</th>
-                    <th>Data</th>
+                    <th>Date</th>
                     <th>Hour</th>
                     <th>Status</th>
                 </tr>
@@ -26,7 +26,7 @@
     <div class="row">
         <div>
             <h3 class="title">Companions</h3>
-            <table>
+            <table class="min-width">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -39,17 +39,17 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let companion of race?.companions">
-                        <td class="mat-cell">{{companion.userDetails.mail}} </td>
-                        <td>{{companion.initialStop.name}} </td>
-                        <td>{{companion.finalStop.name}} </td>
-                        <td>{{companion.state}}</td>
-                        <td>
-                            <button mat-icon-button>
+                        <td class="mat-cell center-vertical">{{companion.userDetails.mail}} </td>
+                        <td class="mat-cell">{{companion.initialStop.name}} </td>
+                        <td class="mat-cell">{{companion.finalStop.name}} </td>
+                        <td class="mat-cell">{{companion.state}}</td>
+                        <td class="mat-cell">
+                            <button mat-icon-button *ngIf="companion.state === 'AVAILABLE'" (click)="acceptRequest(race,companion)">
                                 <mat-icon class="green">check</mat-icon>
                             </button>
                         </td>
-                        <td>
-                            <button mat-icon-button>
+                        <td class="mat-cell">
+                            <button mat-icon-button *ngIf="companion.state === 'AVAILABLE' || companion.state === 'CHOSEN'" (click)="rejectRequest(race,companion)">
                                 <mat-icon class="red">clear</mat-icon>
                             </button>
                         </td>
@@ -57,7 +57,20 @@
                 </tbody>
             </table>
         </div>
-        <!-- TODO: fare expansion row -->
+
+        <div>
+            <h3 class="title">Line</h3>
+            <div class="timeline">
+                <div class="stop-container" *ngFor="let stop of race?.direction=='OUTWARD'? race?.line.outwardStops : race?.line.returnStops">
+                    <div class="stop" [ngClass]="{ 'covered': isStopCovered(stop), 'uncovered': !isStopCovered(stop)}">
+                        <p>
+                            <span class="block">{{stop.name}}</span>
+                            <span class="block">{{getTime(race.date.getTime()+stop.delayInMillis)}}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div mat-dialog-actions>

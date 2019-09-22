@@ -72,7 +72,12 @@ export class LineService {
     }
 
     public getRace(lineName: string, date: Date, direction: string): Promise<Race> {
-        return this.http.get(`${LineService.lineEndpoint}/${lineName}/races/${date.toISOString()}/${direction}`).toPromise() as Promise<Race>;
+        return this.http.get(`${LineService.lineEndpoint}/${lineName}/races/${date.toISOString()}/${direction}`)
+            .toPromise()
+            .then((race: Race) => {
+                race.date = new Date(race.date);
+                return race;
+            });
     }
 
     public deleteRace(race: Race) {
@@ -114,10 +119,10 @@ export class RacesDataSource implements DataSource<Race>{
                 this.sortRaces(data, "asc", "Date");
                 this.racesSbj.next(data);
                 if (data.length === 0) {
-                    console.log("zero")
+                    // console.log("zero")
                     this.empty = true;
                 }
-                console.log("LOAD_RACES", data);
+                // console.log("LOAD_RACES", data);
             })
             .finally(() => this.loadingSbj.next(false))
     }
@@ -131,37 +136,22 @@ export class RacesDataSource implements DataSource<Race>{
             case "Date":
                 // console.log("Sort by date");
                 if (direction === "asc")
-                    return data.sort((a: Race, b: Race) => {
-                        return a.date.getTime() - b.date.getTime();
-                    })
+                    return data.sort((a: Race, b: Race) => (a.date.getTime() - b.date.getTime()));
                 else
-                    return data.sort((a: Race, b: Race) => {
-                        return b.date.getTime() - a.date.getTime();
-                    });
-                break;
+                    return data.sort((a: Race, b: Race) => (b.date.getTime() - a.date.getTime()));
             case "Direction":
                 // console.log("Sort by Direction");
                 if (direction === "asc")
-                    return data.sort((a: Race, b: Race) => {
-                        return a.direction.localeCompare(b.direction);
-                    });
+                    return data.sort((a: Race, b: Race) => a.direction.localeCompare(b.direction));
                 else
-                    return data.sort((a: Race, b: Race) => {
-                        return b.direction.localeCompare(a.direction);
-                    });
-                break;
+                    return data.sort((a: Race, b: Race) => b.direction.localeCompare(a.direction));
             case "LineName":
                 // console.log("Sort by LineName");
                 if (direction === "asc")
-                    return data.sort((a: Race, b: Race) => {
-                        return a.line.name.localeCompare(b.line.name);
-                    });
+                    return data.sort((a: Race, b: Race) => a.line.name.localeCompare(b.line.name));
                 else
-                    return data.sort((a: Race, b: Race) => {
-                        return a.line.name.localeCompare(b.line.name);
-                    });
-                break;
-            default: // console.log("Error type sort");;
+                    return data.sort((a: Race, b: Race) => a.line.name.localeCompare(b.line.name));
+            default: break; // console.log("Error type sort");;
         }
     }
 }

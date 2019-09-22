@@ -1,19 +1,6 @@
-td,
-th {
-    text-align: left;
-    padding-right: 10px;
-    vertical-align: top;
-}
-
 tr td:last-child,
 th:last-child {
     padding-right: 0px;
-}
-
-table {
-    height: 100%;
-    overflow: auto;
-    margin: 0px auto;
 }
 
 .no-scroll {
@@ -27,18 +14,148 @@ table {
     width: 100%
 }
 
-.row {
-    align-content: center;
-    align-items: center;
+table {
+    width: 100%;
 }
 
-.row div {
+td,
+th {
+    text-align: left;
+    padding-right: 20px;
+}
+
+tr td:last-child,
+th:last-child {
+    padding-right: 20px;
+}
+
+tr td:first-child,
+th:first-child {
+    padding-left: 20px !important;
+}
+
+.mat-cell,
+.mat-header-cell {
+    padding: 8px;
+}
+
+tr:last-child td {
+    border: 0px;
+}
+
+mat-table>tr:hover.mat-row:not('mobile') {
+    background-color: #e8e8e8;
+    cursor: pointer;
+}
+
+mat-table>tr:active.mat-row:not('mobile') {
+    background-color: #ababab;
+}
+
+td span {
+    display: block;
+}
+
+.squeeze {
+    min-width: 0px;
+    padding: 0px !important;
+}
+
+.center-vertical {
+    vertical-align: middle;
+}
+
+.spinner-container {
+    margin: 20px;
+    display: inline-block;
+}
+
+.mat-tab-link {
+    min-width: initial;
+}
+
+.mat-cell-button {
+    padding-right: 0px;
+}
+
+.row {
+    align-content: center;
+}
+
+.row>div {
+    display: inline-grid;
     border: 1px solid #c8c8c8;
     padding: 8px;
-    margin: 8px 0px 8px 0px;
+    margin: 8px 20px 0px 0;
     border-radius: 8px;
 }
 
-.row div:last-of-type {
+.row>div:last-of-type {
     margin-right: 0px;
+}
+
+.timeline {
+    position: relative;
+    margin-left: 20px;
+    margin-right: 8px;
+}
+
+.timeline::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background-color: gray;
+    top: 32px;
+    bottom: 32px;
+    left: 16px;
+    margin-left: -8px;
+}
+
+.stop-container {
+    margin-left: 24px;
+    position: relative;
+    background-color: inherit;
+}
+
+.stop-container .stop:after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    top: 16px;
+    left: -22px;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.stop-container:last-of-type .stop::before {
+    content: '🏁';
+    position: absolute;
+    font-size: 15px;
+    top: 14px;
+    left: -42px;
+    z-index: 1;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.stop-container:first-of-type .stop::before {
+    content: '🚩';
+    position: absolute;
+    font-size: 15px;
+    top: 14px;
+    left: -42px;
+    z-index: 1;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.covered::after {
+    background-color: greenyellow !important;
+}
+
+.uncovered::after {
+    background-color: red !important;
 }

@@ -3,6 +3,7 @@ import { CompanionRacesDataSource, CompanionService } from 'src/app/services/com
 import { Race } from 'src/app/models/race';
 import { ViewRaceDialog } from 'src/app/components/dialogs/view-race-dialog/view-race.dialog';
 import { MatDialog } from '@angular/material';
+import Utils from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-companion-today-lines',
@@ -15,6 +16,10 @@ export class CompanionTodayLinesComponent implements OnInit {
   displayedColumns = ["lineName", "initialStop", "finalStop", "status"];
 
   isLoading: boolean;
+
+  getTime = Utils.getTime;
+
+  getTimeWithSecond = Utils.getTimeWithSecond;
 
   constructor(private companionSvc: CompanionService, public dialog: MatDialog) {
     this.dataSource = new CompanionRacesDataSource(this.companionSvc);

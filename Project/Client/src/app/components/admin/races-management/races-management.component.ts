@@ -102,7 +102,6 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     }
 
     public search() {
-        console.log("SEARCH")
         if (this.directionSelected.id == null)
             this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
         else

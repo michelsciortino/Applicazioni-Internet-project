@@ -2898,16 +2898,20 @@ td.mat-cell:first-of-type {
     color: red;
 }
 
-.opacity50{
+.opacity50 {
     opacity: 0.5;
-    filter: alpha(opacity=50); /* For IE8 and earlier */
+    filter: alpha(opacity=50);
 }
 
-.grey{
+.grey {
     color: rgb(173, 173, 173);
 }
 
-.hidden { 
+.hidden {
     visibility: hidden;
     display: none;
- }
+}
+
+.min-width {
+    width: min-content;
+}
