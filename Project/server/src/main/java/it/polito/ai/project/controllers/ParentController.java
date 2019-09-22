@@ -27,7 +27,7 @@ public class ParentController {
     @Autowired
     private DatabaseService db;
     @RequestMapping(value="/reserveChildren", method = RequestMethod.POST)
-    public ResponseEntity reserveChildren(@AuthenticationPrincipal ClientUserCredentials performerUserCredentials, @RequestBody ReserveChildrenRequest reserveChildrenRequest)
+    public ResponseEntity reserveChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ReserveChildrenRequest reserveChildrenRequest)
     {
         try
         {
