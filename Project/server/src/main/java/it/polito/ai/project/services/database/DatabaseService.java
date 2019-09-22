@@ -1437,6 +1437,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             if (c.getState().equals(CompanionState.CONFIRMED))
                 race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.VALIDATED);
         }
+        race.get().setRaceState(RaceState.VALIDATED);
         updateRace(raceToClientRace(race.get(),null), performerUsername);
     }
 
