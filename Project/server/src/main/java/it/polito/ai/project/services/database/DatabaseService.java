@@ -640,7 +640,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         // If performer user is not parent for children: Throw BadRequest
         for (ClientPassenger c : clientPassengers) {
-            if (!c.getChildDetails().getParentId().equals(performerUsername) || !performer.get().getAuthorities().contains(Roles.prefix + Roles.USER))
+            if (!c.getChildDetails().getParentId().equals(performerUsername) || !performer.get().getRoles().contains(Roles.prefix + Roles.USER))
                 throw new BadRequestException();
         }
         int count = 0;
