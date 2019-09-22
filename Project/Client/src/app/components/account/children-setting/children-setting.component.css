@@ -50,3 +50,7 @@ table:last-of-type{
 .green {
     color: green;
 }
+
+.margin-left{
+    margin-left: 8px;
+}

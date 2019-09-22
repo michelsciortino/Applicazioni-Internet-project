@@ -14,10 +14,13 @@
                     <td> {{child.name}}</td>
                     <td> {{child.surname}}</td>
                     <td> {{child.cf}}</td>
-                    <button mat-icon-button (click)="removeChild(child)"><mat-icon class="red">remove</mat-icon> </button>
+                    <button mat-icon-button (click)="removeChild(child)">
+                        <mat-icon class="red">remove</mat-icon>
+                    </button>
                 </tr>
             </tbody>
         </table>
-        <button mat-raised-button (click)="openAddChildDialog()">Add Child<mat-icon class="green">add</mat-icon></button>
+        <button mat-raised-button (click)="openAddChildDialog()">Add Child<mat-icon class="green margin-left">
+                add</mat-icon></button>
     </mat-card>
 </div>
