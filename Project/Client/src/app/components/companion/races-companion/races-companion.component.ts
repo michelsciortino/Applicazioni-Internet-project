@@ -8,19 +8,20 @@ import { DirectionType, Race } from 'src/app/models/race';
 import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material';
-import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { GiveAvailabilityDialog } from './give-availability-dialog/give-availability.dialog';
 import { ViewRaceDialog } from '../../dialogs/view-race-dialog/view-race.dialog';
+import { CompanionService } from 'src/app/services/companion/companion.service';
 
 @Component({
     selector: 'app-races-companion',
     templateUrl: './races-companion.component.html',
     styleUrls: ['./races-companion.component.css']
 })
-export class RacesCompanionComponent implements OnInit {
+export class RacesCompanionComponent implements OnInit, OnDestroy {
 
     public isMobile: boolean;
     dataSource: RacesDataSource;
+    _CompaionChangeSub: Subscription;
 
     lines: Line[];
     lineSelected: Line = new Line();
@@ -45,13 +46,12 @@ export class RacesCompanionComponent implements OnInit {
 
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor(private lineSvc: LineService, public dialog: MatDialog, private isMobileSvc: IsMobileService) {
+    constructor(private lineSvc: LineService, public dialog: MatDialog, private isMobileSvc: IsMobileService, private companionSvc: CompanionService) {
     }
 
     ngOnInit() {
 
         this.dataSource = new RacesDataSource(this.lineSvc, this.sort);
-
         this.toDateSelected.setMonth(this.toDateSelected.getMonth() + 3);
 
         this.lineSvc.getLines()
@@ -70,6 +70,15 @@ export class RacesCompanionComponent implements OnInit {
                 this.lineSelected = this.lines[0];
                 this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
             })
+
+        this._CompaionChangeSub = this.companionSvc.companionInfoChange.subscribe((value) => {
+            this.search();
+            console.log(value);
+        });
+    }
+
+    ngOnDestroy() {
+        this._CompaionChangeSub.unsubscribe();
     }
 
     public search() {
@@ -85,16 +94,12 @@ export class RacesCompanionComponent implements OnInit {
     }
 
     giveAvailability(race: Race) {
-        console.log("GIVE AVAILABILITY:", race)
+        // console.log("GIVE AVAILABILITY:", race)
         const dialogRef = this.dialog.open(GiveAvailabilityDialog, { data: { race: race } });
-        dialogRef.afterClosed().subscribe(result => {
-            if (dialogRef.componentInstance.dirty)
-                this.search();
-        });
     }
 
     viewRace(race: Race) {
-        console.log("VIEW RACE:", race)
+        // console.log("VIEW RACE:", race)
         const dialogRef = this.dialog.open(ViewRaceDialog, { data: { race: race } });
     }
 }

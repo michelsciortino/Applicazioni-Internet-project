@@ -2906,3 +2906,8 @@ td.mat-cell:first-of-type {
 .grey{
     color: rgb(173, 173, 173);
 }
+
+.hidden { 
+    visibility: hidden;
+    display: none;
+ }

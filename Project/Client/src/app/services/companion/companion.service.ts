@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { environment } from 'src/environments/environment';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
 import { CompanionRequest } from 'src/app/models/companion-request';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError, finalize } from 'rxjs/operators';
@@ -14,8 +14,12 @@ import { Race } from 'src/app/models/race';
 export class CompanionService {
     private static readonly companionEndpoint = `${environment.baseEndpoint}/companion`;
 
-    constructor(private http: HttpClient) {
+    companionInfoChange: Subject<string> = new Subject<string>();
 
+    constructor(private http: HttpClient) { }
+
+    change(message: string) {
+        this.companionInfoChange.next(message);
     }
 
     public getRequests(): Observable<CompanionRequest[]> {

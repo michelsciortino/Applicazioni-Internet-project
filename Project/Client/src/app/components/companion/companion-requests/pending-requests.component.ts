@@ -1,10 +1,9 @@
-import { Component } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { CompanionRequest } from 'src/app/models/companion-request';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { CompanionRequestsDataSource, CompanionService } from 'src/app/services/companion/companion.service';
-
 
 enum RequestsType {
     PENDING,
@@ -17,7 +16,7 @@ enum RequestsType {
     templateUrl: './pending-requests.component.html',
     styleUrls: ['pending-requests.component.css']
 })
-export class PendingRequestsComponent {
+export class PendingRequestsComponent implements OnInit, OnDestroy {
     //dataSource: RequestsDataSource;
 
     RequestsTab = RequestsType;
@@ -31,16 +30,29 @@ export class PendingRequestsComponent {
 
     columnDefinitions = ["line", "direction", "date", "initialStop", "finalStop"];
 
+    _CompaionChangeSub: Subscription;
 
     constructor(private companionSvc: CompanionService, private dialog: MatDialog) {
         this.requests = [];
         this.activeTab = RequestsType.PENDING;
         this.datasource = new CompanionRequestsDataSource(this.companionSvc);
+    }
+
+    ngOnInit() {
         this.requestsSub = this.datasource.getPendingRequests()
             .subscribe((requests) => {
                 this.requests = requests;
                 console.log(requests);
             });
+        this._CompaionChangeSub = this.companionSvc.companionInfoChange.subscribe((value) => {
+            this.datasource.reload();
+            console.log(value);
+        });
+    }
+
+    ngOnDestroy() {
+        this.requestsSub.unsubscribe();
+        this._CompaionChangeSub.unsubscribe();
     }
 
     switchToTab(tab: RequestsType) {
@@ -66,17 +78,17 @@ export class PendingRequestsComponent {
 
     confirmAvailability(request: CompanionRequest) {
         this.dialog.open(ConfirmDialog, { data: { title: "Give avaibility", message: "Are you sure to give your availabiliy?", YES: true, CANCEL: true } })
-        .afterClosed().subscribe(result => {
-            switch (result) {
-                case "YES":
-                    this.companionSvc.confirmAvailability(request.lineName, request.direction, request.date).toPromise()
-                        .then(response => this.datasource.reload())
-                        .catch(error => console.log(error));
-                    break;
-                default:
-                    break;
-            }
-        });
+            .afterClosed().subscribe(result => {
+                switch (result) {
+                    case "YES":
+                        this.companionSvc.confirmAvailability(request.lineName, request.direction, request.date).toPromise()
+                            .then(response => this.datasource.reload())
+                            .catch(error => console.log(error));
+                        break;
+                    default:
+                        break;
+                }
+            });
     }
 
     cancelRequest(request: CompanionRequest) {
@@ -85,7 +97,9 @@ export class PendingRequestsComponent {
                 switch (result) {
                     case "YES":
                         this.companionSvc.cancelRequest(request.lineName, request.direction, request.date).toPromise()
-                            .then(response => this.datasource.reload())
+                            .then(response => {
+                                this.companionSvc.change("Remove Request");
+                            })
                             .catch(error => console.log(error));
                         break;
                     default:

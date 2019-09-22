@@ -84,17 +84,18 @@ export class LineService {
 export class RacesDataSource implements DataSource<Race>{
     private racesSbj = new BehaviorSubject<Race[]>([]);
     private loadingSbj = new BehaviorSubject<boolean>(false);
+    empty: boolean;
 
     constructor(private lineSvc: LineService, private sort: MatSort) {
+        this.empty = false;
     }
 
     connect(collectionViewer: CollectionViewer): Observable<Race[]> {
         // console.log(this.sort);
         this.sort.sortChange.subscribe(
-            (data) => {
+            (data: any) => {
                 let races = this.racesSbj.getValue();
                 this.racesSbj.next(this.sortRaces(races, data.direction, data.active));
-
             }
         )
         return this.racesSbj.asObservable();
@@ -112,9 +113,17 @@ export class RacesDataSource implements DataSource<Race>{
                 data.map(x => x.date = new Date(x.date));
                 this.sortRaces(data, "asc", "Date");
                 this.racesSbj.next(data);
-                // console.log("LOAD_RACES", data);
+                if (data.length === 0) {
+                    console.log("zero")
+                    this.empty = true;
+                }
+                console.log("LOAD_RACES", data);
             })
             .finally(() => this.loadingSbj.next(false))
+    }
+
+    isEmpty() {
+        return this.empty;
     }
 
     sortRaces(data: Race[], direction: string, active: string): Race[] {
@@ -154,6 +163,5 @@ export class RacesDataSource implements DataSource<Race>{
                 break;
             default: // console.log("Error type sort");;
         }
-
     }
 }

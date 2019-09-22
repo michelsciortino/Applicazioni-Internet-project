@@ -15,7 +15,6 @@ import Utils from 'src/app/utils/utils';
     styleUrls: ['./give-availability.dialog.css']
 })
 export class GiveAvailabilityDialog {
-    dirty: boolean;
     initialStop: Stop;
     finalStop: Stop;
     line: Line;
@@ -44,7 +43,7 @@ export class GiveAvailabilityDialog {
                     this.initialStop = this.stops[0];
                     this.finalStop = this.stops[this.stops.length - 1];
                 }
-            })
+            });
     }
 
     getTime = Utils.getTime;
@@ -58,8 +57,7 @@ export class GiveAvailabilityDialog {
     send(): void {
         this.companionSvc.giveAvailability(this.data.race.line.name, this.data.race.direction, this.data.race.date, this.initialStop, this.finalStop).toPromise()
             .then((result) => {
-                if (!this.dirty)
-                    this.dirty = true;
+                this.companionSvc.change("Give Availability");
                 this.dialogRef.close()
             })
             .catch((error) => this.dialogRef.close());

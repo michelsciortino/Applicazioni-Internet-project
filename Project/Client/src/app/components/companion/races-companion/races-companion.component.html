@@ -46,7 +46,8 @@
             (click)="search()">Search</button>
 
         <div class="overflow-auto">
-            <mat-table class="center-horizontal fit-content" [dataSource]="dataSource" matSort>
+            <mat-table class="center-horizontal fit-content" [dataSource]="dataSource" matSort
+                [ngClass]="{'hidden': dataSource.isEmpty()}">
 
                 <!-- LineName Column -->
                 <ng-container matColumnDef="LineName">
@@ -97,6 +98,9 @@
                 <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"
                     (click)="viewRace(row)"></tr>
             </mat-table>
+
+            <div *ngIf="dataSource.empty===true" class="grey">NO RACES FOUND</div>
+
         </div>
     </mat-card>
 </div>
