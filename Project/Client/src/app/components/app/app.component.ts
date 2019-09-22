@@ -3,10 +3,11 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { MatSidenav } from '@angular/material';
+import { MatSidenav, MatIconRegistry } from '@angular/material';
 import { UserService } from 'src/app/services/user/user.service';
 import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
 import { UserInfo } from 'src/app/models/user';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private userInfoSub: Subscription;
   private isMobileSub: Subscription;
 
+  userLogged: string;
+
   isLogged: boolean;
   isAdmin: boolean;
   isCompanion: boolean;
@@ -27,7 +30,13 @@ export class AppComponent implements OnInit, OnDestroy {
   @ViewChild('snav', { static: true })
   sidenav: MatSidenav;
 
-  constructor(private router: Router, private authSvc: AuthService, private userSvc: UserService, private isMobileSvc: IsMobileService) { }
+  constructor(private router: Router, private authSvc: AuthService, private userSvc: UserService, private isMobileSvc: IsMobileService, private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer) {
+    this.matIconRegistry.addSvgIcon(
+      "imageUser",
+      this.domSanitizer.bypassSecurityTrustResourceUrl("../../assets/userColor.svg")
+    );
+  }
 
   ngOnInit() {
     this.isLoggedSub = this.authSvc.observeLoggedStatus().subscribe(
@@ -36,6 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.userInfoSub = this.userSvc.getUserInfo().subscribe(
       (info: UserInfo) => {
         if (info != null) {
+          this.userLogged = info.name + " " + info.surname;
           this.isAdmin = info.isAdmin();
           this.isCompanion = info.isCompanion();
         }

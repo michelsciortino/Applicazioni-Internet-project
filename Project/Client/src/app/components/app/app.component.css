@@ -100,3 +100,14 @@ h1.app-name {
 .footer span {
   padding: 0 10px;
 }
+
+.icon {
+  height: 45px !important;
+  width: 45px !important;
+  font-size: 30px !important;
+  display: initial !important;
+}
+
+.icon mat-icon {
+  display: initial !important;
+}
