@@ -12,6 +12,17 @@ agm-map {
   right: 0px;
 }
 
+.sidenav-button {
+  position: absolute;
+  z-index: 1;
+  height: fit-content;
+  width: 45px !important;
+  left: 4px;
+  bottom: 8px;
+  min-width: unset !important;
+  padding: 0px 0px 0px 0px !important;
+}
+
 .mat-select-card {
   margin: 8px;
   padding: 5px 8px 1px 8px;
@@ -42,4 +53,14 @@ agm-map {
 
 .perc_85 {
   width: 85%;
+}
+
+.sidenav-bar{
+  margin-top: 8px;
+  margin-bottom: 8px;
+  width: fit-content;
+}
+
+.title-drawer{
+  margin-bottom: 0px;
 }

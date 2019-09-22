@@ -1,10 +1,4 @@
-import {
-    Component,
-    OnInit,
-    AfterViewInit,
-    ViewChild,
-    Directive
-} from "@angular/core";
+import { Component, OnInit, AfterViewInit } from "@angular/core";
 import { LineService } from "src/app/services/lines/line-races.service";
 import { Line } from "src/app/models/line";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -14,6 +8,7 @@ import { GoogleMapsAPIWrapper, MarkerManager } from "@agm/core";
 import { Stop } from "src/app/models/stop";
 import { Subscription } from 'rxjs';
 import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
+import { MatBottomSheet, MatBottomSheetRef, MatBottomSheetConfig } from '@angular/material';
 
 declare const google: any;
 
@@ -24,14 +19,14 @@ export class Marker {
     lng: any;
     alpha: number;
     icon: any;
-    options: { title: string }
+    options: { stopName: string, info: string }
 
-    constructor(lat: number, lng: number, alpha: number, icon: any, title: string) {
+    constructor(lat: number, lng: number, alpha: number, icon: any, stopName: string, info: string) {
         this.lat = lat;
         this.lng = lng;
         this.alpha = alpha;
         this.icon = icon;
-        this.options = { title: title }
+        this.options = { stopName: stopName, info: info }
     }
 }
 
@@ -55,19 +50,19 @@ export class ViewMapComponent implements OnInit, AfterViewInit {
     markers: Marker[];
     lines: Line[];
     lineSelected: Line;
-    zoom: number = 14;
+    zoom: number = 15;
 
-    constructor(public lineSvc: LineService, private gmapsApi: GoogleMapsAPIWrapper, private isMobileSvc: IsMobileService) {
+    constructor(public lineSvc: LineService, private gmapsApi: GoogleMapsAPIWrapper, private isMobileSvc: IsMobileService, private _bottomSheet: MatBottomSheet) {
         this.markers = [];
         this.waypoints = [];
+        this.lineSelected = new Line;
     }
 
     ngOnInit() {
         this.isMobileSub = this.isMobileSvc.getIsMobile()
             .subscribe((isMobile) => this.isMobile = isMobile);
 
-        this.lineSvc
-            .getLines()
+        this.lineSvc.getLines()
             .pipe(
                 map(
                     (data: any) => data,
@@ -91,15 +86,15 @@ export class ViewMapComponent implements OnInit, AfterViewInit {
                         case 0: {
                             this.centerLat = stop.latitude;
                             this.centerLng = stop.longitude;
-                            this.markers.push(new Marker(stop.latitude, stop.longitude, 1, markerPosition + "marker_blueS.png", stop.name));
+                            this.markers.push(new Marker(stop.latitude, stop.longitude, 1, markerPosition + "marker_blueS.png", stop.name, index.toString()));
                             break;
                         }
                         case stops.length - 1: {
-                            this.markers.push(new Marker(stop.latitude, stop.longitude, 1, markerPosition + "flag.png", stop.name));
+                            this.markers.push(new Marker(stop.latitude, stop.longitude, 1, markerPosition + "flag.png", stop.name, index.toString()));
                             break;
                         }
                         default: {
-                            this.markers.push(new Marker(stop.latitude, stop.longitude, 1, markerPosition + "marker_blue" + index + ".png", stop.name));
+                            this.markers.push(new Marker(stop.latitude, stop.longitude, 1, markerPosition + "marker_blue" + index + ".png", stop.name, index.toString()));
                             break;
                         }
                     }
@@ -125,38 +120,41 @@ export class ViewMapComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         console.log("AfterViewInit");
-        this.gmapsApi
-            .getNativeMap()
+        this.gmapsApi.getNativeMap()
             .then(map => console.log("AfterViewInit: map: ", map))
             .catch(error => console.log("AfterViewInit: getNativeMap() Error: ", error))
             .then(() => { console.log("Finally"); });
-        this.gmapsApi
-            .getBounds()
+        this.gmapsApi.getBounds()
             .then(bounds => console.log("AfterViewInit: bounds: ", bounds))
             .catch(error => console.log("AfterViewInit: getBounds() Error: ", error));
     }
 
     onMapReady(event: any) {
         console.log("onMapReady");
-        this.gmapsApi
-            .getNativeMap()
+        this.gmapsApi.getNativeMap()
             .then(map => console.log("AfterViewInit: map: ", map))
             .catch(error => console.log("AfterViewInit: getNativeMap() Error: ", error))
             .then(() => { console.log("Finally"); });
     }
 
     private plotline(line: Line) {
-        line.outwardStops.forEach((stop: Stop) => {
+        line.outwardStops.forEach((stop: Stop, index: number) => {
             this.markers.push(
-                new Marker(stop.latitude, stop.longitude, 1, markerPosition + "marker_blue.png", stop.name)
+                new Marker(stop.latitude, stop.longitude, 1, markerPosition + "marker_blue.png", stop.name, index.toString())
             );
         });
     }
 
+    onMouseOver(infoWindow: any, $event: MouseEvent) {
+        infoWindow.open();
+    }
+
+    onMouseOut(infoWindow: any, $event: MouseEvent) {
+        infoWindow.close();
+    }
+
     addMarker(lat: number, lng: number) {
-        this.markers.push(
-            new Marker(lat, lng, 1, markerPosition + "marker_blue.png", "")
-        );
+        //this.markers.push(new Marker(lat, lng, 1, markerPosition + "marker_blue.png", ""));
     }
 
     selectMarker(event: any) {
