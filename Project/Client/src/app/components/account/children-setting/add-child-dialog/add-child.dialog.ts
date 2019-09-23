@@ -3,7 +3,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Child } from 'src/app/models/child';
 import { UserService } from 'src/app/services/user/user.service';
 
-
 @Component({
     selector: 'add-child-dialog',
     templateUrl: './add-child.dialog.html',
@@ -11,8 +10,6 @@ import { UserService } from 'src/app/services/user/user.service';
 })
 export class AddChildDialog {
     child = new Child(null, null, null, null);
-
-    cf = "MRONDR94C13B019P"
 
     constructor(public dialogRef: MatDialogRef<AddChildDialog>, private userSvc: UserService, @Inject(MAT_DIALOG_DATA) public data: any) {
     }
