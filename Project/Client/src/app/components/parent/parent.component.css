@@ -1,0 +1,26 @@
+td,
+th {
+    text-align: left;
+    padding-right: 10px;
+    vertical-align: center;
+    padding-bottom: 0px;
+}
+
+table:last-of-type{
+    margin-bottom: 20px;
+}
+
+.no-scroll {
+    overflow: initial;
+}
+
+.title {
+    text-align: center;
+    margin: 0px 0px 4px 0px;
+    border-bottom: #c8c8c8 1px solid;
+    width: 100%
+}
+
+.mat-raised-button {
+    text-align: center
+}

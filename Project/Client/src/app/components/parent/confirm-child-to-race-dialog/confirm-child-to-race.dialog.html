@@ -1,0 +1,85 @@
+<div mat-dialog-content class="no-scroll fit-content">
+    <div>
+        <h3 class="title">Reservations</h3>
+        <mat-card class="compact-card centered">
+            <table *ngIf="reservedRaces && reservedRaces.length>0">
+                <thead>
+                    <tr>
+                        <th>Child</th>
+                        <th>Line</th>
+                        <th>Direction</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let reservedRace of reservedRaces; let i = index">
+                        <th> {{reservedRace.child.name}}</th>
+                        <td> {{reservedRace.race.line.name}}</td>
+                        <td> {{reservedRace.race.direction}}</td>
+                        <td> {{reservedDates[i]}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p *ngIf="reservedRaces.length==0">There are no reservations for your races</p>
+        </mat-card>
+    </div>
+    <div>
+        <h3 class="title">Select a race</h3>
+
+        <mat-card class="compact-card centered">
+            <table *ngIf="perChildRaces && perChildRaces.length>0">
+                <thead>
+                    <tr>
+                        <th>Child</th>
+                        <th>Line</th>
+                        <th>Direction</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let perChildRace of perChildRaces; let i = index">
+                        <th> {{perChildRace.child.name}}</th>
+                        <td> {{perChildRace.race.line.name}}</td>
+                        <td> {{perChildRace.race.direction}}</td>
+                        <td> {{dates[i]}}</td>
+                        <mat-radio-button value="perChildRace" (click)="onSelectPerChildRace(perChildRace)">
+                        </mat-radio-button>
+                    </tr>
+                </tbody>
+            </table>
+            <p *ngIf="perChildRaces.length==0">There are no races to reserve</p>
+        </mat-card>
+    </div>
+
+    <div *ngIf="raceSelected && outward">
+        <h3 class="title">Select stop</h3>
+        <mat-card class="compact-card centered">
+            <mat-form-field>
+                <mat-select (selectionChange)="onSelectStop()" placeholder="Stop" [(ngModel)]="stopSelected">
+                    <mat-option *ngFor="let stop of raceSelected.line.outwardStops" [value]="stop">
+                        {{stop.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </mat-card>
+    </div>
+    <div *ngIf="raceSelected && !outward">
+        <h3 class="title">Select stop</h3>
+        <mat-card class="compact-card centered">
+            <mat-form-field>
+                <mat-select (selectionChange)="onSelectStop()" placeholder="Stop" [(ngModel)]="stopSelected">
+                    <mat-option *ngFor="let stop of raceSelected.line.returnStops" [value]="stop">
+                        {{stop.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </mat-card>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+        <button mat-button [disabled]="disableSubmit" (click)="confirmChild()" cdkFocusInitial>Submit</button>
+    </div>
+
+</div>
