@@ -43,6 +43,10 @@ export class LineService {
         return this.linesSubj.asObservable();
     }
 
+    public async getLinesPromise() {
+        return await this.http.get(LineService.lineEndpoint).toPromise();;
+    }
+
     public async getRaces(lineName: string, fromDate: Date, toDate: Date, direction: string) {
 
         // Parameters obj-
@@ -86,8 +90,8 @@ export class LineService {
     }
 
     public validateRace(lineName: string, date: Date, direction: string) {
-        return this.http.post(`${LineService.lineEndpoint}/${lineName}/races/${date.toISOString()}/${direction}/validate`,{})
-        .toPromise();
+        return this.http.post(`${LineService.lineEndpoint}/${lineName}/races/${date.toISOString()}/${direction}/validate`, {})
+            .toPromise();
     }
 }
 
@@ -158,5 +162,42 @@ export class RacesDataSource implements DataSource<Race>{
                     return data.sort((a: Race, b: Race) => a.line.name.localeCompare(b.line.name));
             default: break; // console.log("Error type sort");;
         }
+    }
+}
+
+
+export class LinesDataSource implements DataSource<Line>{
+    private linesSbj = new BehaviorSubject<Line[]>([]);
+    private loadingSbj = new BehaviorSubject<boolean>(false);
+    empty: boolean;
+
+    constructor(private lineSvc: LineService) {
+        this.empty = false;
+    }
+
+    connect(collectionViewer: CollectionViewer): Observable<Line[]> {
+        // console.log(this.sort);
+        return this.linesSbj.asObservable();
+    }
+
+    disconnect(collectionViewer: CollectionViewer): void {
+        this.linesSbj.complete();
+        this.loadingSbj.complete();
+    }
+
+    loadLines() {
+        this.loadingSbj.next(true);
+        this.lineSvc.getLinesPromise()
+            .then((data: Line[]) => {
+                this.linesSbj.next(data);
+                if (data.length === 0) {
+                    this.empty = true;
+                }
+            })
+            .finally(() => this.loadingSbj.next(false))
+    }
+
+    isEmpty() {
+        return this.empty;
     }
 }

@@ -23,9 +23,11 @@ export class AdminService {
     private static readonly adminEndpoint = `${environment.baseEndpoint}/admin`;
 
     private racesChangeSbj: Subject<string>;
+    private linesChangeSbj: Subject<string>;
 
     constructor(private http: HttpClient) {
         this.racesChangeSbj = new Subject();
+        this.linesChangeSbj = new Subject();
     }
 
     public getUsers(pageNumber: number = 0, pageSize: number = 10, filterBy: UserSearchFilter, filter: string): Observable<Users> {
@@ -106,12 +108,29 @@ export class AdminService {
             });
     }
 
+    public addChildrenToLine(lineName: string, child: Child) {
+        return this.http.post(`${AdminService.adminEndpoint}/addChildrenToLine`,
+            {
+                lineName: lineName,
+                child: child
+            });
+    }
+
     public getRacesChanges(): Observable<string> {
         return this.racesChangeSbj.asObservable();
     }
 
     racesChanged(reason: string) {
         this.racesChangeSbj.next(reason);
+    }
+
+    public getLinesChanges(): Observable<string> {
+        return this.linesChangeSbj.asObservable();
+    }
+
+    linesChanged(reason: string) {
+        console.log(reason)
+        this.linesChangeSbj.next(reason);
     }
 }
 

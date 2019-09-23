@@ -1,0 +1,44 @@
+<div class="padded-content">
+    <mat-card class="compact-card scroll">
+
+        <p class=" inline-grid">Manage Lines</p>
+
+        <div class="overflow-auto">
+            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource"
+                [ngClass]="{'hidden': dataSource.isEmpty()}">
+
+                <!-- LineName Column -->
+                <ng-container matColumnDef="LineName">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef> LineName </th>
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.name}} </td>
+                </ng-container>
+
+                <!-- LineName Column -->
+                <ng-container matColumnDef="N° Children">
+                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> N° Children
+                    </th>
+                    <td class="center-vertical centered-text" mat-cell *matCellDef="let element">
+                        {{element.subscribedChildren.length}} </td>
+                </ng-container>
+
+                <!-- Action Column -->
+                <ng-container matColumnDef="Add-Child-Action">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
+                        <button *ngIf="isAdminOfLine(element)" mat-raised-button
+                            (click)="$event.stopPropagation(); addChildtoLine(element)">Add Child
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
+                <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"
+                    (click)="viewLine(row)"></tr>
+            </mat-table>
+
+            <div *ngIf="dataSource.empty===true" class="grey">NO RACES FOUND</div>
+
+        </div>
+
+    </mat-card>
+</div>

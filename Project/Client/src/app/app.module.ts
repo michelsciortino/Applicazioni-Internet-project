@@ -55,6 +55,8 @@ import { ManageRaceDialog } from './components/admin/manage-race/manage-race.dia
 import { CompanionTodayLinesComponent } from './components/home/companion/today-races/today-races.component';
 import { ParentComponent } from './components/parent/parent.component';
 import { ParentService } from './services/parent/parent.service';
+import { SubscribeChildDialog } from './components/admin/lines-management/add-child-dialog/add-child.dialog';
+import { LinesManagementComponent } from './components/admin/lines-management/lines-management.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +78,8 @@ import { ParentService } from './services/parent/parent.service';
     CompanionComponent, PendingRequestsComponent, RacesCompanionComponent, GiveAvailabilityDialog,
 
     // Admin
-    AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, NewRaceDialog, ViewUserDialog, EditUserDialog, ManageRaceDialog,
+    AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, LinesManagementComponent,
+    NewRaceDialog, ViewUserDialog, EditUserDialog, ManageRaceDialog, SubscribeChildDialog,
 
     // Settings
     AccountComponent, MeComponent, ChildrenSettingComponent, ContactsSettingComponent, AddChildDialog,
@@ -92,7 +95,8 @@ import { ParentService } from './services/parent/parent.service';
 
   ],
   entryComponents: [
-    ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ManageRaceDialog
+    ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog,
+    EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ManageRaceDialog, SubscribeChildDialog,
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,

@@ -1,0 +1,46 @@
+<div mat-dialog-content class="no-scroll fit-content">
+    <div>
+        <h3 class="title">Subscribe Child</h3>
+
+        <!-- Parent selection -->
+        <mat-form-field class="custom-field">
+            <mat-label>Parent Name</mat-label>
+            <mat-select [(value)]="parent">
+                <mat-option *ngFor="let user of usersSbj.value" [value]="user"
+                    (onSelectionChange)="changeParent($event)">
+                    {{user.name}} {{user.surname}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="custom-field">
+            <mat-label>Parent Mail</mat-label>
+            <input matInput type="email" placeholder="Parent Mail" [disabled]="true" [value]="parent.mail">
+        </mat-form-field>
+
+        <!-- Child selection -->
+        <mat-form-field *ngIf="children.length>0" class="block custom-field">
+            <mat-label>Child</mat-label>
+            <mat-select [(value)]="child" [disabled]="disableSelect.value">
+                <mat-option *ngFor="let child of children" [value]="child">
+                    {{child.name}} {{child.surname}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field *ngIf="children.length===0" class="block custom-field">
+            <mat-label>NO CHILDREN</mat-label>
+            <mat-select [disabled]="true"></mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="custom-field">
+            <mat-label>Fiscal Code</mat-label>
+            <input matInput type="text" placeholder="Fiscal Code" [disabled]="true" [value]="child.cf">
+        </mat-form-field>
+
+        <div mat-dialog-actions>
+            <button mat-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+            <button mat-button (click)="addChild()" cdkFocusInitial
+                [disabled]="parent.name===null || child.cf===null">Send</button>
+        </div>
+
+    </div>
