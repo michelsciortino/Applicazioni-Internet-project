@@ -54,6 +54,7 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
         { def: 'Date' },
         { def: 'Passengers' },
         { def: 'Companions' },
+        { def: 'State' },
         { def: 'Remove-Action' }];
 
     @ViewChild(MatSort, { static: true }) sort: MatSort;
