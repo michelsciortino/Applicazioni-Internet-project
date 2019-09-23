@@ -57,7 +57,7 @@ export class GiveAvailabilityDialog {
     send(): void {
         this.companionSvc.giveAvailability(this.data.race.line.name, this.data.race.direction, this.data.race.date, this.initialStop, this.finalStop).toPromise()
             .then((result) => {
-                this.companionSvc.change("Give Availability");
+                this.companionSvc.companionInfoChanged("Give Availability");
                 this.dialogRef.close()
             })
             .catch((error) => this.dialogRef.close());

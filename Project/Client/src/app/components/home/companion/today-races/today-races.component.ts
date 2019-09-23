@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CompanionRacesDataSource, CompanionService } from 'src/app/services/companion/companion.service';
 import { Race } from 'src/app/models/race';
-import { ViewRaceDialog } from 'src/app/components/dialogs/view-race-dialog/view-race.dialog';
 import { MatDialog } from '@angular/material';
 import Utils from 'src/app/utils/utils';
+import { ManageRaceDialog } from 'src/app/components/admin/manage-race/manage-race.dialog';
 
 @Component({
   selector: 'app-companion-today-lines',
@@ -37,6 +37,12 @@ export class CompanionTodayLinesComponent implements OnInit {
 
   viewRace(race: Race) {
     console.log("VIEW RACE:", race)
-    const dialogRef = this.dialog.open(ViewRaceDialog, { data: { race: race } });
+    this.dialog.open(ManageRaceDialog, {
+      data: {
+        lineName: race.line.name,
+        date: race.date,
+        direction: race.direction
+      }
+    });
   }
 }

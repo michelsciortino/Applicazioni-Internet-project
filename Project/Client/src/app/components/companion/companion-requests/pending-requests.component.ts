@@ -44,7 +44,7 @@ export class PendingRequestsComponent implements OnInit, OnDestroy {
                 this.requests = requests;
                 console.log(requests);
             });
-        this._CompaionChangeSub = this.companionSvc.companionInfoChange.subscribe((value) => {
+        this._CompaionChangeSub = this.companionSvc.getCompanionInfoChanges().subscribe((value) => {
             this.datasource.reload();
             console.log(value);
         });
@@ -98,7 +98,7 @@ export class PendingRequestsComponent implements OnInit, OnDestroy {
                     case "YES":
                         this.companionSvc.cancelRequest(request.lineName, request.direction, request.date).toPromise()
                             .then(response => {
-                                this.companionSvc.change("Remove Request");
+                                this.companionSvc.companionInfoChanged("Remove Request");
                             })
                             .catch(error => console.log(error));
                         break;

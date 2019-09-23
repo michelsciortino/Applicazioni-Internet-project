@@ -14,11 +14,15 @@ import { Race } from 'src/app/models/race';
 export class CompanionService {
     private static readonly companionEndpoint = `${environment.baseEndpoint}/companion`;
 
-    companionInfoChange: Subject<string> = new Subject<string>();
+    private companionInfoChange: Subject<string> = new Subject<string>();
 
     constructor(private http: HttpClient) { }
 
-    change(message: string) {
+    public getCompanionInfoChanges(): Observable<string> {
+        return this.companionInfoChange.asObservable();
+    }
+
+    public companionInfoChanged(message: string) {
         this.companionInfoChange.next(message);
     }
 

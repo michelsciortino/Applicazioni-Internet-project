@@ -2,7 +2,7 @@ import { BrowserModule, HAMMER_LOADER } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { HashLocationStrategy, LocationStrategy, DatePipe } from '@angular/common';
 import { AppRoutingModule } from './modules/routing.module';
 import { AppComponent } from './components/app/app.component';
 import { MaterialModule } from './modules/material.module';
@@ -42,7 +42,6 @@ import { PendingRequestsComponent } from './components/companion/companion-reque
 import { CompanionService } from './services/companion/companion.service'
 import { RacesCompanionComponent } from './components/companion/races-companion/races-companion.component';
 import { GiveAvailabilityDialog } from './components/companion/races-companion/give-availability-dialog/give-availability.dialog';
-import { ViewRaceDialog } from './components/dialogs/view-race-dialog/view-race.dialog';
 import { MeComponent } from './components/account/me/me.component';
 import { ChildrenSettingComponent } from './components/account/children-setting/children-setting.component';
 import { ContactsSettingComponent } from './components/account/contacts-setting/contacts-setting.component';
@@ -52,9 +51,10 @@ import { ViewMapComponent } from './components/lines/view-map/view-map.component
 import { AgmDirectionModule } from 'agm-direction';
 import { CompanionRequestsManagementComponent } from './components/admin/companion-requests/companion-requests.component';
 import { NewRaceDialog } from './components/admin/races-management/new-race-dialog/new-race.dialog';
-import { EditRaceDialog } from './components/admin/edit-race/edit-race.dialog';
+import { ManageRaceDialog } from './components/admin/manage-race/manage-race.dialog';
 import { CompanionTodayLinesComponent } from './components/home/companion/today-races/today-races.component';
 import { ParentComponent } from './components/parent/parent.component';
+import { ParentService } from './services/parent/parent.service';
 
 @NgModule({
   declarations: [
@@ -76,7 +76,7 @@ import { ParentComponent } from './components/parent/parent.component';
     CompanionComponent, PendingRequestsComponent, RacesCompanionComponent, GiveAvailabilityDialog,
 
     // Admin
-    AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, NewRaceDialog, ViewUserDialog, EditUserDialog, ViewRaceDialog, EditRaceDialog,
+    AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, NewRaceDialog, ViewUserDialog, EditUserDialog, ManageRaceDialog,
 
     // Settings
     AccountComponent, MeComponent, ChildrenSettingComponent, ContactsSettingComponent, AddChildDialog,
@@ -92,7 +92,7 @@ import { ParentComponent } from './components/parent/parent.component';
 
   ],
   entryComponents: [
-    ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ViewRaceDialog, EditRaceDialog
+    ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog, EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ManageRaceDialog
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,
@@ -112,8 +112,10 @@ import { ParentComponent } from './components/parent/parent.component';
     AdminService,
     CompanionService,
     LineService,
+    ParentService,
     MessageService,
     IsMobileService,
+    DatePipe,
     { provide: GoogleMapsAPIWrapper, useClass: GoogleMapsAPIWrapper },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

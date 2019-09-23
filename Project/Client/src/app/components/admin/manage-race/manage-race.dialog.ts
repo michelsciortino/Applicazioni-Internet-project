@@ -3,23 +3,29 @@ import { AdminService } from 'src/app/services/admin/admin.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Companion, CompanionState } from 'src/app/models/companion';
 import { Line } from 'src/app/models/line';
-import { Race, DirectionType } from 'src/app/models/race';
+import { Race, DirectionType, RaceState } from 'src/app/models/race';
 import { LineService } from 'src/app/services/lines/line-races.service';
 import Utils from 'src/app/utils/utils';
 import { Stop } from 'src/app/models/stop';
-import { CompanionService } from 'src/app/services/companion/companion.service';
+import { Subscription } from 'rxjs';
+import { UserService } from 'src/app/services/user/user.service';
+import { UserInfo } from 'src/app/models/user';
 
 @Component({
-    selector: 'app-edit-race-dialog',
-    templateUrl: './edit-race.dialog.html',
-    styleUrls: ['./edit-race.dialog.css']
+    selector: 'app-manage-race-dialog',
+    templateUrl: './manage-race.dialog.html',
+    styleUrls: ['./manage-race.dialog.css']
 })
-export class EditRaceDialog implements OnInit {
+export class ManageRaceDialog implements OnInit, OnDestroy {
 
+    isAdmin: boolean;
     stopCoverage: Map<string, boolean>;
     race: Race;
 
-    constructor(private adminSvc: AdminService, private lineSvc: LineService, public dialogRef: MatDialogRef<EditRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    userSub: Subscription;
+    racesChangesSub: Subscription;
+
+    constructor(private adminSvc: AdminService, private userSvc: UserService, private lineSvc: LineService, public dialogRef: MatDialogRef<ManageRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
         console.log(data);
         this.stopCoverage = new Map<string, boolean>();
     }
@@ -29,6 +35,19 @@ export class EditRaceDialog implements OnInit {
     getTimeWithSecond = Utils.getTimeWithSecond;
 
     ngOnInit() {
+        this.userSub = this.userSvc.getUserInfo().subscribe(userInfo => this.isAdmin = userInfo.isAdminOfLine(this.data.lineName));
+        this.getRace();
+        this.racesChangesSub = this.adminSvc.getRacesChanges().subscribe((reason) => {
+            this.getRace();
+        });
+    }
+
+    ngOnDestroy() {
+        !this.userSub || this.userSub.unsubscribe();
+        !this.racesChangesSub || this.racesChangesSub.unsubscribe();
+    }
+
+    private getRace() {
         this.lineSvc.getRace(this.data.lineName, this.data.date, this.data.direction)
             .then(race => {
                 console.log(race);
@@ -74,12 +93,31 @@ export class EditRaceDialog implements OnInit {
         if (companion.state === CompanionState.AVAILABLE)
             this.adminSvc.rejectCompanionRequest(race.line.name, race.direction, race.date, companion.userDetails.mail)
                 .toPromise()
-                .then(() => this.ngOnInit())
+                .then(() => this.adminSvc.racesChanged("An request has been deleted"))
                 .catch(() => { });
         else
             this.adminSvc.unAcceptCompanionRequest(race.line.name, race.direction, race.date, companion.userDetails.mail)
                 .toPromise()
                 .then(() => this.ngOnInit())
                 .catch(() => { });
+    }
+
+    isRaceValidable() {
+        for (let covered of this.stopCoverage.values())
+            if (!covered) return false;
+        return true;
+    }
+
+    onCancel() {
+        this.dialogRef.close();
+    }
+
+    validate() {
+        this.lineSvc.validateRace(this.race.line.name, this.race.date, this.race.direction)
+            .then(() => {
+                this.race.raceState = RaceState.VALIDATED;
+                this.adminSvc.racesChanged("A race has been validated");
+            })
+            .catch(() => { });
     }
 }

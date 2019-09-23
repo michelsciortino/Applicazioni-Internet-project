@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
 import { map, catchError, finalize } from 'rxjs/operators'
 import { UserInfo } from '../../models/user';
 import { UserRole } from '../../models/roles';
@@ -22,7 +22,10 @@ export class AdminService {
     private static readonly usersEndpoint = `${environment.baseEndpoint}/users`;
     private static readonly adminEndpoint = `${environment.baseEndpoint}/admin`;
 
+    private racesChangeSbj: Subject<string>;
+
     constructor(private http: HttpClient) {
+        this.racesChangeSbj = new Subject();
     }
 
     public getUsers(pageNumber: number = 0, pageSize: number = 10, filterBy: UserSearchFilter, filter: string): Observable<Users> {
@@ -102,6 +105,14 @@ export class AdminService {
                 companion: username
             });
     }
+
+    public getRacesChanges(): Observable<string> {
+        return this.racesChangeSbj.asObservable();
+    }
+
+    racesChanged(reason: string) {
+        this.racesChangeSbj.next(reason);
+    }
 }
 
 export class UsersDataSource implements DataSource<UserInfo>{
@@ -134,9 +145,15 @@ export class UsersDataSource implements DataSource<UserInfo>{
                 })
             ).subscribe((users: Users) => {
                 //console.log(users)
-                const usrs=users.content.map( user => new UserInfo(user));
-                this.usersSbj.next(usrs);
-                this.nUsersSbj.next(users.totalElements)
+                if (users && users.content) {
+                    const usrs = users.content.map(user => new UserInfo(user));
+                    this.usersSbj.next(usrs);
+                    this.nUsersSbj.next(users.totalElements)
+                }
+                else {
+                    this.usersSbj.next([]);
+                    this.nUsersSbj.next(0)
+                }
             });
     }
 }
@@ -154,8 +171,8 @@ export class CompanionRequestsDataSource {
     public getPendingRequests(): Observable<CompanionRequest[]> {
         return this.requestsSbj.asObservable()
             .pipe(
-                map(requests => requests.map( req =>{
-                    req.date= new Date(req.date);
+                map(requests => requests.map(req => {
+                    req.date = new Date(req.date);
                     return req;
                 }).filter(request => request.state == CompanionState.AVAILABLE))
             );

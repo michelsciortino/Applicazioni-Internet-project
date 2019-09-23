@@ -10,8 +10,8 @@ export class UserInfo {
     public lines: string[];
     public roles: UserRole[];
 
-    constructor(init?:Partial<UserInfo>){
-        Object.assign(this,init);
+    constructor(init?: Partial<UserInfo>) {
+        Object.assign(this, init);
     }
 
     public isAdmin(): boolean {
@@ -20,11 +20,15 @@ export class UserInfo {
 
     public isCompanion(): boolean {
         return this.roles != null &&
-        this.roles.find(r => r === UserRole.COMPANION) != null;
+            this.roles.find(r => r === UserRole.COMPANION) != null;
     }
 
     public isSystemAdmin(): boolean {
         return this.roles != null &&
-        this.roles.find(r => r === UserRole.SYSTEM_ADMIN) != null;
+            this.roles.find(r => r === UserRole.SYSTEM_ADMIN) != null;
+    }
+
+    public isAdminOfLine(lineName: string) {
+        return this.isAdmin() && (this.roles.find(r => r === UserRole.SYSTEM_ADMIN) != null || this.lines.find(line => line === lineName) != null);
     }
 }

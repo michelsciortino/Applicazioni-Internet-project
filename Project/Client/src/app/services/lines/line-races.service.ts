@@ -80,9 +80,14 @@ export class LineService {
             });
     }
 
-    public deleteRace(race: Race) {
-        return this.http.delete(`${LineService.lineEndpoint}/${race.line.name}/races/${race.date.toISOString()}/${race.direction}`)
+    public deleteRace(lineName: string, date: Date, direction: string) {
+        return this.http.delete(`${LineService.lineEndpoint}/${lineName}/races/${date.toISOString()}/${direction}`)
             .toPromise();
+    }
+
+    public validateRace(lineName: string, date: Date, direction: string) {
+        return this.http.post(`${LineService.lineEndpoint}/${lineName}/races/${date.toISOString()}/${direction}/validate`,{})
+        .toPromise();
     }
 }
 
