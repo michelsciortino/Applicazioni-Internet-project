@@ -79,6 +79,6 @@
                 <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}" (click)="isMobile || viewUser(row)"></tr>
             </mat-table>
         </div>
-        <mat-paginator [pageSizeOptions]="[5,10]" [pageSize]=10 [length]="nUsers"></mat-paginator>
+        <mat-paginator [pageSizeOptions]="[5,10]" [pageSize]=5 [length]="nUsers"></mat-paginator>
     </mat-card>
 </div>

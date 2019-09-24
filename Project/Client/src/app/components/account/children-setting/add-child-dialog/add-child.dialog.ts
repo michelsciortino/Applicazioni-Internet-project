@@ -9,7 +9,7 @@ import { UserService } from 'src/app/services/user/user.service';
     styleUrls: ['./add-child.dialog.css']
 })
 export class AddChildDialog {
-    child = new Child(null, null, null, null);
+    child = new Child();
 
     constructor(public dialogRef: MatDialogRef<AddChildDialog>, private userSvc: UserService, @Inject(MAT_DIALOG_DATA) public data: any) {
     }

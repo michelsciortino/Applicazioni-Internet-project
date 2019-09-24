@@ -67,7 +67,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit, OnDestroy
         this.nUsersSub = this.dataSource.nUsers$
             .subscribe((nUsers: number) => this.nUsers = nUsers);
 
-        this.dataSource.loadUsers(0, 10);
+        this.dataSource.loadUsers(0, 5);
     }
 
     ngAfterViewInit() {

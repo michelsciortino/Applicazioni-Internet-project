@@ -37,7 +37,8 @@ export class ParentComponent implements OnInit, OnDestroy {
                     //console.log("info : " + this.userInfo);
                     this.isCompanion = this.userInfo.isCompanion();
                     this.children = this.userInfo.children;
-                    this.children.forEach(child => {
+                    
+                    this.children && this.children.forEach(child => {
                         child.parentId = this.userInfo.mail;
                     })
                     this.parentSvc.getRaces()

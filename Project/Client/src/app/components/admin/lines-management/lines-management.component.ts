@@ -18,7 +18,7 @@ export class LinesManagementComponent implements OnInit, OnDestroy {
 
     userInfo: UserInfo = new UserInfo;
     private userInfoSub: Subscription;
-    private lineSub: Subscription;
+    private linesSub: Subscription;
 
     private linesChangesSub: Subscription;
 
@@ -56,7 +56,7 @@ export class LinesManagementComponent implements OnInit, OnDestroy {
 
         this.getLines();
 
-        this.linesChangesSub = this.adminSvc.getRacesChanges().subscribe((reason) => {
+        this.linesChangesSub = this.adminSvc.getLinesChanges().subscribe((reason) => {
             console.log(reason);
             this.getLines();
         });
@@ -64,12 +64,12 @@ export class LinesManagementComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.userInfoSub.unsubscribe();
-        this.lineSub.unsubscribe();
+        this.linesSub.unsubscribe();
         this.linesChangesSub.unsubscribe();
     }
 
     private getLines() {
-        this.lineSub = this.lineSvc.getLines().subscribe(
+        this.linesSub = this.lineSvc.getLines().subscribe(
             (data: Line[]) => {
                 console.log(data);
                 this.lines = data;

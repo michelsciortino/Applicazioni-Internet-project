@@ -9,6 +9,7 @@ import { Users } from 'src/app/models/users_paginated';
 import { DataSource, CollectionViewer } from '@angular/cdk/collections';
 import { CompanionRequest } from 'src/app/models/companion-request';
 import { CompanionState } from 'src/app/models/companion';
+import { Child } from 'src/app/models/child';
 
 export enum UserSearchFilter {
     MAIL,
@@ -129,7 +130,6 @@ export class AdminService {
     }
 
     linesChanged(reason: string) {
-        console.log(reason)
         this.linesChangeSbj.next(reason);
     }
 }

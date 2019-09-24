@@ -27,9 +27,9 @@ export class SubscribeChildDialog implements OnInit {
     constructor(public dialogRef: MatDialogRef<SubscribeChildDialog>, private adminSvc: AdminService, public dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.parent = new UserInfo();
         this.parent.children = [];
-        this.parent.mail = ""
+        this.parent.mail = "";
         this.children = [];
-        this.child = new Child(null, null, null, null);
+        this.child = new Child();
     }
 
     ngOnInit(): void {
@@ -52,7 +52,6 @@ export class SubscribeChildDialog implements OnInit {
                         let child = new Child(this.child.name, this.child.surname, this.child.cf, this.parent.mail);
                         this.adminSvc.addChildrenToLine(this.data.line.name, child).toPromise()
                             .then(response => {
-                                //console.log("Child Added");
                                 this.adminSvc.linesChanged("Child added");
                                 this.dialogRef.close();
                             })

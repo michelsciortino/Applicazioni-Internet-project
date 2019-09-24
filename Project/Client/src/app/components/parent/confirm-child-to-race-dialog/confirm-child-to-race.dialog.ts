@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Race, DirectionType } from 'src/app/models/race';
-import { LineService} from 'src/app/services/lines/line-races.service';
+import { LineService } from 'src/app/services/lines/line-races.service';
 import { ParentService } from 'src/app/services/parent/parent.service';
 import { reserveChildrenRequest } from 'src/app/models/reserve-children-request';
 import { pipe } from 'rxjs';
@@ -11,8 +11,8 @@ import { Line } from 'src/app/models/line';
 import { Child } from 'src/app/models/child';
 import { Stop } from 'src/app/models/stop';
 import { Passenger, PassengerState } from 'src/app/models/passenger';
-import { PerChildRace } from 'src/app/models/per-child-race';
 import { DatePipe } from '@angular/common';
+import { PerChildRace } from 'src/app/models/per-child-race';
 
 
 @Component({
@@ -22,22 +22,21 @@ import { DatePipe } from '@angular/common';
 })
 export class ConfirmChildToRaceDialog implements OnInit {
 
-    reservedRaces : PerChildRace[] = [];
+    reservedRaces: PerChildRace[] = [];
     races: Race[] = [];
-    reservation: reserveChildrenRequest = new reserveChildrenRequest;
+    reservation: reserveChildrenRequest;
     children: Child[];
     disableSubmit: boolean = true;
     raceSelected: Race;
-    outward : boolean;
-    stopSelected: Stop = new Stop;
-    childSelected: Child = new Child;
-    perChildRaces: PerChildRace[] = [];
-    dates : string[] = [];
-    reservedDates : string[] = [];
+    outward: boolean;
+    stopSelected: Stop;
+    childSelected: Child;
+    dates: string[] = [];
+    reservedDates: string[] = [];
 
     constructor(public dialogRef: MatDialogRef<ConfirmChildToRaceDialog>,
-                private raceSvc: LineService, private parentSvc: ParentService,
-                @Inject(MAT_DIALOG_DATA) public data: any, private datePipe : DatePipe) {}
+        private raceSvc: LineService, private parentSvc: ParentService,
+        @Inject(MAT_DIALOG_DATA) public data: any, private datePipe: DatePipe) { }
 
     ngOnInit() {
         this.children = this.data.children;
@@ -65,17 +64,15 @@ export class ConfirmChildToRaceDialog implements OnInit {
                                             let perChildRace = new PerChildRace;
                                             perChildRace.child = this.children[i];
                                             perChildRace.race = race;
-                                            if(passenger.reserved)
-                                            {
+                                            if (passenger.reserved) {
                                                 this.reservedRaces.push(perChildRace);
                                                 this.reservedDates.push(this.datePipe.transform(race.date, "yyyy-MM-dd hh:mm a"));
                                             }
-                                            else
-                                            {
-                                                this.perChildRaces.push(perChildRace);
+                                            else {
+                                                this.reservedRaces.push(perChildRace);
                                                 this.dates.push(this.datePipe.transform(race.date, "yyyy-MM-dd hh:mm a"));
                                             }
-                                            
+
                                         }
                                     }
                                 })
@@ -99,7 +96,7 @@ export class ConfirmChildToRaceDialog implements OnInit {
         this.reservation.clientRace = this.raceSelected;
         console.log(this.reservation)
         this.parentSvc.confirmChildrenToRace(this.reservation).then(
-            () => {alert("Reservation eseguita correttamente")}
+            () => { alert("Reservation eseguita correttamente") }
         );
         this.dialogRef.close();
     }
@@ -108,17 +105,17 @@ export class ConfirmChildToRaceDialog implements OnInit {
         this.dialogRef.close();
     }
 
-    onSelectPerChildRace(perChildRace : PerChildRace) {
+    onSelectPerChildRace(perChildRace: PerChildRace) {
         if (perChildRace.race.direction === DirectionType.OUTWARD)
             this.outward = true;
-        else 
+        else
             this.outward = false;
         this.stopSelected = null;
         this.disableSubmit = true;
         if (this.raceSelected == null)
             this.raceSelected = new Race;
         this.raceSelected = perChildRace.race;
-        this.childSelected = new Child;
+        this.childSelected;
         this.childSelected = perChildRace.child;
     }
 
