@@ -13,27 +13,34 @@
                     <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.name}} </td>
                 </ng-container>
 
-                <!-- LineName Column -->
-                <ng-container matColumnDef="N° Children">
-                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> N° Children
+                <!-- Children Column -->
+                <ng-container matColumnDef="Children">
+                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> Children
                     </th>
                     <td class="center-vertical centered-text" mat-cell *matCellDef="let element">
                         {{element.subscribedChildren.length}} </td>
                 </ng-container>
 
-                <!-- Action Column -->
-                <ng-container matColumnDef="Add-Child-Action">
+                <!-- Admin Column -->
+                <ng-container matColumnDef="Admins">
+                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> Admins
+                    </th>
+                    <td class="center-vertical centered-text" mat-cell *matCellDef="let element">
+                        {{element.admins.length}} </td>
+                </ng-container>
+
+                <!-- Edit-Action Column -->
+                <ng-container matColumnDef="View-Action">
                     <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
                     <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
-                        <button *ngIf="isAdminOfLine(element)" mat-raised-button
-                            (click)="$event.stopPropagation(); addChildtoLine(element)">Add Child
+                        <button mat-icon-button (click)="$event.stopPropagation(); viewLine(element)">
+                            <mat-icon>info_outline</mat-icon>
                         </button>
                     </td>
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
-                <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"
-                    (click)="viewLine(row)"></tr>
+                <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"></tr>
             </mat-table>
 
             <div *ngIf="dataSource.empty===true" class="grey">NO RACES FOUND</div>

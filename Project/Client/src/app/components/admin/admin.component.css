@@ -1,6 +1,5 @@
 .admin-content {
     text-align: center;
-    margin: 2em;
 }
 
 mat-card {
@@ -24,4 +23,11 @@ mat-spinner {
     margin-right: auto;
     margin-top: 16px;
     margin-bottom: 16px;
+}
+
+.border{
+    
+    margin: 0px 0px 4px 0px;
+    border-bottom: #c8c8c8 1px solid;
+    width: 100%
 }

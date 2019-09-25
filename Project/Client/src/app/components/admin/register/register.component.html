@@ -1,8 +1,10 @@
 <div class="padded-content">
-    <mat-card class="compact-card centered">
-        <p>Register a New User</p>
-        <div class="admin-content">
-            <form [formGroup]="form" (ngSubmit)="register()">
+    <mat-card class="compact-card scroll">
+
+        <p class=" inline-grid">Register a New User</p>
+
+        <div class="admin-content overflow-auto">
+            <form [formGroup]=" form" (ngSubmit)="register()">
                 <mat-form-field>
                     <mat-label>Email</mat-label>
                     <input matInput type="email" placeholder="Email" formControlName="mail">
@@ -16,7 +18,8 @@
                     <mat-error *ngIf="showMailSentMessage">A confirm mail has been sent to {{mail}}</mat-error>
                 </div>
                 <br>
-                <button [disabled]="!form.valid || busy" mat-raised-button color="primary" type="submit">Register</button>
+                <button [disabled]="!form.valid || busy" mat-raised-button color="primary"
+                    type="submit">Register</button>
             </form>
         </div>
     </mat-card>

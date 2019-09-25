@@ -57,6 +57,7 @@ import { ParentComponent } from './components/parent/parent.component';
 import { ParentService } from './services/parent/parent.service';
 import { SubscribeChildDialog } from './components/admin/lines-management/add-child-dialog/add-child.dialog';
 import { LinesManagementComponent } from './components/admin/lines-management/lines-management.component';
+import { ViewLineDialog } from './components/admin/lines-management/view-line-dialog/view-line.dialog';
 
 @NgModule({
   declarations: [
@@ -79,7 +80,7 @@ import { LinesManagementComponent } from './components/admin/lines-management/li
 
     // Admin
     AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, LinesManagementComponent,
-    NewRaceDialog, ViewUserDialog, EditUserDialog, ManageRaceDialog, SubscribeChildDialog,
+    NewRaceDialog, ViewUserDialog, EditUserDialog, ManageRaceDialog, SubscribeChildDialog, ViewLineDialog,
 
     // Settings
     AccountComponent, MeComponent, ChildrenSettingComponent, ContactsSettingComponent, AddChildDialog,
@@ -96,7 +97,7 @@ import { LinesManagementComponent } from './components/admin/lines-management/li
   ],
   entryComponents: [
     ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog,
-    EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ManageRaceDialog, SubscribeChildDialog,
+    EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ManageRaceDialog, SubscribeChildDialog, ViewLineDialog,
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,

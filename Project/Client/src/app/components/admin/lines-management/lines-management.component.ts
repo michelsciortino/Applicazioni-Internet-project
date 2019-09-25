@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material';
 import { SubscribeChildDialog } from './add-child-dialog/add-child.dialog';
 import { UserRole } from 'src/app/models/roles';
 import { AdminService } from 'src/app/services/admin/admin.service';
+import { ViewLineDialog } from './view-line-dialog/view-line.dialog';
 
 @Component({
     selector: 'app-lines-management',
@@ -16,8 +17,6 @@ import { AdminService } from 'src/app/services/admin/admin.service';
 })
 export class LinesManagementComponent implements OnInit, OnDestroy {
 
-    userInfo: UserInfo = new UserInfo;
-    private userInfoSub: Subscription;
     private linesSub: Subscription;
 
     private linesChangesSub: Subscription;
@@ -32,27 +31,17 @@ export class LinesManagementComponent implements OnInit, OnDestroy {
 
     columnDefinitions = [
         { def: 'LineName' },
-        { def: 'N° Children' },
-        { def: 'Add-Child-Action' }
+        { def: 'Children' },
+        { def: 'Admins' },
+        { def: 'View-Action' }
     ];
 
-    constructor(private lineSvc: LineService, private userSvc: UserService, private adminSvc: AdminService, public dialog: MatDialog) {
-        this.userInfo = new UserInfo();
-        this.userInfo.roles = [];
+    constructor(private lineSvc: LineService, private adminSvc: AdminService, public dialog: MatDialog) {
     }
 
     ngOnInit(): void {
 
         this.dataSource = new LinesDataSource(this.lineSvc);
-
-        this.userInfoSub = this.userSvc.getUserInfo().subscribe(
-            (info: UserInfo) => {
-                if (info != null) {
-                    this.userInfo = info;
-                    console.log(this.userInfo)
-                }
-            }
-        );
 
         this.getLines();
 
@@ -63,7 +52,6 @@ export class LinesManagementComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.userInfoSub.unsubscribe();
         this.linesSub.unsubscribe();
         this.linesChangesSub.unsubscribe();
     }
@@ -84,21 +72,7 @@ export class LinesManagementComponent implements OnInit, OnDestroy {
 
     viewLine(line: Line) {
         console.log("VIEW LINE:", line)
-        //const dialogRef = this.dialog.open(ViewLineDialog, { data: { race: race } });
-    }
-
-    addChildtoLine(line: Line): void {
-        const dialogRef = this.dialog.open(SubscribeChildDialog, { data: { line: line } });
-    }
-
-    isAdminOfLine(lineS: Line) {
-        if (this.userInfo != undefined)
-            if (this.userInfo.isSystemAdmin())
-                return true
-            else
-                return this.userInfo.isAdminOfLine(lineS.name);
-        else
-            return false
+        const dialogRef = this.dialog.open(ViewLineDialog, { data: { line: line } });
     }
 }
 
