@@ -8,6 +8,7 @@ import { UserInfo } from 'src/app/models/user';
 import { LineService } from '../lines/line-races.service';
 import { Line } from 'src/app/models/line';
 import { debug } from 'util';
+import { NotificationService } from '../notifications/notification.service';
 
 const credentialsEndpoint = `${environment.baseEndpoint}/credentials`;
 const userEndpoint = `${environment.baseEndpoint}/users`;
@@ -17,7 +18,7 @@ export class UserService implements OnDestroy {
     private userInfo: UserInfo;
     private authSub: Subscription;
 
-    constructor(private authSvc: AuthService, private lineSvc: LineService, private router: Router, private http: HttpClient) {
+    constructor(private authSvc: AuthService, private lineSvc: LineService, private notificationSvc:NotificationService, private router: Router, private http: HttpClient) {
         this.userSbj = new BehaviorSubject(null);
         this.userInfo = new UserInfo();
         this.authSub = this.authSvc.observeLoggedStatus().subscribe(
@@ -42,7 +43,7 @@ export class UserService implements OnDestroy {
     }
 
     public updateUser(user: UserInfo) {
-        return this.http.put(`${userEndpoint}`, user).toPromise()
+        return this.http.post(`${userEndpoint}/${user.mail}`, user).toPromise()
             .then(
                 (result) => {
                     console.log(result);
