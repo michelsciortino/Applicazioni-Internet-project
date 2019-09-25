@@ -15,6 +15,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.websocket.server.PathParam;
+
 import static org.springframework.http.ResponseEntity.ok;
 
 @CrossOrigin
@@ -40,11 +42,10 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "", method = RequestMethod.PUT)
-    public ResponseEntity putUser(@RequestBody ClientUser clientUser) {
+    @RequestMapping(value = "/{username}", method = RequestMethod.POST)
+    public ResponseEntity updateUser(@PathVariable(value = "username") String username, @RequestBody ClientUser clientUser) {
         try {
-
-            return ok( db.controlledUpdateUser(clientUser));
+            return ok(db.controlledUpdateUser(clientUser));
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         } catch (InternalServerErrorException ie) {
@@ -55,8 +56,9 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity getUsers(@RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "MAIL") String sortBy, @RequestParam @Nullable String filterBy, @RequestParam @Nullable  String filter) {
+    public ResponseEntity getUsers(@RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "MAIL") String sortBy, @RequestParam @Nullable String filterBy, @RequestParam @Nullable String filter) {
         try {
             return ok(db.getUsers(pageSize, pageNumber, sortBy, filterBy, filter));
         } catch (ResourceNotFoundException re) {

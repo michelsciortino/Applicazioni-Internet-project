@@ -90,7 +90,7 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/takeChildren", method = RequestMethod.PUT)
+    @RequestMapping(value = "/takeChildren", method = RequestMethod.POST)
     public ResponseEntity takeChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest takeChildrenRequest) {
         try {
             db.takeChildren(performerUserCredentials.getUsername(), takeChildrenRequest.getClientRace(), takeChildrenRequest.getChildren(), takeChildrenRequest.getPedistop());
@@ -106,7 +106,7 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/deliverChildren", method = RequestMethod.PUT)
+    @RequestMapping(value = "/deliverChildren", method = RequestMethod.POST)
     public ResponseEntity deliverChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest deliverChildrenRequest) {
         try {
             db.deliverChildren(performerUserCredentials.getUsername(), deliverChildrenRequest.getClientRace(), deliverChildrenRequest.getChildren(), deliverChildrenRequest.getPedistop());
@@ -124,7 +124,7 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/absentChildren", method = RequestMethod.PUT)
+    @RequestMapping(value = "/absentChildren", method = RequestMethod.POST)
     public ResponseEntity absentChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AbsentChildrenRequest absentChildrenRequest) {
         try {
             db.absentChildren(performerUserCredentials.getUsername(), absentChildrenRequest.getClientRace(), absentChildrenRequest.getChildren());
@@ -159,7 +159,7 @@ public class CompanionController {
         }
     }
 
-    /*@RequestMapping(value = "/stateAvailability", method = RequestMethod.PUT)
+    /*@RequestMapping(value = "/stateAvailability", method = RequestMethod.POST)
     public ResponseEntity stateAvailability(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody StateOrRemoveCompanionAvailabilityRequest stateRequest) {
         try {
             db.stateCompanionAvailability(stateRequest.getTargetCompanion(), performerUserCredentials.getUsername(), stateRequest.getClientRace());
@@ -177,7 +177,7 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/removeAvailability", method = RequestMethod.PUT)
+    @RequestMapping(value = "/removeAvailability", method = RequestMethod.POST)
     public ResponseEntity removeAvailability(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody StateOrRemoveCompanionAvailabilityRequest stateRequest) {
         try {
             db.removeCompanionAvailability(stateRequest.getTargetCompanion(), performerUserCredentials.getUsername(), stateRequest.getClientRace());
@@ -195,7 +195,7 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/confirmChosen", method = RequestMethod.PUT)
+    @RequestMapping(value = "/confirmChosen", method = RequestMethod.POST)
     public ResponseEntity confirmChosen(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace) {
         try {
             db.confirmChosenState(performerUserCredentials.getUsername(), clientRace);
@@ -285,7 +285,7 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/startRace", method = RequestMethod.PUT)
+    @RequestMapping(value = "/startRace", method = RequestMethod.POST)
     public ResponseEntity startRace(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace) {
         try {
             db.startRace(performerUserCredentials.getUsername(), clientRace);
@@ -303,7 +303,7 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/endRace", method = RequestMethod.PUT)
+    @RequestMapping(value = "/endRace", method = RequestMethod.POST)
     public ResponseEntity endRace(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace) {
         try {
             db.endRace(performerUserCredentials.getUsername(), clientRace);

@@ -286,7 +286,7 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(value="/validCompanions", method = RequestMethod.PUT)
+    @RequestMapping(value="/validCompanions", method = RequestMethod.POST)
     public ResponseEntity validCompanions(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace)
     {
         try
@@ -316,7 +316,7 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(value="/addChildrenToLine", method = RequestMethod.PUT)
+    @RequestMapping(value="/addChildrenToLine", method = RequestMethod.POST)
     public ResponseEntity addChildrenToLine(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AddChildToLineRequest addChildToLineRequest)
     {
         try

@@ -19,7 +19,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -35,7 +35,7 @@
             "delayInMillis": 300000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -51,7 +51,7 @@
             "delayInMillis": 600000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -67,7 +67,7 @@
             "delayInMillis": 900000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -83,7 +83,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         }
       ],
       "companions": [
@@ -130,7 +130,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -146,7 +146,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -162,7 +162,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -178,7 +178,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         }
       ],
       "companions": [
@@ -247,7 +247,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -263,7 +263,7 @@
             "delayInMillis": 600000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -279,7 +279,7 @@
             "delayInMillis": 600000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -295,7 +295,7 @@
             "delayInMillis": 900000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         }
       ],
       "companions": [
@@ -364,7 +364,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -380,7 +380,7 @@
             "delayInMillis": 300000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -396,7 +396,7 @@
             "delayInMillis": 600000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -412,7 +412,7 @@
             "delayInMillis": 900000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -428,7 +428,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         }
       ],
       "companions": [
@@ -475,7 +475,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -491,7 +491,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -507,7 +507,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -523,7 +523,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         }
       ],
       "companions": [
@@ -592,7 +592,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -608,7 +608,7 @@
             "delayInMillis": 600000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -624,7 +624,7 @@
             "delayInMillis": 600000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -640,7 +640,7 @@
             "delayInMillis": 900000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         }
       ],
       "companions": [
@@ -709,7 +709,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -725,7 +725,7 @@
             "delayInMillis": 300000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -741,7 +741,7 @@
             "delayInMillis": 600000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -757,7 +757,7 @@
             "delayInMillis": 900000
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -773,7 +773,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         }
       ],
       "companions": [
@@ -786,15 +786,15 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Via Stefano Clemente 19",
-            "latitude": 45.078289,
-            "longitude": 7.658898,
-            "delayInMillis": 0
-          },
-          "finalStop": {
             "name": "Scuola",
             "latitude": 45.080868,
             "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Via Stefano Clemente 19",
+            "latitude": 45.078289,
+            "longitude": 7.658898,
             "delayInMillis": 1200000
           },
           "state": "CONFIRMED"
@@ -820,7 +820,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -836,7 +836,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -852,7 +852,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -868,7 +868,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         },
         {
           "childDetails": {
@@ -884,7 +884,7 @@
             "delayInMillis": 0
           },
           "reserved": false,
-          "state": "ABSENT"
+          "state": "NULL"
         }
       ],
       "companions": [
