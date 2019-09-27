@@ -116,7 +116,7 @@ public interface DatabaseServiceInterface {
 
     void startRace(String performerUsername, ClientRace clientRace);
 
-    @Transactional
+
     void stopReached(String performerUsername, ClientRace clientRace, ClientPediStop clientPediStop);
 
     List<ClientRace> getCompanionRacesFromDate(String performerUsername, Date date);

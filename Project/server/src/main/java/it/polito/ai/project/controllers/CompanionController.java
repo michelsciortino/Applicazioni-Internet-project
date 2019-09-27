@@ -304,9 +304,9 @@ public class CompanionController {
     }
 
     @RequestMapping(value = "/stopReached", method = RequestMethod.POST)
-    public ResponseEntity stopReached(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace) {
+    public ResponseEntity stopReached(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody StopReachedRequest stopReachedRequest) {
         try {
-            db.stopReached(performerUserCredentials.getUsername(), clientRace);
+            db.stopReached(performerUserCredentials.getUsername(), stopReachedRequest.getRace(), stopReachedRequest.getPediStopReached());
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

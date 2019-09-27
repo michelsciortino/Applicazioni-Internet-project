@@ -20,7 +20,7 @@ public class JsonRace {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @NotNull
     private Date date;
-
+    private JsonPediStop currentStop;
     private List<JsonPassenger> passengers;
 
     private List<JsonCompanion> companions;
@@ -28,10 +28,11 @@ public class JsonRace {
     public JsonRace() {
     }
 
-    public JsonRace(@Size(min = 2, max = 30) String lineName, DirectionType direction, @NotNull Date date, List<JsonPassenger> passengers, List<JsonCompanion> companions) {
+    public JsonRace(@Size(min = 2, max = 30) String lineName, DirectionType direction, @NotNull Date date, JsonPediStop currentStop, List<JsonPassenger> passengers, List<JsonCompanion> companions) {
         this.lineName = lineName;
         this.direction = direction;
         this.date = date;
+        this.currentStop = currentStop;
         this.passengers = passengers;
         this.companions = companions;
     }
