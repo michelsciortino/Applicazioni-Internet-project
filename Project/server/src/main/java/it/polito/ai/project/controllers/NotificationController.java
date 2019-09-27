@@ -3,6 +3,7 @@ package it.polito.ai.project.controllers;
 import it.polito.ai.project.exceptions.BadRequestException;
 import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
+import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.ClientUserNotification;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.DirectionType;
@@ -10,6 +11,7 @@ import it.polito.ai.project.services.database.models.UserCredentials;
 import it.polito.ai.project.websocket.WebSocketConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -21,10 +23,15 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.Date;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @Controller
 public class NotificationController {

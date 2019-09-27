@@ -52,6 +52,32 @@ public class ParentController {
         }
     }
 
+    @RequestMapping(value="/reserveChildren", method = RequestMethod.POST)
+    public ResponseEntity removeChildrenFromLine(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ReserveChildrenRequest reserveChildrenRequest)
+    {
+        try
+        {
+            db.removeChildrenFromLine(performerUserCredentials.getUsername(), reserveChildrenRequest.getClientRace(), reserveChildrenRequest.getChildren());
+            return ok(HttpStatus.OK);
+        }
+        catch(ResourceNotFoundException re)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        catch(InternalServerErrorException ie)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(BadRequestException be)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @RequestMapping(value="/races", method = RequestMethod.GET)
     public ResponseEntity getParentRaces(@AuthenticationPrincipal UserCredentials performerUserCredential, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  @RequestParam Date date)
     {

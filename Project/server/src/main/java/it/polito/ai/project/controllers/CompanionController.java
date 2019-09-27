@@ -303,6 +303,24 @@ public class CompanionController {
         }
     }
 
+    @RequestMapping(value = "/stopReached", method = RequestMethod.POST)
+    public ResponseEntity stopReached(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace) {
+        try {
+            db.stopReached(performerUserCredentials.getUsername(), clientRace);
+            return ok(HttpStatus.OK);
+        } catch (ResourceNotFoundException re) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (InternalServerErrorException ie) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (BadRequestException be) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } catch (UnauthorizedRequestException ue) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @RequestMapping(value = "/endRace", method = RequestMethod.POST)
     public ResponseEntity endRace(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace) {
         try {

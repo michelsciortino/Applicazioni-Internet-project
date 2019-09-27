@@ -53,15 +53,20 @@ public interface DatabaseServiceInterface {
 
     void insertNotification(String performerUsername, ClientUserNotification clientUserNotification, String targetUsername);
 
-    Page<ClientUserNotification> getBroadcastUserNotification(int pageNumber, ClientRace clientRace);
 
-    Page<ClientUserNotification> getUserNotificationByPerformerUsername(int pageNumber, String username);
 
     //-------------------------------------------------###Parent###---------------------------------------------------//
+
+
+    Page<ClientUserNotification> getUserNotifications(int pageNumber, int pageSize, String username);
+
+    List<Page<ClientUserNotification>> getUserBroadcastNotifications(int pageNumber, int pageSize, String username);
 
     void reserveChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> passengers);
 
     //--------------------------------------------------###Admin###---------------------------------------------------//
+
+    void removeChildrenFromLine(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
 
     List<ClientRace> getParentRacesFromDate(String performerUsername, Date date);
 
@@ -110,6 +115,9 @@ public interface DatabaseServiceInterface {
     void absentChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
 
     void startRace(String performerUsername, ClientRace clientRace);
+
+    @Transactional
+    void stopReached(String performerUsername, ClientRace clientRace, ClientPediStop clientPediStop);
 
     List<ClientRace> getCompanionRacesFromDate(String performerUsername, Date date);
 

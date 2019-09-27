@@ -13,6 +13,7 @@ import java.util.Date;
 @Data
 public class ClientUserNotification {
 
+    private String id;
     @Email
     private String performerUsername;
     @Email
@@ -32,7 +33,8 @@ public class ClientUserNotification {
     @NotNull
     private Boolean isRead;
 
-    public ClientUserNotification(@Email String performerUsername,@Email String targetUsername, @NotNull NotificationsType type, @NotNull Date date, boolean broadcast, ClientRace broadcastRace, @Nullable Object parameters, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
+    public ClientUserNotification(String id, @Email String performerUsername,@Email String targetUsername, @NotNull NotificationsType type, @NotNull Date date, boolean broadcast, ClientRace broadcastRace, @Nullable Object parameters, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
+        this.id = id;
         this.performerUsername = performerUsername;
         this.targetUsername = targetUsername;
         this.type = type;

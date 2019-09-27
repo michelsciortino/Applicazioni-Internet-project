@@ -9,6 +9,7 @@ import it.polito.ai.project.services.email.EmailSenderService;
 import it.polito.ai.project.services.email.models.Mail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +29,10 @@ public class DatabaseService implements DatabaseServiceInterface {
     private final UserRepository userRepository;
     private final UserNotificationRepository userNotificationRepository;
     private final EmailSenderService emailSenderService;
-
     @Autowired
+    SimpMessageSendingOperations messagingTemplate;
+
+   @Autowired
     public DatabaseService(PasswordEncoder passwordEncoder, LineRepository lineRepository, RaceRepository raceRepository, UserCredentialsRepository userCredentialsRepository, TokenRepository tokenRepository, UserRepository userRepository, UserNotificationRepository userNotificationRepository, EmailSenderService emailSenderService) {
         this.passwordEncoder = passwordEncoder;
         this.lineRepository = lineRepository;
@@ -582,43 +585,131 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         userNotificationRepository.save(clientUserNotificationToUserNotification(clientUserNotification));
     }
+    public void readNotification(String performerUsername, String notificationId) {
+        Optional<User> performer;
+        Optional<UserNotification> userNotification;
+
+        try {
+            performer = userRepository.findByUsername(performerUsername);
+            userNotification = userNotificationRepository.findById(notificationId);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        //Check if performer is present
+        if (!performer.isPresent() || !userNotification.isPresent())
+            throw new ResourceNotFoundException("Performer User or Notification not found");
+        //If notification is broadcast: Throw BadRequest
+        if (userNotification.get().isBroadcast())
+             throw new BadRequestException("Cannot send read check for broadcast notfication");
+        //If notification is already read: Throw BadRequest
+        if(userNotification.get().getIsRead())
+            throw new BadRequestException("Notification already read");
+        userNotification.get().setIsRead(true);
+        userNotificationRepository.save(userNotification.get());
+    }
 
     @Override
-    public Page<ClientUserNotification> getUserNotificationByPerformerUsername(int pageNumber, String username) {
+    public Page<ClientUserNotification> getUserNotifications(int pageNumber, int pageSize, String performerUsername) {
         try {
-            Pageable pageable = PageRequest.of(pageNumber, 10);
+            Optional<User> performer;
+            Optional<UserCredentials> performerCredentials;
 
+            try {
+                performer = userRepository.findByUsername(performerUsername);
+                performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+
+            } catch (Exception e) {
+                throw new InternalServerErrorException();
+            }
+            //Check if performer is present
+            if (!performer.isPresent() || !performerCredentials.isPresent())
+                throw new ResourceNotFoundException("Performer User not found");
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(SortType.get("date")));
             List<ClientUserNotification> usersNotificationList = new ArrayList<>();
-            for (UserNotification n : userNotificationRepository.findAllByPerformerUsername(pageable, username))
-                usersNotificationList.add(userNotificationToClientUserNotification(n));
+            Page<UserNotification> userNotifications = userNotificationRepository.findAllByTargetUsername(performerUsername, pageable);
+           long totalElements = userNotifications.getTotalElements();
 
-            return new PageImpl<>(usersNotificationList);
+            for (UserNotification un : userNotifications)
+                usersNotificationList.add(userNotificationToClientUserNotification(un));
+
+
+            return new PageImpl<>(usersNotificationList, pageable, totalElements);
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
     }
-
     @Override
-    public Page<ClientUserNotification> getBroadcastUserNotification(int pageNumber, ClientRace race) {
+    public List<Page<ClientUserNotification>> getUserBroadcastNotifications(int pageNumber, int pageSize, String performerUsername) {
         try {
-            Pageable pageable = PageRequest.of(pageNumber, 10);
+            Optional<User> performer;
+            Optional<UserCredentials> performerCredentials;
 
+            try {
+                performer = userRepository.findByUsername(performerUsername);
+                performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
+
+            } catch (Exception e) {
+                throw new InternalServerErrorException();
+            }
+            //Check if performer is present
+            if (!performer.isPresent() || !performerCredentials.isPresent())
+                throw new ResourceNotFoundException("Performer User not found");
+
+            Pageable adminPageable = null;
+            List<ClientUserNotification> adminNotificationList = new ArrayList<>();
+            Page<UserNotification> adminNotifications;
+            long totalElements1=0;
+            if(isAdmin(performerCredentials.get().getRoles()))
+            {
+
+                if(pageNumber == 1)
+                {
+                    int oldpagesize = pageSize;
+                    pageSize = pageSize / 2;
+                    adminPageable = PageRequest.of(pageNumber, pageSize, Sort.by(SortType.get("date")));
+                    if(pageSize*2 != oldpagesize) pageSize= pageSize + 1 ;
+                }
+                else
+                {
+                    int oldpagenumber = pageNumber;
+                    pageNumber = pageNumber/2;
+                    adminPageable = PageRequest.of(pageNumber, pageSize, Sort.by(SortType.get("date")));
+                    if(pageNumber*2 != oldpagenumber) pageNumber = pageNumber + 1 ;
+                }
+
+                adminNotifications = userNotificationRepository.findAllByBroadcastIsTrueAndBroadcastRace_LineNameIn(performer.get().getLines(), adminPageable);
+                totalElements1 = adminNotifications.getTotalElements();
+
+                for (UserNotification un : adminNotifications)
+                    adminNotificationList.add(userNotificationToClientUserNotification(un));
+            }
+
+            Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(SortType.get("date")));
             List<ClientUserNotification> usersNotificationList = new ArrayList<>();
-            for (UserNotification n : userNotificationRepository.findAllByBroadcastIsTrueAndBroadcastRace(pageable, clientRaceToRace(race)))
-                usersNotificationList.add(userNotificationToClientUserNotification(n));
 
-            return new PageImpl<>(usersNotificationList);
+            Page<UserNotification> userNotifications = userNotificationRepository.findAllByBroadcastIsTrueAndBroadcastRace_CompanionsContainsAndBroadcastRace_PassengersContains(performerUsername, performerUsername,  pageable);
+
+            long totalElements = userNotifications.getTotalElements();
+
+            for (UserNotification un : userNotifications)
+                usersNotificationList.add(userNotificationToClientUserNotification(un));
+
+            List<Page<ClientUserNotification>> returnlist = new ArrayList<>();
+            returnlist.add( new PageImpl<>(usersNotificationList, pageable, totalElements));
+            if(!adminNotificationList.isEmpty() && adminPageable != null)
+                returnlist.add(new PageImpl<>(adminNotificationList, adminPageable, totalElements));
+            return returnlist;
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
     }
 
     private ClientUserNotification userNotificationToClientUserNotification(UserNotification n) {
-        return new ClientUserNotification(n.getPerformerUsername(), n.getTargetUsername(), n.getType(), n.getDate(), n.isBroadcast(), raceToClientRace(n.getBroadcastRace(),null), n.getParameters(), n.getMessage(), n.getIsRead());
+        return new ClientUserNotification(n.getId() ,n.getPerformerUsername(), n.getTargetUsername(), n.getType(), n.getDate(), n.isBroadcast(), raceToClientRace(n.getBroadcastRace(),null), n.getParameters(), n.getMessage(), n.getIsRead());
     }
 
     private UserNotification clientUserNotificationToUserNotification(ClientUserNotification n) {
-        return new UserNotification(n.getPerformerUsername(), n.getTargetUsername(), n.getType(), n.getDate(), n.isBroadcast(), clientRaceToRace(n.getBroadcastRace()), n.getParameters(), n.getMessage(), n.getIsRead());
+        return new UserNotification( n.getId(), n.getPerformerUsername(), n.getTargetUsername(), n.getType(), n.getDate(), n.isBroadcast(), clientRaceToRace(n.getBroadcastRace()), n.getParameters(), n.getMessage(), n.getIsRead());
     }
 
     //-------------------------------------------------###Parent###---------------------------------------------------//
@@ -658,6 +749,46 @@ public class DatabaseService implements DatabaseServiceInterface {
             }
         }
         // Check if all passenger in list passed are taken else Throw BadRequest
+        if (count != clientPassengers.size())
+            throw new BadRequestException();
+        // Update the race
+        updateRace(raceToClientRace(race.get(),null), performerUsername);
+    }
+
+    @Override
+    public void removeChildrenFromLine(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
+        Optional<Race> race;
+        Optional<UserCredentials> performer;
+        // Take information from DB
+        try {
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLine().getName(), clientRace.getDirection());
+            performer = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+        // If race or performer is not present: Throw ResourceNotFound
+        if (!race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+
+        // If performer user is not parent for children: Throw BadRequest
+        for (ClientPassenger c : clientPassengers) {
+            if (!c.getChildDetails().getParentId().equals(performerUsername) || !performer.get().getRoles().contains(Roles.prefix + Roles.USER))
+                throw new BadRequestException();
+        }
+        int count = 0;
+        for (Passenger p : race.get().getPassengers()) {
+            for (ClientPassenger cp : clientPassengers) {
+                // For each Passenger in list passed check if he is in race
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCf())) {
+                    {
+                        count++;
+                        race.get().getPassengers().remove(p);
+
+                    }
+                }
+            }
+        }
+        // Check if all passenger in list passed are removed else Throw BadRequest
         if (count != clientPassengers.size())
             throw new BadRequestException();
         // Update the race
@@ -927,38 +1058,39 @@ public class DatabaseService implements DatabaseServiceInterface {
                     continue;
                 if (targetCompanionState == null || targetcompanion == null)
                     throw new InternalServerErrorException();
-                //TODO: fai vedere ad andrea
+
                 //if companion is available, he's suddenly removed
                 if (targetCompanionState.equals(CompanionState.AVAILABLE))
                     r.getCompanions().remove(targetcompanion);
                     //if companion is chosen, all other chosen companions become available and a notification must be sent to admin
-                else if (targetCompanionState.equals(CompanionState.CHOSEN)) {
+                else if (targetCompanionState.equals(CompanionState.CHOSEN))
+                {
                     //Remove chosen companion
-                    for (Companion c : r.getCompanions()) {
+                    for (Companion c : r.getCompanions())
+                    {
                         if (c.getState().equals(CompanionState.CHOSEN) || c.getState().equals(CompanionState.CONFIRMED)) {
                             r.getCompanions().get(r.getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
                         }
                     }
-
-                    //TODO modifica in notifica
-                    //Format content and send email to each admin
+                    /*Format content and send email to each admin
                     String content = targetUsername + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
                     for (String address : line.get().getAdmins())
                         emailSenderService.sendSimpleMail(new Mail(performerUsername, address, "Companion Removed", content));
+                     */
                 } else if (targetCompanionState.equals(CompanionState.CONFIRMED)) {
                     //Remove chosen companion
                     for (Companion c : r.getCompanions()) {
                         String content = "You have been removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
                         if (c.getState().equals(CompanionState.CONFIRMED) || c.getState().equals(CompanionState.CHOSEN)) {
                             r.getCompanions().get(r.getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
-                            emailSenderService.sendSimpleMail(new Mail(performerUsername, c.getUserDetails().getUsername(), "Rounds Changed!", content));
+                            //emailSenderService.sendSimpleMail(new Mail(performerUsername, c.getUserDetails().getUsername(), "Rounds Changed!", content));
                         }
                     }
-                    //Format content and send email to each admin
+                    /*Format content and send email to each admin
                     String content = targetUsername + ": Removed form Race: " + r.getLineName() + "/" + r.getDate().toString() + "/" + r.getDirection();
                     for (String address : line.get().getAdmins())
                         emailSenderService.sendSimpleMail(new Mail(performerUsername, address, "Companion Removed", content));
-
+                    */
                 }
 
                 updateRace(raceToClientRace(r,null), performerUsername);
@@ -1086,6 +1218,16 @@ public class DatabaseService implements DatabaseServiceInterface {
                     race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.CHOSEN);
         }
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+        for (Companion selectedC : selectedCompanions) {
+            for (Companion c : race.get().getCompanions())
+                if (selectedC.getUserDetails().getName().equals(c.getUserDetails().getName())) {
+                    Date d = new Date();
+                    UserNotification notification = new UserNotification(performerUsername, c.getUserDetails().getUsername(), NotificationsType.COMPANION_CHOSEN, d, false, race.get(), null, performerUsername + " has chosen Companion " + c.getUserDetails().getUsername() + " for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString() + ", from Stop " + c.getInitialStop() + " to Stop " + c.getFinalStop(), false);
+                    userNotificationRepository.save(notification);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, c.getUserDetails().getUsername(), d);
+                    messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+                }
+        }
     }
 
 
@@ -1106,6 +1248,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<Race> race;
         Optional<Line> line;
         Optional<User> performer;
+        List<Companion> unselectedCompanions= new ArrayList<>();
         try {
             race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLine().getName(), clientRace.getDirection());
         } catch (Exception e) {
@@ -1136,10 +1279,22 @@ public class DatabaseService implements DatabaseServiceInterface {
             if (c.getState().equals(CompanionState.VALIDATED))
                 throw new BadRequestException("Companions already validated for this race");
             // Unselect all Chosen Companion
-            if (c.getState().equals(CompanionState.CHOSEN))
+            if (c.getState().equals(CompanionState.CHOSEN)) {
                 race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
+                unselectedCompanions.add(c);
+            }
         }
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+        for (Companion selectedC : unselectedCompanions) {
+            for (Companion c : race.get().getCompanions())
+                if (selectedC.getUserDetails().getName().equals(c.getUserDetails().getName())) {
+                    Date d = new Date();
+                    UserNotification notification = new UserNotification(performerUsername, c.getUserDetails().getUsername(), NotificationsType.COMPANION_REMOVECHOSEN, d, false, race.get(), null, performerUsername + " has removed chosen state for Companion " + c.getUserDetails().getUsername() + " for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString(), false);
+                    userNotificationRepository.save(notification);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, c.getUserDetails().getUsername(), d);
+                    messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+                }
+        }
     }
 
     /**
@@ -1211,10 +1366,24 @@ public class DatabaseService implements DatabaseServiceInterface {
         // Set CompanionState to CHOSEN
         if (!isCompanionStillAvailable(selectedCompanion, line.get(), race.get()))
             throw new BadRequestException();
+
+        for (Companion c1 : race.get().getCompanions())
+            if (selectedCompanion.getUserDetails().getName().equals(c1.getUserDetails().getName()))
+                race.get().getCompanions().get(race.get().getCompanions().indexOf(c1)).setState(CompanionState.CHOSEN);
+        updateRace(raceToClientRace(race.get(),null), performerUsername);
+
         for (Companion c : race.get().getCompanions())
             if (selectedCompanion.getUserDetails().getName().equals(c.getUserDetails().getName()))
-                race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.CHOSEN);
-        updateRace(raceToClientRace(race.get(),null), performerUsername);
+            {
+                Date d = new Date();
+                UserNotification notification = new UserNotification(performerUsername, c.getUserDetails().getUsername(), NotificationsType.COMPANION_CHOSEN, d, false, race.get(), null, performerUsername + " has chosen Companion " + c.getUserDetails().getUsername() + " for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString() + ", from Stop " + c.getInitialStop() + " to Stop " + c.getFinalStop(), false);
+                userNotificationRepository.save(notification);
+                userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, c.getUserDetails().getUsername(), d);
+                messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+
+            }
+
+
     }
 
     /**
@@ -1271,6 +1440,16 @@ public class DatabaseService implements DatabaseServiceInterface {
                 race.get().getCompanions().get(race.get().getCompanions().indexOf(c)).setState(CompanionState.AVAILABLE);
         }
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getUsername().equals(companion) && c.getState().equals(CompanionState.CHOSEN)) {
+                Date d = new Date();
+                UserNotification notification = new UserNotification(performerUsername, c.getUserDetails().getUsername(), NotificationsType.COMPANION_REMOVECHOSEN, d, false, race.get(), null, performerUsername + " has removed chosen state for Companion " + c.getUserDetails().getUsername() + " for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString(), false);
+                userNotificationRepository.save(notification);
+                userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, c.getUserDetails().getUsername(), d);
+                messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+            }
+        }
+
     }
 
 
@@ -1439,6 +1618,11 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
         race.get().setRaceState(RaceState.VALIDATED);
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+        Date d = new Date();
+        UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.ROUND_CONFIRM, d, true, race.get(), null, performerUsername + " has validated race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString() , false);
+        userNotificationRepository.save(notification);
+        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndRaceAndDateEq(performerUsername, race.get(), d);
+        this.messagingTemplate.convertAndSend("/topic/notifications/"+race.get().getLineName() +"/" + race.get().getDate() +"/"+race.get().getDirection(), notification);
     }
 
     private boolean isCompanionStillAvailable(Companion companion, Line line, Race race) {
@@ -1757,26 +1941,37 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         ClientCompanion c = new ClientCompanion(userToClientUser(targetUser.get(), targetCredentials.get().getRoles()), companionRequest.getInitialStop(), companionRequest.getFinalStop(), CompanionState.AVAILABLE);
         race.get().getCompanions().add(clientCompanionToCompanion(c));
-        ClientRace finalRace = raceToClientRace(race.get(),null);
+        ClientRace finalRace = raceToClientRace(race.get(), null);
 
         updateRace(finalRace, performerUsername);
+        for (String name : line.get().getAdmins()) {
+            Date d = new Date();
+            UserNotification notification = new UserNotification(performerUsername, name, NotificationsType.COMPANION_STATEAVAILABILITY, d, false, race.get(), null, performerUsername + " states availability for Date "+ race.get().getDate().toString() + ", in Line " + race.get().getLineName() +", Direction " + race.get().getDirection().toString() + ", from Stop " + companionRequest.getInitialStop() + " to Stop " + companionRequest.getFinalStop() , false);
+            userNotificationRepository.save(notification);
+            userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername,name, d);
+            messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+        }
+
     }
 
+    @Transactional
     @Override
     public void removeCompanionAvailability(String performerUsername, CompanionRequest companionRequest) {
         Optional<Race> race;
+        Optional<Line> line;
         Optional<UserCredentials> targetCredentials;
         Optional<UserCredentials> performerCredentials;
 
         try {
             race = raceRepository.findRaceByDateAndLineNameAndDirection(companionRequest.getDate(), companionRequest.getLineName(), companionRequest.getDirection());
+            line = lineRepository.findLineByName(companionRequest.getLineName());
             targetCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
         // If race, targetCredentials or PerformCredentials aren't in db: Throw ResourceNotFound
-        if (!race.isPresent() || !targetCredentials.isPresent() || !performerCredentials.isPresent())
+        if (!line.isPresent() || !race.isPresent() || !targetCredentials.isPresent() || !performerCredentials.isPresent())
             throw new ResourceNotFoundException();
         // If the performer isn't the SysAdmin or the Companion: Throw UnauthorizedRequest
         if (!isCompanion(performerCredentials.get().getRoles()) && !isSystemAdmin(performerCredentials.get().getRoles()))
@@ -1814,6 +2009,13 @@ public class DatabaseService implements DatabaseServiceInterface {
         ClientRace finalRace = raceToClientRace(race.get(),null);
 
         updateRace(finalRace, performerUsername);
+        for (String name : line.get().getAdmins()) {
+            Date d = new Date();
+            UserNotification notification = new UserNotification(performerUsername, name, NotificationsType.COMPANION_REMOVEAVAILABILITY, d, false, race.get(), null, performerUsername + " removes availability for Date "+ race.get().getDate().toString() + ", in Line " + race.get().getLineName() +", Direction " + race.get().getDirection().toString()  , false);
+            userNotificationRepository.save(notification);
+            userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, name, d);
+            messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+        }
     }
 
 
@@ -1833,9 +2035,11 @@ public class DatabaseService implements DatabaseServiceInterface {
         Optional<UserCredentials> performerCredentials;
         Optional<Race> race;
         Optional<User> performer;
+        Optional<Line> line;
         try {
             performerCredentials = userCredentialsRepository.findByUsername(performerUsername);
             performer = userRepository.findByUsername(performerUsername);
+            line = lineRepository.findLineByName(companionRequest.getLineName());
             race = raceRepository.findRaceByDateAndLineNameAndDirection(companionRequest.getDate(), companionRequest.getLineName(), companionRequest.getDirection());
         } catch (Exception e) {
             throw new InternalServerErrorException();
@@ -1866,8 +2070,18 @@ public class DatabaseService implements DatabaseServiceInterface {
                     throw new BadRequestException("Companion not in CHOSEN state");
         }
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+        for (String name : line.get().getAdmins()) {
+            Date d = new Date();
+            UserNotification notification = new UserNotification(performerUsername, name, NotificationsType.COMPANION_CONFIRMCHOSEN, d, false, race.get(), null, performerUsername + " confermed Chosen for Date "+ race.get().getDate().toString() + ", in Line " + race.get().getLineName() +", Direction " + race.get().getDirection().toString()  , false);
+            userNotificationRepository.save(notification);
+            userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, name, d);
+            messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+        }
+
     }
 
+
+    @Transactional
     @Override
     public void updateCompanionAvailability(String performerUsername, CompanionRequest companionRequest) {
         Optional<Race> race;
@@ -1953,6 +2167,8 @@ public class DatabaseService implements DatabaseServiceInterface {
 
 
     //+++++++++++++++++++++++++++++++Companion Controller Methods+++++++++++++++++++++++++++++++
+
+    @Transactional
     @Override
     public void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop takePediStop) {
         Optional<Race> race;
@@ -1997,7 +2213,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         count++;
                         if (race.get().getDirection().equals(DirectionType.OUTWARD))
                             if (!takePediStop.getName().equals(p.getStopReserved())) ;
-                        //TODO: implementare notifiche
+
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setState(PassengerState.TAKEN);
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setStopTaken(clientPediStopToPediStop(takePediStop));
                     }
@@ -2009,8 +2225,26 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new BadRequestException("One or more specified children are not in line");
         // Update the race
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+
+        //Send Notification
+        for (Passenger p : race.get().getPassengers())
+        {
+            for (ClientPassenger cp : clientPassengers)
+            {
+                // For each Passenger in list passed check if is in race
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCf())) {
+                    Date d =  new Date();
+                    UserNotification notification = new UserNotification(performerUsername, p.getChildDetails().getParentId(), NotificationsType.CHILD_TAKEN, d, false, race.get(), null, p.getChildDetails().getName() + " got on the Millepedibus, on Line " + race.get().getLineName() + " at Stop" + p.getStopTaken(), false);
+                    userNotificationRepository.save(notification);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, p.getChildDetails().getParentId(), d);
+                    messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+                }
+            }
+        }
     }
 
+
+    @Transactional
     @Override
     public void deliverChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop deliverPediStop) {
         Optional<Race> race;
@@ -2064,8 +2298,25 @@ public class DatabaseService implements DatabaseServiceInterface {
             throw new BadRequestException("One or More child/s is/are not in race");
         // Update the race
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+
+        //Send Notification
+        for (Passenger p : race.get().getPassengers())
+        {
+            for (ClientPassenger cp : clientPassengers)
+            {
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCf())) {
+                    Date d =  new Date();
+                    UserNotification notification = new UserNotification(performerUsername, p.getChildDetails().getParentId(), NotificationsType.CHILD_DELIVERED, d, false, race.get(), null, p.getChildDetails().getName() + " got off the Millepedibus, on Line " + race.get().getLineName() + " at Stop" + p.getStopDelivered(), false);
+                    userNotificationRepository.save(notification);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, p.getChildDetails().getParentId(), d);
+                    messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+                }
+            }
+        }
     }
 
+
+    @Transactional
     @Override
     public void absentChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
         Optional<Race> race;
@@ -2111,15 +2362,34 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         // Update the race
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+
+        //Send Notification
+        for (Passenger p : race.get().getPassengers())
+        {
+            for (ClientPassenger cp : clientPassengers)
+            {
+                if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCf())) {
+                    Date d = new Date();
+                    UserNotification notification = new UserNotification(performerUsername, p.getChildDetails().getParentId(), NotificationsType.CHILD_ABSENT, d, false, race.get(), null, p.getChildDetails().getName() + " is absent, Line " + race.get().getLineName() + " at Stop" + p.getStopDelivered(), false);
+                    userNotificationRepository.save(notification);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, p.getChildDetails().getParentId(), d);
+                    messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
+                }
+            }
+        }
     }
 
+
+    @Transactional
     @Override
     public void startRace(String performerUsername, ClientRace clientRace) {
         Optional<Race> race;
+        Optional<Line> line;
         Optional<UserCredentials> performer;
 
         // Take information from DB
         try {
+            line = lineRepository.findLineByName(clientRace.getLine().getName());
             race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLine().getName(), clientRace.getDirection());
             performer = userCredentialsRepository.findByUsername(performerUsername);
         } catch (Exception e) {
@@ -2129,7 +2399,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!today.before(clientRace.getDate()))
             throw new BadRequestException("Race cannot be started before its start time");
         // If race or performer is not present: Throw ResourceNotFound
-        if (!race.isPresent() || !performer.isPresent())
+        if (!line.isPresent()||!race.isPresent() || !performer.isPresent())
             throw new ResourceNotFoundException();
         //If race isn't in null state cannot be started: Throw Bad Request
         if (!race.get().getRaceState().equals(RaceState.SCHEDULED))
@@ -2137,14 +2407,123 @@ public class DatabaseService implements DatabaseServiceInterface {
         // If performer user is not select companion for this race : Throw BadRequest
         for (Companion c : race.get().getCompanions()) {
             if (c.getUserDetails().getName().equals(performerUsername))
+            {
                 if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
                     throw new BadRequestException("Performer isn't a Validated Companion");
+
+                if(race.get().getDirection().equals(DirectionType.OUTWARD))
+                {
+                    if (!c.getInitialStop().getName().equals(line.get().getOutwardStops().get(0)))
+                        throw new BadRequestException("Performer isn't a Companion selected for the first stop");
+                }
+                else
+                {
+                    if (!c.getInitialStop().getName().equals(line.get().getReturnStops().get(0)))
+                        throw new BadRequestException("Performer isn't a Companion selected for the first stop");
+                }
+            }
         }
 
         race.get().setRaceState(RaceState.STARTED);
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+        Date d = new Date();
+        UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.RACE_STARTED, d, true, race.get(), null, performerUsername + " : Race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString()+ "is starting!" , false);
+        userNotificationRepository.save(notification);
+        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndRaceAndDateEq(performerUsername, race.get(), d);
+        this.messagingTemplate.convertAndSend("/topic/notifications/"+race.get().getLineName() +"/" + race.get().getDate() +"/"+race.get().getDirection(), notification);
     }
+    @Transactional
+    @Override
+    public void stopReached(String performerUsername, ClientRace clientRace, ClientPediStop clientPediStop) {
+        Optional<Race> race;
+        Optional<Line> line;
+        Optional<UserCredentials> performer;
 
+        // Take information from DB
+        try {
+            line = lineRepository.findLineByName(clientRace.getLine().getName());
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLine().getName(), clientRace.getDirection());
+            performer = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error in repository lookup");
+        }
+        Date today = Calendar.getInstance().getTime();
+        if (!today.before(clientRace.getDate()))
+            throw new BadRequestException("Stop cannot be reached before race start time");
+        // If race or performer is not present: Throw ResourceNotFound
+        if (!line.isPresent()||!race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+        //If race isn't in started state stop cannot be reached: Throw Bad Request
+        if (!race.get().getRaceState().equals(RaceState.STARTED))
+            throw new BadRequestException("Race must be started");
+        if(!line.get().getOutwardStops().contains(clientPediStopToPediStop(clientPediStop)) && !line.get().getReturnStops().contains(clientPediStopToPediStop(clientPediStop)))
+            throw new BadRequestException("Stop not in Race");
+        // If performer user is not select companion for this race : Throw BadRequest
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getName().equals(performerUsername))
+            {
+                if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
+                    throw new BadRequestException("Performer isn't a Validated Companion");
+
+                if(race.get().getDirection().equals(DirectionType.OUTWARD))
+                {
+                    boolean initFlag= false;
+                    boolean stopFlag = false;
+                    boolean found = false;
+                    for(PediStop p : line.get().getOutwardStops())
+                    {
+                        if(stopFlag) break;
+
+                        if(c.getInitialStop().getName().equals(p.getName())) initFlag = true;
+
+                        if(!initFlag) continue;
+
+                        if(c.getFinalStop().getName().equals(p.getName()))stopFlag = true;
+                        if(p.getName().equals(clientPediStop.getName()))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found)
+                    {
+                        throw new BadRequestException("Performer isn't a Companion selected for this stop");
+                    }
+                }
+                else
+                {
+                    boolean initFlag= false;
+                    boolean stopFlag = false;
+                    boolean found = false;
+                    for(PediStop p : line.get().getReturnStops())
+                    {
+                        if(stopFlag) break;
+
+                        if(c.getInitialStop().getName().equals(p.getName())) initFlag = true;
+
+                        if(!initFlag) continue;
+
+                        if(c.getFinalStop().getName().equals(p.getName()))stopFlag = true;
+                        if(p.getName().equals(clientPediStop.getName()))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found)
+                    {
+                        throw new BadRequestException("Performer isn't a Companion selected for this stop");
+                    }
+                }
+            }
+        }
+
+        Date d = new Date();
+        UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.STOP_REACHED, d, true, race.get(), null, performerUsername + " : Race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString()+ "has reached Stop: " + clientPediStop.getName() , false);
+        userNotificationRepository.save(notification);
+        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndRaceAndDateEq(performerUsername, race.get(), d);
+        this.messagingTemplate.convertAndSend("/topic/notifications/"+race.get().getLineName() +"/" + race.get().getDate() +"/"+race.get().getDirection(), notification);
+    }
     @Override
     public List<ClientRace> getCompanionRacesFromDate(String performerUsername, Date date) {
         List<ClientRace> companionRaces;
@@ -2199,13 +2578,17 @@ public class DatabaseService implements DatabaseServiceInterface {
         return companionRaces;
     }
 
+
+    @Transactional
     @Override
     public void endRace(String performerUsername, ClientRace clientRace) {
         Optional<Race> race;
+        Optional<Line> line;
         Optional<UserCredentials> performer;
         // Take information from DB
         try {
             race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLine().getName(), clientRace.getDirection());
+            line = lineRepository.findLineByName(clientRace.getLine().getName());
             performer = userCredentialsRepository.findByUsername(performerUsername);
         } catch (Exception e) {
             throw new InternalServerErrorException("Error in repository lookup");
@@ -2219,11 +2602,28 @@ public class DatabaseService implements DatabaseServiceInterface {
         // If performer user is not select companion for this race : Throw BadRequest
         for (Companion c : race.get().getCompanions()) {
             if (c.getUserDetails().getName().equals(performerUsername))
+            {
                 if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
                     throw new BadRequestException("Performer isn't a Validated Companion");
+                if(race.get().getDirection().equals(DirectionType.OUTWARD))
+                {
+                    if (!c.getFinalStop().getName().equals(line.get().getOutwardStops().get(line.get().getOutwardStops().size())))
+                        throw new BadRequestException("Performer isn't a Companion selected for the last stop");
+                }
+                else
+                {
+                    if (!c.getFinalStop().getName().equals(line.get().getOutwardStops().get(line.get().getOutwardStops().size())))
+                        throw new BadRequestException("Performer isn't a Companion selected for the last stop");
+                }
+            }
         }
         race.get().setRaceState(RaceState.ENDED);
         updateRace(raceToClientRace(race.get(),null), performerUsername);
+        Date d = new Date();
+        UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.RACE_ENDED, d, true, race.get(), null, performerUsername + " : Race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString()+ "reached Final Stop!" , false);
+        userNotificationRepository.save(notification);
+        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndRaceAndDateEq(performerUsername, race.get(), d);
+        this.messagingTemplate.convertAndSend("/topic/notifications/"+race.get().getLineName() +"/" + race.get().getDate() +"/"+race.get().getDirection(), notification);
     }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
