@@ -756,7 +756,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     @Override
-    public void removeChildrenFromLine(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
+    public void removeChildrenFromRace(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
         Optional<Race> race;
         Optional<UserCredentials> performer;
         // Take information from DB
@@ -782,7 +782,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 if (p.getChildDetails().getCF().equals(cp.getChildDetails().getCf())) {
                     {
                         count++;
-                        race.get().getPassengers().remove(p);
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setReserved(false);
 
                     }
                 }

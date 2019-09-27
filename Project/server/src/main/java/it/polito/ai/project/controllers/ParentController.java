@@ -52,8 +52,8 @@ public class ParentController {
         }
     }
 
-    @RequestMapping(value="/reserveChildren", method = RequestMethod.POST)
-    public ResponseEntity removeChildrenFromLine(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ReserveChildrenRequest reserveChildrenRequest)
+    @RequestMapping(value="/removeChildrenFromRace", method = RequestMethod.POST)
+    public ResponseEntity removeChildrenFromRace(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ReserveChildrenRequest reserveChildrenRequest)
     {
         try
         {
