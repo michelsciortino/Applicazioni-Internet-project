@@ -66,7 +66,7 @@ public interface DatabaseServiceInterface {
 
     //--------------------------------------------------###Admin###---------------------------------------------------//
 
-    void removeChildrenFromLine(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
+    void removeChildrenFromRace(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
 
     List<ClientRace> getParentRacesFromDate(String performerUsername, Date date);
 
