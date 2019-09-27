@@ -68,7 +68,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
-        throw new BadRequestException();
+        throw new BadRequestException("Credentials already inserted");
     }
 
     /**
@@ -536,7 +536,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     //----------------------------------------------###Notification###------------------------------------------------//
-
+    @Transactional
     @Override
     public void insertNotification(String performerUsername, ClientUserNotification clientUserNotification, String targetUsername) {
         Optional<User> performer;
@@ -584,6 +584,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
 
         userNotificationRepository.save(clientUserNotificationToUserNotification(clientUserNotification));
+        this.messagingTemplate.convertAndSendToUser(clientUserNotification.getTargetUsername(), "/queue/notifications", clientUserNotification);
     }
     public void readNotification(String performerUsername, String notificationId) {
         Optional<User> performer;
@@ -714,6 +715,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     //-------------------------------------------------###Parent###---------------------------------------------------//
     //TODO controllare
+    @Transactional
     @Override
     public void reserveChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
         Optional<Race> race;
@@ -755,6 +757,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateRace(raceToClientRace(race.get(),null), performerUsername);
     }
 
+    @Transactional
     @Override
     public void removeChildrenFromRace(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers) {
         Optional<Race> race;
@@ -1512,6 +1515,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateRace(raceToClientRace(race.get(),null), performerUsername);
     }
 
+    @Transactional
     @Override
     public void validCompanions(String performerUsername, ClientRace clientRace) {
         Optional<UserCredentials> performerCredentials;
@@ -1550,6 +1554,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     //Valid race. check if all stop are coverage by confirmed companion
+    @Transactional
     @Override
     public void validRace(String performerUsername, ClientRace clientRace) {
         Optional<UserCredentials> performerCredentials;
@@ -3232,6 +3237,7 @@ public class DatabaseService implements DatabaseServiceInterface {
      * @throws ResourceNotFoundException
      * @throws UnauthorizedRequestException
      */
+    @Transactional
     @Override
     public void deleteRace(ClientRace clientRace, String performerUsername) {
         Optional<UserCredentials> performerCredentials;

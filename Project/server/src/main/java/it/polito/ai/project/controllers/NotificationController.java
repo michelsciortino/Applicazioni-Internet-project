@@ -37,8 +37,6 @@ import static org.springframework.http.ResponseEntity.ok;
 public class NotificationController {
 
     @Autowired
-    SimpMessageSendingOperations messagingTemplate;
-    @Autowired
     DatabaseService db;
 
     @MessageMapping("/notify")
@@ -59,7 +57,7 @@ public class NotificationController {
         {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-       this.messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", notification);
+
     }
 
     @MessageMapping("/notifyAll/{line_name}/{date}/{direction}")
