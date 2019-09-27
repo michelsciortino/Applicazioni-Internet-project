@@ -57,7 +57,7 @@ public class ParentController {
     {
         try
         {
-            db.removeChildrenFromLine(performerUserCredentials.getUsername(), reserveChildrenRequest.getClientRace(), reserveChildrenRequest.getChildren());
+            db.removeChildrenFromRace(performerUserCredentials.getUsername(), reserveChildrenRequest.getClientRace(), reserveChildrenRequest.getChildren());
             return ok(HttpStatus.OK);
         }
         catch(ResourceNotFoundException re)
