@@ -15,13 +15,15 @@ import java.util.Optional;
 
 public interface UserNotificationRepository extends MongoRepository<UserNotification, String> {
     Page<UserNotification> findAllByTargetUsername(String TargetUsername, Pageable pageable);
-    @Query("{'user_notifications.broadcastRace.companions.username' : ?0, 'user_notifications.broadcastRace.passengers.childDetails.parentId' : ?1}")
+    @Query("{'broadcastRace.companions.username' : ?0, 'broadcastRace.passengers.childDetails.parentId' : ?1}")
     Page<UserNotification> findAllByBroadcastIsTrueAndBroadcastRace_CompanionsContainsAndBroadcastRace_PassengersContains( String companion, String parent, Pageable pageable);
-    @Query("{'user_notifications.broadcastRace.lineName' :{$in: ?0}}")
+    @Query("{'broadcastRace.lineName' :{$in: ?0}}")
     Page<UserNotification> findAllByBroadcastIsTrueAndBroadcastRace_LineNameIn(List<String> lineName, Pageable pageable);
     Optional<UserNotification> findById(String id);
-    Optional<UserNotification>findByPerformerUsernameAndTargetUsernameAndDateEq(String performerUsername, String targetUsername, Date date);
-    Optional<UserNotification>findByBroadcastIsTrueAndPerformerUsernameAndRaceAndDateEq(String performerUsername, Race race, Date date);
+    @Query("{'date' :{$eq : ?2}}")
+    Optional<UserNotification> findByPerformerUsernameAndTargetUsernameAndEqDate(String performerUsername, String targetUsername, Date date);
+    @Query("{'date' :{$eq : ?2}}")
+    Optional<UserNotification> findByBroadcastIsTrueAndPerformerUsernameAndBroadcastRaceAndEqDate(String performerUsername, Race broadcastRace, Date date);
     @Override
     <S extends UserNotification> Optional<S> findOne(Example<S> example);
 }

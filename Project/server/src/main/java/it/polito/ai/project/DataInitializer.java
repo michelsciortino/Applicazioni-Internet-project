@@ -134,6 +134,10 @@ public class DataInitializer implements CommandLineRunner {
                         clientRace.setLine(line);
                         clientRace.setDirection(race.getDirection());
                         clientRace.setDate(race.getDate());
+                        if(race.getDirection().equals(DirectionType.OUTWARD))
+                            clientRace.setCurrentStop(line.getOutwardStops().get(0));
+                        else
+                            clientRace.setCurrentStop(line.getReturnStops().get(0));
                         clientRace.setRaceState(RaceState.SCHEDULED);
                         for (JsonCompanion companion : race.getCompanions()) {
                             ClientPediStop initialStop = new ClientPediStop(companion.getInitialStop().getName(), companion.getInitialStop().getLongitude(), companion.getInitialStop().getLatitude(), companion.getInitialStop().getDelayInMillis());

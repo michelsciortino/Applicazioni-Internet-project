@@ -1224,7 +1224,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                     Date d = new Date();
                     UserNotification notification = new UserNotification(performerUsername, c.getUserDetails().getUsername(), NotificationsType.COMPANION_CHOSEN, d, false, race.get(), null, performerUsername + " has chosen Companion " + c.getUserDetails().getUsername() + " for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString() + ", from Stop " + c.getInitialStop() + " to Stop " + c.getFinalStop(), false);
                     userNotificationRepository.save(notification);
-                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, c.getUserDetails().getUsername(), d);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername, c.getUserDetails().getUsername(), d);
                     messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
                 }
         }
@@ -1291,7 +1291,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                     Date d = new Date();
                     UserNotification notification = new UserNotification(performerUsername, c.getUserDetails().getUsername(), NotificationsType.COMPANION_REMOVECHOSEN, d, false, race.get(), null, performerUsername + " has removed chosen state for Companion " + c.getUserDetails().getUsername() + " for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString(), false);
                     userNotificationRepository.save(notification);
-                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, c.getUserDetails().getUsername(), d);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername, c.getUserDetails().getUsername(), d);
                     messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
                 }
         }
@@ -1378,7 +1378,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 Date d = new Date();
                 UserNotification notification = new UserNotification(performerUsername, c.getUserDetails().getUsername(), NotificationsType.COMPANION_CHOSEN, d, false, race.get(), null, performerUsername + " has chosen Companion " + c.getUserDetails().getUsername() + " for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString() + ", from Stop " + c.getInitialStop() + " to Stop " + c.getFinalStop(), false);
                 userNotificationRepository.save(notification);
-                userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, c.getUserDetails().getUsername(), d);
+                userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername, c.getUserDetails().getUsername(), d);
                 messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
 
             }
@@ -1445,7 +1445,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 Date d = new Date();
                 UserNotification notification = new UserNotification(performerUsername, c.getUserDetails().getUsername(), NotificationsType.COMPANION_REMOVECHOSEN, d, false, race.get(), null, performerUsername + " has removed chosen state for Companion " + c.getUserDetails().getUsername() + " for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString(), false);
                 userNotificationRepository.save(notification);
-                userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, c.getUserDetails().getUsername(), d);
+                userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername, c.getUserDetails().getUsername(), d);
                 messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
             }
         }
@@ -1621,7 +1621,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Date d = new Date();
         UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.ROUND_CONFIRM, d, true, race.get(), null, performerUsername + " has validated race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString() , false);
         userNotificationRepository.save(notification);
-        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndRaceAndDateEq(performerUsername, race.get(), d);
+        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndBroadcastRaceAndEqDate(performerUsername, race.get(), d);
         this.messagingTemplate.convertAndSend("/topic/notifications/"+race.get().getLineName() +"/" + race.get().getDate() +"/"+race.get().getDirection(), notification);
     }
 
@@ -1948,7 +1948,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             Date d = new Date();
             UserNotification notification = new UserNotification(performerUsername, name, NotificationsType.COMPANION_STATEAVAILABILITY, d, false, race.get(), null, performerUsername + " states availability for Date "+ race.get().getDate().toString() + ", in Line " + race.get().getLineName() +", Direction " + race.get().getDirection().toString() + ", from Stop " + companionRequest.getInitialStop() + " to Stop " + companionRequest.getFinalStop() , false);
             userNotificationRepository.save(notification);
-            userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername,name, d);
+            userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername,name, d);
             messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
         }
 
@@ -2013,7 +2013,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             Date d = new Date();
             UserNotification notification = new UserNotification(performerUsername, name, NotificationsType.COMPANION_REMOVEAVAILABILITY, d, false, race.get(), null, performerUsername + " removes availability for Date "+ race.get().getDate().toString() + ", in Line " + race.get().getLineName() +", Direction " + race.get().getDirection().toString()  , false);
             userNotificationRepository.save(notification);
-            userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, name, d);
+            userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername, name, d);
             messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
         }
     }
@@ -2074,7 +2074,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             Date d = new Date();
             UserNotification notification = new UserNotification(performerUsername, name, NotificationsType.COMPANION_CONFIRMCHOSEN, d, false, race.get(), null, performerUsername + " confermed Chosen for Date "+ race.get().getDate().toString() + ", in Line " + race.get().getLineName() +", Direction " + race.get().getDirection().toString()  , false);
             userNotificationRepository.save(notification);
-            userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, name, d);
+            userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername, name, d);
             messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
         }
 
@@ -2236,7 +2236,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                     Date d =  new Date();
                     UserNotification notification = new UserNotification(performerUsername, p.getChildDetails().getParentId(), NotificationsType.CHILD_TAKEN, d, false, race.get(), null, p.getChildDetails().getName() + " got on the Millepedibus, on Line " + race.get().getLineName() + " at Stop" + p.getStopTaken(), false);
                     userNotificationRepository.save(notification);
-                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, p.getChildDetails().getParentId(), d);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername, p.getChildDetails().getParentId(), d);
                     messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
                 }
             }
@@ -2308,7 +2308,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                     Date d =  new Date();
                     UserNotification notification = new UserNotification(performerUsername, p.getChildDetails().getParentId(), NotificationsType.CHILD_DELIVERED, d, false, race.get(), null, p.getChildDetails().getName() + " got off the Millepedibus, on Line " + race.get().getLineName() + " at Stop" + p.getStopDelivered(), false);
                     userNotificationRepository.save(notification);
-                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, p.getChildDetails().getParentId(), d);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername, p.getChildDetails().getParentId(), d);
                     messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
                 }
             }
@@ -2372,7 +2372,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                     Date d = new Date();
                     UserNotification notification = new UserNotification(performerUsername, p.getChildDetails().getParentId(), NotificationsType.CHILD_ABSENT, d, false, race.get(), null, p.getChildDetails().getName() + " is absent, Line " + race.get().getLineName() + " at Stop" + p.getStopDelivered(), false);
                     userNotificationRepository.save(notification);
-                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndDateEq(performerUsername, p.getChildDetails().getParentId(), d);
+                    userNotificationRepository.findByPerformerUsernameAndTargetUsernameAndEqDate(performerUsername, p.getChildDetails().getParentId(), d);
                     messagingTemplate.convertAndSendToUser(notification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(notification));
                 }
             }
@@ -2429,7 +2429,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Date d = new Date();
         UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.RACE_STARTED, d, true, race.get(), null, performerUsername + " : Race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString()+ "is starting!" , false);
         userNotificationRepository.save(notification);
-        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndRaceAndDateEq(performerUsername, race.get(), d);
+        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndBroadcastRaceAndEqDate(performerUsername, race.get(), d);
         this.messagingTemplate.convertAndSend("/topic/notifications/"+race.get().getLineName() +"/" + race.get().getDate() +"/"+race.get().getDirection(), notification);
     }
     @Transactional
@@ -2523,7 +2523,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Date d = new Date();
         UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.STOP_REACHED, d, true, race.get(), null, performerUsername + " : Race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString()+ "has reached Stop: " + clientPediStop.getName() , false);
         userNotificationRepository.save(notification);
-        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndRaceAndDateEq(performerUsername, race.get(), d);
+        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndBroadcastRaceAndEqDate(performerUsername, race.get(), d);
         this.messagingTemplate.convertAndSend("/topic/notifications/"+race.get().getLineName() +"/" + race.get().getDate() +"/"+race.get().getDirection(), notification);
 
     }
@@ -2626,7 +2626,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         Date d = new Date();
         UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.RACE_ENDED, d, true, race.get(), null, performerUsername + " : Race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString()+ "reached Final Stop!" , false);
         userNotificationRepository.save(notification);
-        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndRaceAndDateEq(performerUsername, race.get(), d);
+        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndBroadcastRaceAndEqDate(performerUsername, race.get(), d);
         this.messagingTemplate.convertAndSend("/topic/notifications/"+race.get().getLineName() +"/" + race.get().getDate() +"/"+race.get().getDirection(), notification);
     }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

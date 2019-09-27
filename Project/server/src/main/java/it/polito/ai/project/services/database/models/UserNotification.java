@@ -3,6 +3,7 @@ package it.polito.ai.project.services.database.models;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Email;
@@ -24,6 +25,7 @@ public class UserNotification {
     @NotNull
     private NotificationsType type;
     @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private Date date;
     private boolean broadcast;
     @Nullable
