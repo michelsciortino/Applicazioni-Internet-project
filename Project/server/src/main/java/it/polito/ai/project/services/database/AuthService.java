@@ -39,7 +39,9 @@ public class AuthService implements AuthServiceInterface {
     private final JwtTokenProvider jwtTokenProvider;
     private final EmailSenderService emailSenderService;
 
-    public AuthService(@Lazy DatabaseServiceInterface database, @Lazy UserCredentialsRepository userCredentialsRepository, @Lazy UserRepository userRepository, @Lazy TokenRepository tokenRepository, @Lazy AuthenticationManager authenticationManager, @Lazy JwtTokenProvider jwtTokenProvider, @Lazy EmailSenderService emailSenderService) {
+    @Lazy
+    @Autowired
+    public AuthService( DatabaseServiceInterface database, UserCredentialsRepository userCredentialsRepository, UserRepository userRepository, TokenRepository tokenRepository, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, EmailSenderService emailSenderService) {
         this.database = database;
         this.userCredentialsRepository = userCredentialsRepository;
         this.userRepository = userRepository;

@@ -32,14 +32,10 @@ public class DataInitializer implements CommandLineRunner {
     private static Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
     private final DatabaseService db;
-    private final PasswordEncoder passwordEncoder;
-    private final EmailSenderService emailSenderService;
 
     @Autowired
-    public DataInitializer(EmailSenderService emailSenderService, DatabaseService db, PasswordEncoder passwordEncoder) {
-        this.emailSenderService = emailSenderService;
+    public DataInitializer(DatabaseService db) {
         this.db = db;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -68,15 +64,6 @@ public class DataInitializer implements CommandLineRunner {
                 }
             }
         }
-//        log.info("Spring Mail - Sending Email with JavaMailSender");
-
-//        Mail mail = new Mail();
-//        mail.setFrom("brucolini19@gmail.com");
-//        mail.setTo("andrix.m.94@hotmail.it");
-//        mail.setSubject("Sending Email with JavaMailSender");
-//        mail.setContent("Test send a email using Spring Framework.");
-//
-//        emailSenderService.sendSimpleMail(mail);
     }
 
     private void insertReal(String filesTable) throws IOException, JSONException {

@@ -3269,7 +3269,10 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private Race clientRaceToRace(ClientRace clientRace) {
-        return new Race(clientRace.getLine().getName(), clientRace.getDirection(), clientRace.getDate(),clientPediStopToPediStop(clientRace.getCurrentStop()), clientRace.getRaceState(), clientPassengersToPassengers(clientRace.getPassengers()), clientCompanionsToCompanions(clientRace.getCompanions()));
+        if(clientRace.getCurrentStop()==null)
+            return new Race(clientRace.getLine().getName(), clientRace.getDirection(), clientRace.getDate(),null, clientRace.getRaceState(), clientPassengersToPassengers(clientRace.getPassengers()), clientCompanionsToCompanions(clientRace.getCompanions()));
+        else
+            return new Race(clientRace.getLine().getName(), clientRace.getDirection(), clientRace.getDate(),clientPediStopToPediStop(clientRace.getCurrentStop()), clientRace.getRaceState(), clientPassengersToPassengers(clientRace.getPassengers()), clientCompanionsToCompanions(clientRace.getCompanions()));
     }
 
     private ClientRace raceToClientRace(Race race, UserCredentials performer) {
@@ -3288,8 +3291,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
             return new ClientRace(lineToClientLine(line.get()),
                 race.getDirection(),
-                race.getDate(),
-                pediStopToClientPediStop(race.getCurrentStop()),
+                race.getDate(), race.getCurrentStop()==null ? null : pediStopToClientPediStop(race.getCurrentStop()),
                 race.getRaceState(),
                 passengersToClientPassengers(race.getPassengers()),
                 companionsToClientCompanions(race.getCompanions()),companion);
