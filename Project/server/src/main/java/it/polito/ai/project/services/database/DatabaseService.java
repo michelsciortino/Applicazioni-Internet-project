@@ -8,6 +8,7 @@ import it.polito.ai.project.services.email.EmailConfiguration;
 import it.polito.ai.project.services.email.EmailSenderService;
 import it.polito.ai.project.services.email.models.Mail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.*;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,11 +30,10 @@ public class DatabaseService implements DatabaseServiceInterface {
     private final UserRepository userRepository;
     private final UserNotificationRepository userNotificationRepository;
     private final EmailSenderService emailSenderService;
-    @Autowired
-    SimpMessageSendingOperations messagingTemplate;
+    private final SimpMessageSendingOperations messagingTemplate;
 
    @Autowired
-    public DatabaseService(PasswordEncoder passwordEncoder, LineRepository lineRepository, RaceRepository raceRepository, UserCredentialsRepository userCredentialsRepository, TokenRepository tokenRepository, UserRepository userRepository, UserNotificationRepository userNotificationRepository, EmailSenderService emailSenderService) {
+    public DatabaseService(PasswordEncoder passwordEncoder, LineRepository lineRepository, RaceRepository raceRepository, UserCredentialsRepository userCredentialsRepository, TokenRepository tokenRepository, UserRepository userRepository, UserNotificationRepository userNotificationRepository, EmailSenderService emailSenderService, SimpMessageSendingOperations messagingTemplate) {
         this.passwordEncoder = passwordEncoder;
         this.lineRepository = lineRepository;
         this.raceRepository = raceRepository;
@@ -42,7 +42,8 @@ public class DatabaseService implements DatabaseServiceInterface {
         this.userRepository = userRepository;
         this.userNotificationRepository = userNotificationRepository;
         this.emailSenderService = emailSenderService;
-    }
+       this.messagingTemplate = messagingTemplate;
+   }
 
 
     //---------------------------------------------###UserCredentials###----------------------------------------------//

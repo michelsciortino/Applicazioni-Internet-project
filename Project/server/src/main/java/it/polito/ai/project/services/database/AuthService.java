@@ -17,6 +17,7 @@ import it.polito.ai.project.services.email.models.Mail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -30,20 +31,23 @@ public class AuthService implements AuthServiceInterface {
 
     private static Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
-    @Autowired
-    private DatabaseServiceInterface database;
-    @Autowired
-    private UserCredentialsRepository userCredentialsRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private TokenRepository tokenRepository;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    private EmailSenderService emailSenderService;
+    private final DatabaseServiceInterface database;
+    private final UserCredentialsRepository userCredentialsRepository;
+    private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final EmailSenderService emailSenderService;
+
+    public AuthService(@Lazy DatabaseServiceInterface database, @Lazy UserCredentialsRepository userCredentialsRepository, @Lazy UserRepository userRepository, @Lazy TokenRepository tokenRepository, @Lazy AuthenticationManager authenticationManager, @Lazy JwtTokenProvider jwtTokenProvider, @Lazy EmailSenderService emailSenderService) {
+        this.database = database;
+        this.userCredentialsRepository = userCredentialsRepository;
+        this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.emailSenderService = emailSenderService;
+    }
 
     /**
      * Function to get credential
