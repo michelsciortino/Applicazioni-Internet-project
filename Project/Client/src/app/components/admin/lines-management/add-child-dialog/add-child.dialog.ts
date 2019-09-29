@@ -20,6 +20,8 @@ export class SubscribeChildDialog implements OnInit {
     disableSelect = new FormControl(true);
     private usersSbj = new BehaviorSubject<UserInfo[]>([]);
 
+    users: UserInfo[];
+
     parent: UserInfo;
     children: Child[];
     child: Child;
@@ -30,6 +32,7 @@ export class SubscribeChildDialog implements OnInit {
         this.parent.mail = "";
         this.children = [];
         this.child = new Child();
+        this.child.cf = "";
     }
 
     ngOnInit(): void {
