@@ -3246,6 +3246,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         for(Child c: targetLine.get().getSubscribedChildren())
         {
             Passenger p = new Passenger(c, null, null, null, false, PassengerState.NULL);
+            clientRace.getPassengers().add(passengerToClientPassenger(p));
         }
         Race race = clientRaceToRace(clientRace);
         try {
