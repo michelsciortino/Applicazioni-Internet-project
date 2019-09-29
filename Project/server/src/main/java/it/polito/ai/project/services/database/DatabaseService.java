@@ -3239,7 +3239,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if(!clientRace.getPassengers().isEmpty())
             clientRace.getPassengers().clear();
         if(!clientRace.getReachedStops().isEmpty())
-            clientRace.getPassengers().clear();
+            clientRace.getReachedStops().clear();
         if(clientRace.getCurrentStop()!=null)
             clientRace.setCurrentStop(null);
         clientRace.setRaceState(RaceState.SCHEDULED);
