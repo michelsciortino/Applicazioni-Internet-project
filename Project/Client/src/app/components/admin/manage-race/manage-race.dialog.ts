@@ -10,6 +10,7 @@ import { Stop } from 'src/app/models/stop';
 import { Subscription } from 'rxjs';
 import { UserService } from 'src/app/services/user/user.service';
 import { UserInfo } from 'src/app/models/user';
+import { CompanionService } from 'src/app/services/companion/companion.service';
 
 @Component({
     selector: 'app-manage-race-dialog',
@@ -35,11 +36,15 @@ export class ManageRaceDialog implements OnInit, OnDestroy {
     getTimeWithSecond = Utils.getTimeWithSecond;
 
     ngOnInit() {
-        this.userSub = this.userSvc.getUserInfo().subscribe(userInfo => this.isAdmin = userInfo.isAdminOfLine(this.data.lineName));
+        this.userSub = this.userSvc.getUserInfo().subscribe(userInfo =>{
+            this.isAdmin = userInfo.isAdminOfLine(this.data.lineName);
+            if(this.isAdmin){
+                this.racesChangesSub = this.adminSvc.getRacesChanges().subscribe((reason) => {
+                    this.getRace();
+                });
+            }
+        })
         this.getRace();
-        this.racesChangesSub = this.adminSvc.getRacesChanges().subscribe((reason) => {
-            this.getRace();
-        });
     }
 
     ngOnDestroy() {

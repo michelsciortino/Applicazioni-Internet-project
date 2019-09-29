@@ -65,7 +65,7 @@
                                         <mat-icon class="green">check</mat-icon>
                                     </button>
                                 </td>
-                                <td class="mat-cell" *ngIf="race?.raceState=='SCHEDULED'">
+                                <td class="mat-cell" *ngIf="isAdmin && race?.raceState=='SCHEDULED'">
                                     <button mat-icon-button *ngIf="isAdmin && companion.state === 'AVAILABLE' || companion.state === 'CHOSEN'" (click)="rejectRequest(race,companion)">
                                         <mat-icon class="red">clear</mat-icon>
                                     </button>
