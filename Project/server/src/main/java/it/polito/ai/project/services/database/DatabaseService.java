@@ -2440,7 +2440,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
     @Transactional
     @Override
-    public void stopReached(String performerUsername, ClientRace clientRace, ClientPediStop clientPediStop) {
+    public void stopReached(String performerUsername, ClientRace clientRace, ClientPediStop clientPediStop, long arrival) {
         Optional<Race> race;
         Optional<Line> line;
         Optional<UserCredentials> performer;
@@ -2525,6 +2525,105 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
 
         race.get().setCurrentStop(clientPediStopToPediStop(clientPediStop));
+        race.get().getReachedStops().add(new ReachedStop(clientPediStop.getName(), arrival, 0));
+        raceRepository.save(race.get());
+        Date d = new Date();
+        UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.STOP_REACHED, d, true, race.get(), null, performerUsername + " : Race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString()+ "has reached Stop: " + clientPediStop.getName() , false);
+        userNotificationRepository.save(notification);
+        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndBroadcastRaceAndEqDate(performerUsername, race.get(), d);
+        this.messagingTemplate.convertAndSend("/topic/notifications/"+race.get().getLineName() +"/" + race.get().getDate() +"/"+race.get().getDirection(), notification);
+
+    }
+    @Transactional
+    @Override
+    public void stopLeft(String performerUsername, ClientRace clientRace, ClientPediStop clientPediStop, long departure) {
+        Optional<Race> race;
+        Optional<Line> line;
+        Optional<UserCredentials> performer;
+
+        // Take information from DB
+        try {
+            line = lineRepository.findLineByName(clientRace.getLine().getName());
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLine().getName(), clientRace.getDirection());
+            performer = userCredentialsRepository.findByUsername(performerUsername);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Error in repository lookup");
+        }
+        Date today = Calendar.getInstance().getTime();
+        if (!today.before(clientRace.getDate()))
+            throw new BadRequestException("Stop cannot be reached before race start time");
+        // If race or performer is not present: Throw ResourceNotFound
+        if (!line.isPresent()||!race.isPresent() || !performer.isPresent())
+            throw new ResourceNotFoundException();
+        //If race isn't in started state stop cannot be reached: Throw Bad Request
+        if (!race.get().getRaceState().equals(RaceState.STARTED))
+            throw new BadRequestException("Race must be started");
+        if(!line.get().getOutwardStops().contains(clientPediStopToPediStop(clientPediStop)) && !line.get().getReturnStops().contains(clientPediStopToPediStop(clientPediStop)))
+            throw new BadRequestException("Stop not in Race");
+        // If performer user is not select companion for this race : Throw BadRequest
+        for (Companion c : race.get().getCompanions()) {
+            if (c.getUserDetails().getName().equals(performerUsername))
+            {
+                if (!isSelectedCompanionOfRace(race.get().getCompanions(), performer.get().getRoles(), c))
+                    throw new BadRequestException("Performer isn't a Validated Companion");
+
+                if(race.get().getDirection().equals(DirectionType.OUTWARD))
+                {
+                    boolean initFlag= false;
+                    boolean stopFlag = false;
+                    boolean found = false;
+                    for(PediStop p : line.get().getOutwardStops())
+                    {
+                        if(stopFlag) break;
+
+                        if(c.getInitialStop().getName().equals(p.getName())) initFlag = true;
+
+                        if(!initFlag) continue;
+
+                        if(c.getFinalStop().getName().equals(p.getName()))stopFlag = true;
+                        if(p.getName().equals(clientPediStop.getName()))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found)
+                    {
+                        throw new BadRequestException("Performer isn't a Companion selected for this stop");
+                    }
+                }
+                else
+                {
+                    boolean initFlag= false;
+                    boolean stopFlag = false;
+                    boolean found = false;
+                    for(PediStop p : line.get().getReturnStops())
+                    {
+                        if(stopFlag) break;
+
+                        if(c.getInitialStop().getName().equals(p.getName())) initFlag = true;
+
+                        if(!initFlag) continue;
+
+                        if(c.getFinalStop().getName().equals(p.getName()))stopFlag = true;
+                        if(p.getName().equals(clientPediStop.getName()))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found)
+                    {
+                        throw new BadRequestException("Performer isn't a Companion selected for this stop");
+                    }
+                }
+            }
+        }
+
+        for(ReachedStop r : race.get().getReachedStops())
+            if(r.getStopName().equals(clientPediStop.getName()))
+                race.get().getReachedStops().get(race.get().getReachedStops().indexOf(r)).setDepartureDelay(departure);
+
         raceRepository.save(race.get());
         Date d = new Date();
         UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.STOP_REACHED, d, true, race.get(), null, performerUsername + " : Race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString()+ "has reached Stop: " + clientPediStop.getName() , false);
@@ -2564,13 +2663,21 @@ public class DatabaseService implements DatabaseServiceInterface {
                             if (!line.isPresent())
                                 throw new BadRequestException();
                             Companion me = race.getCompanions().stream().filter(companion -> companion.getUserDetails().getUsername().equals(performerUsername)).findFirst().orElse(null);
+                            List<ClientReachedStop> clientReachedStops = new ArrayList<>();
+                            ClientPediStop currentStop = null;
+                            if(race.getReachedStops() != null)
+                                for(ReachedStop reachedStop : race.getReachedStops())
+                                    clientReachedStops.add(new ClientReachedStop(reachedStop.getStopName(), reachedStop.getArrivalDelay(), reachedStop.getDepartureDelay()));
+                            if(race.getCurrentStop() != null)
+                                currentStop = pediStopToClientPediStop(race.getCurrentStop());
                             if (me != null) {
                                 return new ClientRace(lineToClientLine(line.get()),
                                         race.getDirection(),
                                         race.getDate(),
-                                        pediStopToClientPediStop(race.getCurrentStop()),
+                                        currentStop,
                                         race.getRaceState(),
                                         passengersToClientPassengers(race.getPassengers()),
+                                        clientReachedStops,
                                         companionsToClientCompanions(race.getCompanions()),
                                         companionToClientCompanion(me, performerCredentials.get().getRoles()));
                             }
@@ -3269,14 +3376,27 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private Race clientRaceToRace(ClientRace clientRace) {
-        if(clientRace.getCurrentStop()==null)
-            return new Race(clientRace.getLine().getName(), clientRace.getDirection(), clientRace.getDate(),null, clientRace.getRaceState(), clientPassengersToPassengers(clientRace.getPassengers()), clientCompanionsToCompanions(clientRace.getCompanions()));
-        else
-            return new Race(clientRace.getLine().getName(), clientRace.getDirection(), clientRace.getDate(),clientPediStopToPediStop(clientRace.getCurrentStop()), clientRace.getRaceState(), clientPassengersToPassengers(clientRace.getPassengers()), clientCompanionsToCompanions(clientRace.getCompanions()));
+        PediStop currentStop = null;
+        List<ReachedStop> reachedStops = new ArrayList<>();
+        if(clientRace.getCurrentStop()!=null)
+            currentStop = clientPediStopToPediStop(clientRace.getCurrentStop());
+        if(clientRace.getReachedStops() != null)
+            for( ClientReachedStop clientReachedStop : clientRace.getReachedStops())
+            {
+                reachedStops.add(new ReachedStop(clientReachedStop.getStopName(), clientReachedStop.getArrivalDelay(), clientReachedStop.getDepartureDelay()));
+            }
+
+        return new Race(clientRace.getLine().getName(), clientRace.getDirection(), clientRace.getDate(),currentStop, clientRace.getRaceState(), clientPassengersToPassengers(clientRace.getPassengers()), reachedStops ,clientCompanionsToCompanions(clientRace.getCompanions()));
     }
 
     private ClientRace raceToClientRace(Race race, UserCredentials performer) {
         Optional<Line> line;
+        List<ClientReachedStop> clientReachedStops = new ArrayList<>();
+        if(race.getReachedStops() != null)
+            for( ReachedStop reachedStop : race.getReachedStops())
+            {
+                clientReachedStops.add(new ClientReachedStop(reachedStop.getStopName(), reachedStop.getArrivalDelay(), reachedStop.getDepartureDelay()));
+            }
         try{
             line=lineRepository.findLineByName(race.getLineName());
         }catch (Exception e) {
@@ -3294,8 +3414,10 @@ public class DatabaseService implements DatabaseServiceInterface {
                 race.getDate(), race.getCurrentStop()==null ? null : pediStopToClientPediStop(race.getCurrentStop()),
                 race.getRaceState(),
                 passengersToClientPassengers(race.getPassengers()),
+                clientReachedStops,
                 companionsToClientCompanions(race.getCompanions()),companion);
     }
+
 
     private ClientPassenger passengerToClientPassenger(Passenger passenger) {
         return new ClientPassenger(childToClientChild(passenger.getChildDetails()), pediStopToClientPediStop(passenger.getStopReserved()), pediStopToClientPediStop(passenger.getStopTaken()), pediStopToClientPediStop(passenger.getStopDelivered()), passenger.isReserved(), passenger.getState());

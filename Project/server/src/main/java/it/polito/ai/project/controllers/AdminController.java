@@ -198,7 +198,7 @@ public class AdminController {
     {
         try
         {
-            ClientRace clientRace=new ClientRace(new ClientLine(acceptCompanionRequest.getLineName()),acceptCompanionRequest.getDirection(),acceptCompanionRequest.getDate(),null, RaceState.SCHEDULED, new ArrayList<>(),new ArrayList<>(),null);
+            ClientRace clientRace=new ClientRace(new ClientLine(acceptCompanionRequest.getLineName()),acceptCompanionRequest.getDirection(),acceptCompanionRequest.getDate(),null, RaceState.SCHEDULED,new ArrayList<>(), new ArrayList<>(),new ArrayList<>(),null);
             db.acceptCompanion(performerUserCredentials.getUsername(), clientRace, acceptCompanionRequest.getCompanion());
             return ok(HttpStatus.OK);
         }
@@ -229,7 +229,7 @@ public class AdminController {
     {
         try
         {
-            ClientRace clientRace=new ClientRace(new ClientLine(acceptCompanionRequest.getLineName()),acceptCompanionRequest.getDirection(),acceptCompanionRequest.getDate(),null, RaceState.SCHEDULED, new ArrayList<>(),new ArrayList<>(),null);
+            ClientRace clientRace=new ClientRace(new ClientLine(acceptCompanionRequest.getLineName()),acceptCompanionRequest.getDirection(),acceptCompanionRequest.getDate(),null, RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(),new ArrayList<>(),null);
             db.unAcceptCompanion(performerUserCredentials.getUsername(), clientRace, acceptCompanionRequest.getCompanion());
             return ok(HttpStatus.OK);
         }
@@ -260,7 +260,7 @@ public class AdminController {
     {
         try
         {
-            ClientRace clientRace=new ClientRace(new ClientLine(acceptCompanionRequest.getLineName()),acceptCompanionRequest.getDirection(),acceptCompanionRequest.getDate(),null,RaceState.SCHEDULED, new ArrayList<>(),new ArrayList<>(),null);
+            ClientRace clientRace=new ClientRace(new ClientLine(acceptCompanionRequest.getLineName()),acceptCompanionRequest.getDirection(),acceptCompanionRequest.getDate(),null,RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(),new ArrayList<>(),null);
             db.rejectCompanion(performerUserCredentials.getUsername(), clientRace, acceptCompanionRequest.getCompanion());
             return ok(HttpStatus.OK);
         }

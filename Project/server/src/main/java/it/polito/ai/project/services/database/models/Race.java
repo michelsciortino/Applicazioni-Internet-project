@@ -23,16 +23,17 @@ public class Race {
     private PediStop currentStop;
     private RaceState raceState;
     private List<Passenger> passengers;
-
+    private List<ReachedStop> reachedStops;
     private List<Companion> companions;
 
-    public Race(String lineName, DirectionType direction, Date date, PediStop currentStop, RaceState raceState, List<Passenger> passengers, List<Companion> companions) {
+    public Race(String lineName, DirectionType direction, Date date, PediStop currentStop, RaceState raceState, List<Passenger> passengers,List<ReachedStop> reachedStops, List<Companion> companions) {
         this.lineName = lineName;
         this.direction = direction;
         this.date = date;
         this.currentStop = currentStop;
         this.raceState = raceState;
         this.passengers = passengers;
+        this.reachedStops = reachedStops;
         this.companions = companions;
     }
 }

@@ -3,6 +3,7 @@ package it.polito.ai.project.generalmodels;
 import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.PediStop;
 import it.polito.ai.project.services.database.models.RaceState;
+import it.polito.ai.project.services.database.models.ReachedStop;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
@@ -22,17 +23,19 @@ public class ClientRace {
     private RaceState raceState;
     private ClientPediStop currentStop;
     private List<ClientPassenger> passengers;
+    private List<ClientReachedStop> reachedStops;
     private List<ClientCompanion> companions;
     @Nullable
     private ClientCompanion companion;
 
-    public ClientRace(ClientLine line, DirectionType direction, Date date, ClientPediStop currentStop, RaceState raceState, List<ClientPassenger> passengers, List<ClientCompanion> companions, @Nullable ClientCompanion companion) {
+    public ClientRace(ClientLine line, DirectionType direction, Date date, ClientPediStop currentStop, RaceState raceState, List<ClientPassenger> passengers, List<ClientReachedStop> reachedStops, List<ClientCompanion> companions, @Nullable ClientCompanion companion) {
         this.line = line;
         this.direction = direction;
         this.date = date;
         this.currentStop = currentStop;
         this.raceState = raceState;
         this.passengers = passengers;
+        this.reachedStops = reachedStops;
         this.companions = companions;
         this.companion = companion;
     }
@@ -40,5 +43,6 @@ public class ClientRace {
     public ClientRace() {
         passengers = new ArrayList<>();
         companions = new ArrayList<>();
+        reachedStops = new ArrayList<>();
     }
 }
