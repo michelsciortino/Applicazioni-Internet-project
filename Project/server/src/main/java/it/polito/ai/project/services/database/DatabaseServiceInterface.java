@@ -142,6 +142,9 @@ public interface DatabaseServiceInterface {
 
     //---------------------------------------------------###Race###---------------------------------------------------//
 
+    @Transactional
+    ClientLine removeChildFromLine(String UserID, ClientChild child, String lineName, List<String> roles);
+
     ClientRace insertRace(ClientRace clientRace, String performerUsername);
 
     Collection<ClientRace> getRaces();

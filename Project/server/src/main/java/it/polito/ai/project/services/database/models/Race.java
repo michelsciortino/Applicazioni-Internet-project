@@ -2,6 +2,7 @@ package it.polito.ai.project.services.database.models;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Reference;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,6 +25,7 @@ public class Race {
     private RaceState raceState;
     private List<Passenger> passengers;
     private List<ReachedStop> reachedStops;
+    @Reference
     private List<Companion> companions;
 
     public Race(String lineName, DirectionType direction, Date date, PediStop currentStop, RaceState raceState, List<Passenger> passengers,List<ReachedStop> reachedStops, List<Companion> companions) {

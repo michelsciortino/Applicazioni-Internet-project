@@ -1,9 +1,6 @@
 package it.polito.ai.project.services.database.repositories;
 
-import it.polito.ai.project.services.database.models.Companion;
-import it.polito.ai.project.services.database.models.DirectionType;
-import it.polito.ai.project.services.database.models.Race;
-import it.polito.ai.project.services.database.models.RaceState;
+import it.polito.ai.project.services.database.models.*;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -41,6 +38,7 @@ public interface RaceRepository extends MongoRepository<Race, String> {
     @Query("{'companions.userDetails.username' : ?0, 'date':{$eq:?1}}")
     List<Race> findAllByCompanionsAndEqDate(String companion, Date date);
     //List<Race> findAllByCompanionsContainsAndDateEquals(String companion, Date date);
+
 
     //List<Race> findAllByPassengersContainsAndDateEquals(String parentId, Date date);
 

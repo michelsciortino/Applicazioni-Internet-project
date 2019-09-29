@@ -1,10 +1,13 @@
 package it.polito.ai.project.services.database.models;
 
+import jdk.nashorn.internal.ir.annotations.Reference;
 import lombok.Data;
 
 @Data
 public class Companion {
+    @Reference
     private User userDetails;
+
     private PediStop initialStop;
     private PediStop finalStop;
     private CompanionState state;

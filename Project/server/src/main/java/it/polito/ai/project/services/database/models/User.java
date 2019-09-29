@@ -2,6 +2,7 @@ package it.polito.ai.project.services.database.models;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Reference;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.Nullable;
@@ -20,6 +21,7 @@ public class User {
 
     @Email
     @NotNull
+    @Indexed(unique = true)
     private String username;
 
     @Size(min = 2, max = 30)

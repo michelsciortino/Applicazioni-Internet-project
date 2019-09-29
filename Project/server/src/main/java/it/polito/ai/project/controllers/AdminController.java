@@ -345,6 +345,35 @@ public class AdminController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+    @RequestMapping(value="/removeChildrenFromLine", method = RequestMethod.POST)
+    public ResponseEntity removeChildrenFromLine(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AddChildToLineRequest addChildToLineRequest)
+    {
+        try
+        {
+            db.removeChildFromLine(performerUserCredentials.getUsername(), addChildToLineRequest.getChild(), addChildToLineRequest.getLineName(), performerUserCredentials.getRoles());
+            return ok(HttpStatus.OK);
+        }
+        catch(ResourceNotFoundException re)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
+        }
+        catch(InternalServerErrorException ie)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
+        }
+        catch(BadRequestException be)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
+        }
+        catch(UnauthorizedRequestException ue)
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ue.getMessage());
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 
 
 }

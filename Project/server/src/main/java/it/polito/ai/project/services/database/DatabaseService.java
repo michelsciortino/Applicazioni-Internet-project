@@ -3080,7 +3080,10 @@ public class DatabaseService implements DatabaseServiceInterface {
     @Transactional
     public ClientLine addChildToLine(String UserID, ClientChild child, String lineName, List<String> roles) {
         Optional<Line> l;
+        List<Race> childScheduledRaces = new ArrayList<>();
+
         try {
+            childScheduledRaces = raceRepository.findAllByLineNameAndRaceStateIs(lineName, RaceState.SCHEDULED);
             l = lineRepository.findLineByName(lineName);
         } catch (Exception e) {
             throw new InternalServerErrorException(e);
@@ -3097,7 +3100,15 @@ public class DatabaseService implements DatabaseServiceInterface {
         Child c = new Child(child.getName(), child.getSurname(), child.getCf(), child.getParentId(), EntryState.ISENABLE);
 
         if (!l.get().getSubscribedChildren().contains(c)) {
-
+            for(Race r : childScheduledRaces)
+            {
+                for (Passenger p : r.getPassengers())
+                    if (p.getChildDetails().getCF().equals(child.getCf())) {
+                        throw new BadRequestException("Child already registered!");
+                    }
+                r.getPassengers().add(new Passenger(clientChildToChild(child), null, null, null, false, PassengerState.NULL ));
+                raceRepository.save(r);
+            }
             l.get().getSubscribedChildren().add(c);
             lineRepository.save(l.get());
             return lineToClientLine(l.get());
@@ -3108,6 +3119,54 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     }
 
+    @Override
+    @Transactional
+    public ClientLine removeChildFromLine(String UserID, ClientChild child, String lineName, List<String> roles) {
+        Optional<Line> l;
+        List<Race> childScheduledRaces = new ArrayList<>();
+        List<Race> childValidatedRaces = new ArrayList<>();
+        try {
+            l = lineRepository.findLineByName(lineName);
+            childScheduledRaces = raceRepository.findAllByLineNameAndRaceStateIs(lineName, RaceState.SCHEDULED);
+            childValidatedRaces = raceRepository.findAllByLineNameAndRaceStateIs(lineName, RaceState.VALIDATED);
+
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e);
+        }
+
+        if (!l.isPresent())
+            throw new ResourceNotFoundException();
+
+        if (!roles.contains(Roles.prefix + Roles.SYSTEM_ADMIN)) {
+            if (!l.get().getAdmins().contains(UserID))
+                throw new UnauthorizedRequestException("Line Admins only can perform this operation");
+        }
+
+        Child c = new Child(child.getName(), child.getSurname(), child.getCf(), child.getParentId(), EntryState.ISENABLE);
+
+        if (l.get().getSubscribedChildren().contains(c)) {
+
+            for(Race r : childScheduledRaces)
+                for(Passenger p : r.getPassengers())
+                    if(p.getChildDetails().getCF().equals(child.getCf())) {
+                        r.getPassengers().remove(p);
+                        raceRepository.save(r);
+                    }
+            for(Race r : childValidatedRaces)
+                for(Passenger p : r.getPassengers())
+                    if(p.getChildDetails().getCF().equals(child.getCf())) {
+                        r.getPassengers().remove(p);
+                        raceRepository.save(r);
+                    }
+            l.get().getSubscribedChildren().remove(c);
+            lineRepository.save(l.get());
+            return lineToClientLine(l.get());
+        } else {
+            throw new BadRequestException();
+        }
+
+
+    }
     /**
      * Function to convert MongoDB Line into a ClientLine
      *
@@ -3177,6 +3236,17 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (clientRace.getDate() == null || clientRace.getLine().getName() == null || clientRace.getDirection() == null)
             throw new BadRequestException();
 
+        if(!clientRace.getPassengers().isEmpty())
+            clientRace.getPassengers().clear();
+        if(!clientRace.getReachedStops().isEmpty())
+            clientRace.getPassengers().clear();
+        if(clientRace.getCurrentStop()!=null)
+            clientRace.setCurrentStop(null);
+        clientRace.setRaceState(RaceState.SCHEDULED);
+        for(Child c: targetLine.get().getSubscribedChildren())
+        {
+            Passenger p = new Passenger(c, null, null, null, false, PassengerState.NULL);
+        }
         Race race = clientRaceToRace(clientRace);
         try {
             raceRepository.save(race);
