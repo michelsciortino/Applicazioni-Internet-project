@@ -3097,7 +3097,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 throw new UnauthorizedRequestException("Line Admins only can perform this operation");
         }
 
-        Child c = new Child(child.getName(), child.getSurname(), child.getCf(), child.getParentId(), EntryState.ISENABLE);
+        Child c = new Child(child.getName(), child.getSurname(), child.getCf(), child.getParentId(), null);
 
         if (!l.get().getSubscribedChildren().contains(c)) {
             for(Race r : childScheduledRaces)
@@ -3245,6 +3245,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         clientRace.setRaceState(RaceState.SCHEDULED);
         for(Child c: targetLine.get().getSubscribedChildren())
         {
+            c.setState(null);
             Passenger p = new Passenger(c, null, null, null, false, PassengerState.NULL);
             clientRace.getPassengers().add(passengerToClientPassenger(p));
         }
