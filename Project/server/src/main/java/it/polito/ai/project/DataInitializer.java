@@ -121,6 +121,7 @@ public class DataInitializer implements CommandLineRunner {
                         clientRace.setLine(line);
                         clientRace.setDirection(race.getDirection());
                         clientRace.setDate(race.getDate());
+                        clientRace.setReachedStops(new ArrayList<>());
                         if(race.getDirection().equals(DirectionType.OUTWARD))
                             clientRace.setCurrentStop(line.getOutwardStops().get(0));
                         else

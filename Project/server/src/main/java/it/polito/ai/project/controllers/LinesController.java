@@ -118,7 +118,7 @@ public class LinesController {
     @RequestMapping(value = "/{line_name}/races/{date}/{direction}", method = RequestMethod.DELETE)
     public ResponseEntity deleteLineRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value = "line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date, @PathVariable(value = "direction") DirectionType direction) {
         try {
-            ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, null, RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(),null);
+            ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, null, RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(),new ArrayList<>(),null);
             db.deleteRace(clientRace, userCredentials.getUsername());
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
@@ -135,7 +135,7 @@ public class LinesController {
     @RequestMapping(value = "/{line_name}/races/{date}/{direction}/validate", method = RequestMethod.POST)
     public ResponseEntity validRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value = "line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date, @PathVariable(value = "direction") DirectionType direction) {
         try {
-            ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, null, RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(), null);
+            ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, null, RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(),new ArrayList<>(), null);
             db.validRace(userCredentials.getUsername(), clientRace);
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
@@ -155,7 +155,7 @@ public class LinesController {
     public ResponseEntity getLineRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value = "line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date, @PathVariable(value = "direction") DirectionType direction) {
         try {
 
-            ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, null, RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(),null);
+            ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, null, RaceState.SCHEDULED, new ArrayList<>(),new ArrayList<>(), new ArrayList<>(),null);
             return ok(db.getRace(userCredentials, clientRace));
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
