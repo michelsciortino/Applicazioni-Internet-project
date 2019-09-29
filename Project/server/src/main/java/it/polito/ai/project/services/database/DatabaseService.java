@@ -3557,11 +3557,42 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private ClientPassenger passengerToClientPassenger(Passenger passenger) {
-        return new ClientPassenger(childToClientChild(passenger.getChildDetails()), pediStopToClientPediStop(passenger.getStopReserved()), pediStopToClientPediStop(passenger.getStopTaken()), pediStopToClientPediStop(passenger.getStopDelivered()), passenger.isReserved(), passenger.getState());
+        ClientPediStop stopReserved;
+        ClientPediStop stopTaken;
+        ClientPediStop stopDeliverd;
+        if(passenger.getStopReserved() == null)
+            stopReserved = null;
+        else
+            stopReserved = pediStopToClientPediStop(passenger.getStopReserved());
+        if(passenger.getStopTaken() == null)
+            stopTaken = null;
+        else
+            stopTaken= pediStopToClientPediStop(passenger.getStopTaken());
+        if(passenger.getStopDelivered() == null)
+            stopDeliverd = null;
+        else
+            stopDeliverd = pediStopToClientPediStop(passenger.getStopDelivered());
+
+        return new ClientPassenger(childToClientChild(passenger.getChildDetails()), stopReserved, stopTaken, stopDeliverd, passenger.isReserved(), passenger.getState());
     }
 
     private Passenger clientPassengerToPassenger(ClientPassenger clientPassenger) {
-        return new Passenger(clientChildToChild(clientPassenger.getChildDetails()), clientPediStopToPediStop(clientPassenger.getStopReserved()), clientPediStopToPediStop(clientPassenger.getStopTaken()), clientPediStopToPediStop(clientPassenger.getStopDelivered()), clientPassenger.isReserved(), clientPassenger.getState());
+        PediStop stopReserved;
+        PediStop stopTaken;
+        PediStop stopDeliverd;
+        if(clientPassenger.getStopReserved() == null)
+            stopReserved = null;
+        else
+            stopReserved = clientPediStopToPediStop(clientPassenger.getStopReserved());
+        if(clientPassenger.getStopTaken() == null)
+            stopTaken = null;
+        else
+            stopTaken= clientPediStopToPediStop(clientPassenger.getStopTaken());
+        if(clientPassenger.getStopDelivered() == null)
+            stopDeliverd = null;
+        else
+            stopDeliverd = clientPediStopToPediStop(clientPassenger.getStopDelivered());
+        return new Passenger(clientChildToChild(clientPassenger.getChildDetails()),stopReserved, stopTaken, stopDeliverd, clientPassenger.isReserved(), clientPassenger.getState());
     }
 
     private List<ClientPassenger> passengersToClientPassengers(List<Passenger> passengers) {
