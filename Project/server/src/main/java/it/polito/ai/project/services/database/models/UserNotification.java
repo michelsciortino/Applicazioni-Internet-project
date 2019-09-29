@@ -2,6 +2,9 @@ package it.polito.ai.project.services.database.models;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Reference;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
@@ -14,7 +17,6 @@ import java.util.Date;
 @Document(collection = "users_notifications")
 @Data
 public class UserNotification {
-    //TODO: da fare con estensioni se si riesce....
     @Id
     private String id;
     @Email
@@ -29,6 +31,7 @@ public class UserNotification {
     private Date date;
     private boolean broadcast;
     @Nullable
+    @Reference
     private Race broadcastRace;
     @Nullable
     private Object parameters;
@@ -36,6 +39,9 @@ public class UserNotification {
     private String message;
     @NotNull
     private Boolean isRead;
+
+    public UserNotification(){
+    }
 
     public UserNotification(String id, @Email String performerUsername,@Email String targetUsername, @NotNull NotificationsType type, @NotNull Date date, boolean broadcast, Race broadcastRace, @Nullable Object parameters, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
         this.id = id;
