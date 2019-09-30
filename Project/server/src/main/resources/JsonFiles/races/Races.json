@@ -3,7 +3,7 @@
     {
       "lineName": "Bruchi_cantanti",
       "direction": "OUTWARD",
-      "date": "2019-11-20T10:44:00.000Z",
+      "date": "2019-09-30T10:44:00.000Z",
       "passengers": [
         {
           "childDetails": {
@@ -98,7 +98,7 @@
             "longitude": 7.659967,
             "delayInMillis": 1200000
           },
-          "state": "AVAILABLE"
+          "state": "VALIDATED"
         }
       ]
     },

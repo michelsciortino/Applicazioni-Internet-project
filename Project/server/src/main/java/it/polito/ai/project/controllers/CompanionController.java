@@ -9,7 +9,6 @@ import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.generalmodels.CompanionRequest;
 import it.polito.ai.project.requestEntities.*;
 import it.polito.ai.project.services.database.DatabaseService;
-import it.polito.ai.project.services.database.models.CompanionState;
 import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.RaceState;
 import it.polito.ai.project.services.database.models.UserCredentials;
@@ -21,7 +20,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
 import java.util.Date;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -91,9 +89,9 @@ public class CompanionController {
     }
 
     @RequestMapping(value = "/takeChildren", method = RequestMethod.POST)
-    public ResponseEntity takeChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest takeChildrenRequest) {
+    public ResponseEntity takeChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody TakeDeliverChildrenRequest request) {
         try {
-            db.takeChildren(performerUserCredentials.getUsername(), takeChildrenRequest.getClientRace(), takeChildrenRequest.getChildren(), takeChildrenRequest.getPedistop());
+            db.takeChildren(performerUserCredentials.getUsername(), request.getLineName(), request.getDate(),request.getDirection(), request.getChildren(), request.getStopName());
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
@@ -107,9 +105,9 @@ public class CompanionController {
     }
 
     @RequestMapping(value = "/deliverChildren", method = RequestMethod.POST)
-    public ResponseEntity deliverChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody TakeorDeliverChildrenRequest deliverChildrenRequest) {
+    public ResponseEntity deliverChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody TakeDeliverChildrenRequest request) {
         try {
-            db.deliverChildren(performerUserCredentials.getUsername(), deliverChildrenRequest.getClientRace(), deliverChildrenRequest.getChildren(), deliverChildrenRequest.getPedistop());
+            db.deliverChildren(performerUserCredentials.getUsername(), request.getLineName(), request.getDate(),request.getDirection(), request.getChildren(), request.getStopName());
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
@@ -125,9 +123,9 @@ public class CompanionController {
     }
 
     @RequestMapping(value = "/absentChildren", method = RequestMethod.POST)
-    public ResponseEntity absentChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AbsentChildrenRequest absentChildrenRequest) {
+    public ResponseEntity absentChildren(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody AbsentChildrenRequest request) {
         try {
-            db.absentChildren(performerUserCredentials.getUsername(), absentChildrenRequest.getClientRace(), absentChildrenRequest.getChildren());
+            db.absentChildren(performerUserCredentials.getUsername(), request.getLineName(), request.getDate(),request.getDirection(), request.getChildren());
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());
@@ -285,10 +283,13 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/startRace", method = RequestMethod.POST)
-    public ResponseEntity startRace(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace) {
+    @RequestMapping(value = "/startRace/{lineName}/{date}/{direction}", method = RequestMethod.POST)
+    public ResponseEntity startRace(@AuthenticationPrincipal UserCredentials performerUserCredentials,
+                                    @PathVariable(value = "lineName") String lineName,
+                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date,
+                                    @PathVariable(value = "direction") DirectionType direction) {
         try {
-            db.startRace(performerUserCredentials.getUsername(), clientRace);
+            db.startRace(performerUserCredentials.getUsername(), lineName, date,direction);
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -303,10 +304,14 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/stopReached", method = RequestMethod.POST)
-    public ResponseEntity stopReached(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody StopReachedRequest stopReachedRequest) {
+    @RequestMapping(value = "/stopReached/{lineName}/{date}/{direction}/{stopName}", method = RequestMethod.POST)
+    public ResponseEntity stopReached(@AuthenticationPrincipal UserCredentials performerUserCredentials,
+                                      @PathVariable(value = "lineName") String lineName,
+                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date,
+                                      @PathVariable(value = "direction") DirectionType direction,
+                                      @PathVariable(value = "stopName") String stopName) {
         try {
-            db.stopReached(performerUserCredentials.getUsername(), stopReachedRequest.getRace(), stopReachedRequest.getPediStopReached(), stopReachedRequest.getArrivalDelay());
+            db.stopReached(performerUserCredentials.getUsername(), lineName,date,direction,stopName);
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -322,10 +327,14 @@ public class CompanionController {
     }
 
 
-    @RequestMapping(value = "/stopLeft", method = RequestMethod.POST)
-    public ResponseEntity stopLeft(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody StopLeftRequest stopLeftRequest) {
+    @RequestMapping(value = "/stopLeft/{lineName}/{date}/{direction}/{stopName}", method = RequestMethod.POST)
+    public ResponseEntity stopLeft(@AuthenticationPrincipal UserCredentials performerUserCredentials,
+                                   @PathVariable(value = "lineName") String lineName,
+                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date,
+                                   @PathVariable(value = "direction") DirectionType direction,
+                                   @PathVariable(value = "stopName") String stopName) {
         try {
-            db.stopReached(performerUserCredentials.getUsername(), stopLeftRequest.getRace(), stopLeftRequest.getPediStopReached(), stopLeftRequest.getDepartureDelay());
+            db.stopLeft(performerUserCredentials.getUsername(),lineName,date,direction,stopName);
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

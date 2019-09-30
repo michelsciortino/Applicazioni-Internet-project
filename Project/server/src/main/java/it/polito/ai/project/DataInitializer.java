@@ -141,6 +141,7 @@ public class DataInitializer implements CommandLineRunner {
                             ClientCompanion clientCompanion = new ClientCompanion(clientUser, initialStop, finalStop, companion.getState());
                             clientRace.getCompanions().add(clientCompanion);
                         }
+                        List<ClientPassenger> listC=new ArrayList<>();
                         for (JsonPassenger passenger : race.getPassengers()) {
                             ClientPassenger clientPassenger = new ClientPassenger();
                             clientPassenger.setChildDetails(new ClientChild(passenger.getChildDetails().getName(), passenger.getChildDetails().getSurname(), passenger.getChildDetails().getCF(), passenger.getChildDetails().getParentId()));
@@ -150,9 +151,10 @@ public class DataInitializer implements CommandLineRunner {
                             clientPassenger.setStopReserved(stopReserved);
                             clientPassenger.setStopTaken(new ClientPediStop());
                             clientPassenger.setStopDelivered(new ClientPediStop());
-                            clientRace.getPassengers().add(clientPassenger);
+                            listC.add(clientPassenger);
                         }
-                        db.insertRace(clientRace, db.getLinebyName(race.getLineName()).getAdmins().get(0));
+                        clientRace.setPassengers(listC);
+                        db.insertRaceInitializer(clientRace, db.getLinebyName(race.getLineName()).getAdmins().get(0));
                     }
                 }
             } else {

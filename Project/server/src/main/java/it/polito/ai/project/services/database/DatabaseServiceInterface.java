@@ -108,19 +108,18 @@ public interface DatabaseServiceInterface {
 
     void updateCompanionAvailability(String performerUsername, CompanionRequest companionRequest);
 
-    void takeChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop takePediStop);
+    void takeChildren(String performerUsername, String lineName,Date date, DirectionType direction, List<ClientPassenger> clientPassengers, String stopName);
 
-    void deliverChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers, ClientPediStop deliverPediStop);
+    void deliverChildren(String performerUsername, String lineName,Date date, DirectionType direction, List<ClientPassenger> clientPassengers, String stopName);
 
-    void absentChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
+    void absentChildren(String performerUsername, String lineName,Date date, DirectionType direction, List<ClientPassenger> clientPassengers);
 
-    void startRace(String performerUsername, ClientRace clientRace);
+    void startRace(String performerUsername,String lineName,Date date, DirectionType direction);
 
-
-    void stopReached(String performerUsername, ClientRace clientRace, ClientPediStop clientPediStop, long arrival);
+    void stopReached(String performerUsername, String lineName,Date date, DirectionType direction, String stopName);
 
     @Transactional
-    void stopLeft(String performerUsername, ClientRace clientRace, ClientPediStop clientPediStop, long departure);
+    void stopLeft(String performerUsername, String lineName,Date date, DirectionType direction, String stopName);
 
     List<ClientRace> getCompanionRacesFromDate(String performerUsername, Date date);
 
@@ -146,6 +145,9 @@ public interface DatabaseServiceInterface {
     ClientLine removeChildFromLine(String UserID, ClientChild child, String lineName, List<String> roles);
 
     ClientRace insertRace(ClientRace clientRace, String performerUsername);
+
+    @Transactional
+    ClientRace insertRaceInitializer(ClientRace clientRace, String performerUsername);
 
     Collection<ClientRace> getRaces();
 
