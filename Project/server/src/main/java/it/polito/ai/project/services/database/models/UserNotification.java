@@ -17,6 +17,7 @@ import java.util.Date;
 @Document(collection = "users_notifications")
 @Data
 public class UserNotification {
+    @NotNull
     @Id
     private String id;
     @Email
@@ -29,7 +30,7 @@ public class UserNotification {
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private Date date;
-    private boolean broadcast;
+    private Boolean broadcast;
     @Nullable
     @Reference
     private Race broadcastRace;

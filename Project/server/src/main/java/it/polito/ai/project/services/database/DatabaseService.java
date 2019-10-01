@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -555,7 +556,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!performer.isPresent() || !performerCredentials.isPresent())
             throw new ResourceNotFoundException("Performer User not found");
         //If notification isn't broadcast and the target is not in db: Throw Resource not Found
-        if (!clientUserNotification.isBroadcast()) {
+        if (!clientUserNotification.getBroadcast()) {
             if (!target.isPresent())
                 throw new ResourceNotFoundException("Target User not found");
         }
@@ -583,9 +584,13 @@ public class DatabaseService implements DatabaseServiceInterface {
 
 
         }
-
-        userNotificationRepository.save(clientUserNotificationToUserNotification(clientUserNotification));
-        this.messagingTemplate.convertAndSendToUser(clientUserNotification.getTargetUsername(), "/queue/notifications", clientUserNotification);
+        try {
+            userNotificationRepository.save(clientUserNotificationToUserNotification(clientUserNotification));
+            this.messagingTemplate.convertAndSendToUser(clientUserNotification.getTargetUsername(), "/queue/notifications", clientUserNotification);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
     }
 
     public void readNotification(String performerUsername, String notificationId) {
@@ -602,7 +607,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         if (!performer.isPresent() || !userNotification.isPresent())
             throw new ResourceNotFoundException("Performer User or Notification not found");
         //If notification is broadcast: Throw BadRequest
-        if (userNotification.get().isBroadcast())
+        if (userNotification.get().getBroadcast())
             throw new BadRequestException("Cannot send read check for broadcast notfication");
         //If notification is already read: Throw BadRequest
         if (userNotification.get().getIsRead())
@@ -704,11 +709,21 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private ClientUserNotification userNotificationToClientUserNotification(UserNotification n) {
-        return new ClientUserNotification(n.getId(), n.getPerformerUsername(), n.getTargetUsername(), n.getType(), n.getDate(), n.isBroadcast(), raceToClientRace(n.getBroadcastRace(), null), n.getParameters(), n.getMessage(), n.getIsRead());
+        return new ClientUserNotification(n.getId(), n.getPerformerUsername(), n.getTargetUsername(), n.getType(), n.getDate(), n.getBroadcast(), raceToClientRace(n.getBroadcastRace(), null), n.getParameters(), n.getMessage(), n.getIsRead());
     }
 
     private UserNotification clientUserNotificationToUserNotification(ClientUserNotification n) {
-        return new UserNotification(n.getId(), n.getPerformerUsername(), n.getTargetUsername(), n.getType(), n.getDate(), n.isBroadcast(), clientRaceToRace(n.getBroadcastRace()), n.getParameters(), n.getMessage(), n.getIsRead());
+        UserNotification notification = new UserNotification();
+        notification.setPerformerUsername(n.getPerformerUsername());
+        notification.setIsRead(false);
+        notification.setBroadcast(n.getBroadcast());
+        notification.setBroadcastRace(n.getBroadcastRace() == null ? null : clientRaceToRace(n.getBroadcastRace()));
+        notification.setParameters(n.getParameters());
+        notification.setMessage(n.getMessage());
+        notification.setTargetUsername(n.getTargetUsername());
+        notification.setDate(n.getDate());
+        notification.setType(n.getType());
+        return notification;
     }
 
     //-------------------------------------------------###Parent###---------------------------------------------------//
@@ -2920,38 +2935,32 @@ public class DatabaseService implements DatabaseServiceInterface {
     }
 
     private boolean isStopInCompanionRoute(Race race, Line line, Companion c, String stopName) {
-        boolean takeStopFound = false;
-        boolean initialStopFound = false;
+        AtomicBoolean initialStopFound = new AtomicBoolean(false);
         if (race.getDirection().equals(DirectionType.OUTWARD)) {
             for (PediStop ps : line.getOutwardStops()) {
                 //cycle until initial stop is found
-                if (ps.getName().equals(c.getInitialStop().getName()))
-                    initialStopFound = true;
-                else if (!initialStopFound) continue;
-
+                if (!initialStopFound.get() && ps.getName().equals(c.getInitialStop().getName()))
+                    initialStopFound.set(true);
                 //if we get this point we are checking stops between Initial and Final for current companion
-                if (ps.getName().equals(stopName)) {
-                    takeStopFound = true;
-                    break;
-                }
-                if (ps.getName().equals(c.getFinalStop().getName())) ;
-                break;
+                if (initialStopFound.get() && ps.getName().equals(stopName))
+                    return true;
+                if (ps.getName().equals(c.getFinalStop().getName()))
+                    return false;
             }
         } else {
             for (PediStop ps : line.getReturnStops()) {
                 //cycle until initial stop is found
-                if (ps.getName().equals(c.getInitialStop().getName()))
-                    initialStopFound = true;
-                else if (!initialStopFound) continue;
+                if (!initialStopFound.get() && ps.getName().equals(c.getInitialStop().getName()))
+                    initialStopFound.set(true);
 
                 //if we get this point we are checking stops between Initial and Final for current companion
-                if (ps.getName().equals(stopName))
-                    takeStopFound = true;
-                if (ps.getName().equals(c.getFinalStop().getName())) ;
-                break;
+                if (initialStopFound.get() && ps.getName().equals(stopName))
+                    return true;
+                if (ps.getName().equals(c.getFinalStop().getName()))
+                    return false;
             }
         }
-        return takeStopFound;
+        return false;
     }
 
     private boolean isCompanion(List<String> roles) {

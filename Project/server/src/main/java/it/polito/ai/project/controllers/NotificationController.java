@@ -36,8 +36,14 @@ import static org.springframework.http.ResponseEntity.ok;
 @Controller
 public class NotificationController {
 
+    private SimpMessageSendingOperations messagingTemplate;
+    private DatabaseService db;
+
     @Autowired
-    DatabaseService db;
+    public NotificationController(DatabaseService db,SimpMessageSendingOperations messagingTemplate){
+        this.db=db;
+        this.messagingTemplate=messagingTemplate;
+    }
 
     @MessageMapping("/notify")
     public void notify(@AuthenticationPrincipal Authentication performer, @Payload ClientUserNotification notification) throws Exception {
