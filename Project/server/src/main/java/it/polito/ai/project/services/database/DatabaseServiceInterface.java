@@ -123,7 +123,7 @@ public interface DatabaseServiceInterface {
 
     List<ClientRace> getCompanionRacesFromDate(String performerUsername, Date date);
 
-    void endRace(String performerUsername, ClientRace clientRace);
+    void endRace(String performerUsername,String lineName,Date date, DirectionType direction);
 
     //---------------------------------------------------###Line###---------------------------------------------------//
 

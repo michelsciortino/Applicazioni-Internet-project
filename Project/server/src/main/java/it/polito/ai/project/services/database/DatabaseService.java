@@ -2864,14 +2864,14 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     @Transactional
     @Override
-    public void endRace(String performerUsername, ClientRace clientRace) {
+    public void endRace(String performerUsername,String lineName,Date date, DirectionType direction) {
         Optional<Race> race;
         Optional<Line> line;
         Optional<UserCredentials> performer;
         // Take information from DB
         try {
-            race = raceRepository.findRaceByDateAndLineNameAndDirection(clientRace.getDate(), clientRace.getLine().getName(), clientRace.getDirection());
-            line = lineRepository.findLineByName(clientRace.getLine().getName());
+            race = raceRepository.findRaceByDateAndLineNameAndDirection(date, lineName, direction);
+            line = lineRepository.findLineByName(lineName);
             performer = userCredentialsRepository.findByUsername(performerUsername);
         } catch (Exception e) {
             throw new InternalServerErrorException("Error in repository lookup");
@@ -2899,10 +2899,23 @@ public class DatabaseService implements DatabaseServiceInterface {
         race.get().setRaceState(RaceState.ENDED);
         updateRace(raceToClientRace(race.get(), null), performerUsername);
         Date d = new Date();
-        UserNotification notification = new UserNotification(performerUsername, null, NotificationsType.RACE_ENDED, d, true, race.get(), null, performerUsername + " : Race for Date " + race.get().getDate().toString() + ", in Line " + race.get().getLineName() + ", Direction " + race.get().getDirection().toString() + "reached Final Stop!", false);
-        userNotificationRepository.save(notification);
-        userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndBroadcastRaceAndEqDate(performerUsername, race.get(), d);
-        this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + race.get().getDate() + "/" + race.get().getDirection(), notification);
+        UserNotification notification = new UserNotification();
+        notification.setPerformerUsername(performerUsername);
+        notification.setTargetUsername(null);
+        notification.setType(NotificationsType.RACE_ENDED);
+        notification.setDate(d);
+        notification.setBroadcast(true);
+        notification.setBroadcastRace(new Race(race.get().getLineName(), race.get().getDirection(), race.get().getDate(), race.get().getCurrentStop(), race.get().getRaceState(), race.get().getPassengers(), race.get().getReachedStops(), race.get().getCompanions()));
+        notification.setParameters(null);
+        notification.setMessage(performerUsername + " : Race has ended.");
+        notification.setIsRead(false);
+        try {
+            userNotificationRepository.save(notification);
+            Optional<UserNotification> uNotification = userNotificationRepository.findByBroadcastIsTrueAndPerformerUsernameAndBroadcastRaceAndEqDate(performerUsername, race.get(), d);
+            uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + race.get().getDate() + "/" + race.get().getDirection(), userNotificationToClientUserNotification(userNotification)));
+        } catch (Exception ex) {
+            throw new InternalServerErrorException();
+        }
     }
 
     private boolean isCompanionOfRace(List<Companion> companions, List<String> roles, Companion companion) {

@@ -289,7 +289,7 @@ public class CompanionController {
                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date,
                                     @PathVariable(value = "direction") DirectionType direction) {
         try {
-            db.startRace(performerUserCredentials.getUsername(), lineName, date,direction);
+            db.startRace(performerUserCredentials.getUsername(), lineName, date, direction);
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -349,10 +349,13 @@ public class CompanionController {
         }
     }
 
-    @RequestMapping(value = "/endRace", method = RequestMethod.POST)
-    public ResponseEntity endRace(@AuthenticationPrincipal UserCredentials performerUserCredentials, @RequestBody ClientRace clientRace) {
+    @RequestMapping(value = "/endRace/{lineName}/{date}/{direction}", method = RequestMethod.POST)
+    public ResponseEntity endRace(@AuthenticationPrincipal UserCredentials performerUserCredentials,
+                                  @PathVariable(value = "lineName") String lineName,
+                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date,
+                                  @PathVariable(value = "direction") DirectionType direction) {
         try {
-            db.endRace(performerUserCredentials.getUsername(), clientRace);
+            db.endRace(performerUserCredentials.getUsername(), lineName, date,direction);
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
