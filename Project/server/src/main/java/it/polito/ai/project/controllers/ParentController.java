@@ -6,6 +6,7 @@ import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.generalmodels.ClientUserCredentials;
 import it.polito.ai.project.requestEntities.ReserveChildrenRequest;
 import it.polito.ai.project.services.database.DatabaseService;
+import it.polito.ai.project.services.database.models.DirectionType;
 import it.polito.ai.project.services.database.models.UserCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.Date;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -79,11 +81,19 @@ public class ParentController {
     }
 
     @RequestMapping(value="/races", method = RequestMethod.GET)
-    public ResponseEntity getParentRaces(@AuthenticationPrincipal UserCredentials performerUserCredential, @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  @RequestParam Date date)
+    public ResponseEntity getParentRaces(@AuthenticationPrincipal UserCredentials performerUserCredential,
+                                         @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  @RequestParam Date fromDate,
+                                         @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  @RequestParam Date toDate,
+                                         @Nullable @RequestParam boolean reserved,
+                                         @RequestParam @Valid DirectionType direction,
+                                         @RequestParam @Valid String lineName)
     {
         try
         {
-            return ok(db.getParentRacesFromDate(performerUserCredential.getUsername(), date));
+            if(reserved)
+                return ok(db.getParentReservedRacesBetweenDate(performerUserCredential.getUsername(), fromDate, toDate, direction, lineName));
+            else
+                return ok(db.getParentRacesBetweenDate(performerUserCredential.getUsername(), fromDate, toDate, direction, lineName));
         }
         catch(ResourceNotFoundException re)
         {

@@ -118,6 +118,12 @@
       "name": "Shibo",
       "surname": "Chin",
       "CF": "SHBCHN01C25B919P"
+    },
+    {
+      "parentId": "palermo@mail.com",
+      "name": "Jessica",
+      "surname": "Palermo",
+      "CF": "PLRJSC06A46L219G"
     }
   ],
   "admins": [

@@ -799,7 +799,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                     {
                         count++;
                         race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setReserved(false);
-
+                        race.get().getPassengers().get(race.get().getPassengers().indexOf(p)).setStopReserved(null);
                     }
                 }
             }
@@ -811,6 +811,53 @@ public class DatabaseService implements DatabaseServiceInterface {
         updateRace(raceToClientRace(race.get(), null), performerUsername);
     }
 
+    // Get parent races
+    @Override
+    public List<ClientRace> getParentRacesBetweenDate(String performerUsername, Date fromDate, Date toDate, DirectionType direction, String lineName) {
+        List<ClientRace> parentRaces;
+        List<Race> races;
+
+        try {
+            if (fromDate == null || toDate == null)
+                races = raceRepository.findAllByLineNameAndDirection(lineName, direction);
+            else
+                races = raceRepository.findAllByLineNameAndDirectionAndDateBetween(lineName, direction,removeTime(fromDate), midnightTime(toDate));
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+
+        parentRaces = races.stream()
+                .filter(race -> race.getPassengers().stream().anyMatch(passenger -> passenger.getChildDetails().getParentId().equals(performerUsername))
+                ).map(race -> raceToClientRace(race, null)
+                ).collect(Collectors.toList());
+
+        return parentRaces;
+    }
+
+    // Get parent reserved races
+    @Override
+    public List<ClientRace> getParentReservedRacesBetweenDate(String performerUsername, Date fromDate, Date toDate, DirectionType direction, String lineName) {
+        List<ClientRace> parentRaces;
+        List<Race> races;
+
+        try {
+            if (fromDate == null || toDate == null)
+                races = raceRepository.findAllByLineNameAndDirection(lineName, direction);
+            else
+                races = raceRepository.findAllByLineNameAndDirectionAndDateBetween(lineName, direction, removeTime(fromDate), midnightTime(toDate));
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+
+        parentRaces = races.stream()
+                .filter(race -> race.getPassengers().stream().anyMatch(passenger -> passenger.getChildDetails().getParentId().equals(performerUsername)
+                        && passenger.isReserved())
+                )
+                .map(race -> raceToClientRace(race, null)
+                ).collect(Collectors.toList());
+
+        return parentRaces;
+    }
 
     //---------------------------------------------------###Admin###--------------------------------------------------//
 

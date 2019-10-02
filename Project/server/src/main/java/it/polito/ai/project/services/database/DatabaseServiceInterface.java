@@ -64,11 +64,17 @@ public interface DatabaseServiceInterface {
 
     void reserveChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> passengers);
 
+    // Get parent races
+    List<ClientRace> getParentRacesBetweenDate(String performerUsername, Date fromDate, Date toDate, DirectionType direction, String lineName);
+
+    // Get parent reserved races
+    List<ClientRace> getParentReservedRacesBetweenDate(String performerUsername, Date fromDate, Date toDate, DirectionType direction, String lineName);
+
+    List<ClientRace> getParentRacesFromDate(String performerUsername, Date date);
+
     //--------------------------------------------------###Admin###---------------------------------------------------//
 
     void removeChildrenFromRace(String performerUsername, ClientRace clientRace, List<ClientPassenger> clientPassengers);
-
-    List<ClientRace> getParentRacesFromDate(String performerUsername, Date date);
 
     void makeLineAdmin(String performerUsername, String targetUsername, String line);
 
@@ -141,12 +147,10 @@ public interface DatabaseServiceInterface {
 
     //---------------------------------------------------###Race###---------------------------------------------------//
 
-    @Transactional
     ClientLine removeChildFromLine(String UserID, ClientChild child, String lineName, List<String> roles);
 
     ClientRace insertRace(ClientRace clientRace, String performerUsername);
 
-    @Transactional
     ClientRace insertRaceInitializer(ClientRace clientRace, String performerUsername);
 
     Collection<ClientRace> getRaces();
