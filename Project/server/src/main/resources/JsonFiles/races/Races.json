@@ -3,7 +3,8 @@
     {
       "lineName": "Bruchi_cantanti",
       "direction": "OUTWARD",
-      "date": "2019-09-30T10:44:00.000Z",
+      "date": "2019-10-02T10:44:00.000Z",
+      "raceState": "VALIDATED",
       "passengers": [
         {
           "childDetails": {
@@ -105,7 +106,8 @@
     {
       "lineName": "Bruchi_cantanti",
       "direction": "RETURN",
-      "date": "2019-11-20T16:54:00.000Z",
+      "date": "2019-10-02T16:54:00.000Z",
+      "raceState": "VALIDATED",
       "passengers": [
         {
           "childDetails": {
@@ -115,10 +117,10 @@
             "parentId": "rossi@mail.com"
           },
           "stopReserved": {
-            "name": "Scuola",
-            "latitude": 45.080868,
-            "longitude": 7.659967,
-            "delayInMillis": 0
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
+            "delayInMillis": 900000
           },
           "reserved": true,
           "state": "NULL"
@@ -144,9 +146,9 @@
             "parentId": "bruno@mail.com"
           },
           "stopReserved": {
-            "name": "Scuola",
-            "latitude": 45.080868,
-            "longitude": 7.659967,
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
           "reserved": true,
@@ -160,9 +162,12 @@
             "parentId": "albanese@mail.com"
           },
           "stopReserved": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
             "delayInMillis": 0
           },
-          "reserved": false,
+          "reserved": true,
           "state": "NULL"
         }
       ],
@@ -176,10 +181,10 @@
             "lines": []
           },
           "initialStop": {
-            "name": "Via San Donato 47",
-            "latitude": 45.080973,
-            "longitude": 7.662972,
-            "delayInMillis": 600000
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
           },
           "finalStop": {
             "name": "Via Sobrero 30",
@@ -187,7 +192,7 @@
             "longitude": 7.666355,
             "delayInMillis": 1200000
           },
-          "state": "CHOSEN"
+          "state": "VALIDATED"
         },
         {
           "userDetails": {
