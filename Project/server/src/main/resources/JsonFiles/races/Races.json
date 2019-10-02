@@ -4,7 +4,6 @@
       "lineName": "Bruchi_cantanti",
       "direction": "OUTWARD",
       "date": "2019-10-02T10:44:00.000Z",
-      "raceState": "VALIDATED",
       "passengers": [
         {
           "childDetails": {
@@ -107,7 +106,6 @@
       "lineName": "Bruchi_cantanti",
       "direction": "RETURN",
       "date": "2019-10-02T16:54:00.000Z",
-      "raceState": "VALIDATED",
       "passengers": [
         {
           "childDetails": {
