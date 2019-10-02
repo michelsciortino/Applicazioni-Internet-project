@@ -2725,8 +2725,9 @@ public class DatabaseService implements DatabaseServiceInterface {
         }
 
         race.get().setCurrentStop(stop.get());
-        race.get().getReachedStops().add(new ReachedStop(stopName, new Date().getTime(), 0));
+        race.get().getReachedStops().add(new ReachedStop(stopName, new Date().getTime()-race.get().getDate().getTime(), -1));
         raceRepository.save(race.get());
+
         Date d = new Date();
         UserNotification notification = new UserNotification();
         notification.setPerformerUsername(performerUsername);
@@ -2841,7 +2842,7 @@ public class DatabaseService implements DatabaseServiceInterface {
 
         for (ReachedStop r : race.get().getReachedStops())
             if (r.getStopName().equals(stopName))
-                race.get().getReachedStops().get(race.get().getReachedStops().indexOf(r)).setDepartureDelay(new Date().getTime() - race.get().getDate().getTime() + stop.get().getDelayInMillis());
+                race.get().getReachedStops().get(race.get().getReachedStops().indexOf(r)).setDepartureDelay(new Date().getTime() - race.get().getDate().getTime());
         raceRepository.save(race.get());
     }
 

@@ -8,9 +8,9 @@ import javax.validation.constraints.Min;
 @Data
 public class ClientReachedStop {
     private String stopName;
-    @Min(0)
+    @Min(-1)
     private long arrivalDelay;
-    @Min(0)
+    @Min(-1)
     private long departureDelay;
 
     public ClientReachedStop(String stopName, @Min(0) long arrivalDelay, @Min(0) long departureDelay) {
