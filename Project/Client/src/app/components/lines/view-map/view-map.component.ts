@@ -119,7 +119,6 @@ export class ViewMapComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        console.log("AfterViewInit");
         this.gmapsApi.getNativeMap()
             .then(map => console.log("AfterViewInit: map: ", map))
             .catch(error => console.log("AfterViewInit: getNativeMap() Error: ", error))
@@ -130,7 +129,6 @@ export class ViewMapComponent implements OnInit, AfterViewInit {
     }
 
     onMapReady(event: any) {
-        console.log("onMapReady");
         this.gmapsApi.getNativeMap()
             .then(map => console.log("AfterViewInit: map: ", map))
             .catch(error => console.log("AfterViewInit: getNativeMap() Error: ", error))
