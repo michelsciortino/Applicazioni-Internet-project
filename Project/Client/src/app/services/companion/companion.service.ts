@@ -9,6 +9,7 @@ import { DataSource } from '@angular/cdk/table';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { Stop } from 'src/app/models/stop';
 import { Race } from 'src/app/models/race';
+import { Passenger } from 'src/app/models/passenger';
 
 @Injectable()
 export class CompanionService {
@@ -67,6 +68,56 @@ export class CompanionService {
                 return race;
             }))
         );
+    }
+
+    public startRace(lineName: string, direction: string, date: Date){
+        return this.http.post(`${CompanionService.companionEndpoint}/startRace/${lineName}/${date.toISOString()}/${direction}`, {})
+            .toPromise();
+    }
+
+    public endRace(lineName: string, direction: string, date: Date){
+        return this.http.post(`${CompanionService.companionEndpoint}/endRace/${lineName}/${date.toISOString()}/${direction}`, {})
+            .toPromise();
+    }
+
+    public stopReached(lineName: string, direction: string, date: Date,stopName:string) {
+        return this.http.post(`${CompanionService.companionEndpoint}/stopReached/${lineName}/${date.toISOString()}/${direction}/${stopName}`, {})
+            .toPromise();
+    }
+
+    public stopLeft(lineName: string, direction: string, date: Date, stopName: string) {
+        return this.http.post(`${CompanionService.companionEndpoint}/stopLeft/${lineName}/${date.toISOString()}/${direction}/${stopName}`, {})
+            .toPromise();
+    }
+
+    public takeChildren(lineName: string, direction: string, date: Date,stopName:string,children: Passenger[]){
+        return this.http.post(`${CompanionService.companionEndpoint}/takeChildren`, {
+            lineName: lineName,
+            direction: direction,
+            date: date,
+            children: children,
+            stopName: stopName
+        }).toPromise();
+    }
+
+    public deliverChildren(lineName: string, direction: string, date: Date,stopName:string,children: Passenger[]){
+        return this.http.post(`${CompanionService.companionEndpoint}/deliverChildren`, {
+            lineName: lineName,
+            direction: direction,
+            date: date,
+            children: children,
+            stopName: stopName
+        }).toPromise();
+    }
+
+    public absentChildren(lineName: string, direction: string, date: Date,stopName:string,children: Passenger[]){
+        return this.http.post(`${CompanionService.companionEndpoint}/absentChildren`, {
+            lineName: lineName,
+            direction: direction,
+            date: date,
+            children: children,
+            stopName: stopName
+        }).toPromise();
     }
 }
 
@@ -130,12 +181,16 @@ export class CompanionRacesDataSource implements DataSource<Race>{
             .pipe(
                 catchError(() => of([])),
                 finalize(() => {
-                    console.log(this.racesSbj.value);
+                    // console.log(this.racesSbj.value);
                     this.loadingSbj.next(false);
                 })
             ).subscribe((races: Race[]) => {
-                console.log(races)
+                // console.log(races)
                 this.racesSbj.next(races);
             });
+    }
+
+    public isEmpty():boolean{
+        return this.racesSbj && this.racesSbj.value && this.racesSbj.value.length>0 ? false:true;
     }
 }
