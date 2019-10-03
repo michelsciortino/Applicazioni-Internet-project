@@ -2,10 +2,15 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+const remoteAddress
+  // = 'http://192.168.0.102:8080';
+  // = 'http://192.168.0.230:8080';
+   = 'http://localhost:8080';
+
 export const environment = {
   production: false,
-  baseEndpoint: 'http://192.168.0.102:8080',
-  //baseEndpoint: 'http://localhost:8080'
+  baseEndpoint: remoteAddress,
+  baseWsEndpoint: remoteAddress+'/ws'
 };
 
 /*
