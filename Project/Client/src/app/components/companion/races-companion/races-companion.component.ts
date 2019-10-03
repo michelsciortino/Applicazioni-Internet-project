@@ -42,6 +42,7 @@ export class RacesCompanionComponent implements OnInit, OnDestroy {
         { def: 'Date' },
         { def: 'Passengers' },
         { def: 'Companions' },
+        { def: 'State' },
         { def: 'Availability-Action' }];
 
     @ViewChild(MatSort, { static: true }) sort: MatSort;
