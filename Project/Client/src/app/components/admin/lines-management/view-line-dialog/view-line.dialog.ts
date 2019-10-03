@@ -9,6 +9,7 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { AdminService } from 'src/app/services/admin/admin.service';
 import { LineService } from 'src/app/services/lines/line-races.service';
 import { Child } from 'src/app/models/child';
+import { ConfirmDialog } from 'src/app/components/dialogs/confirm-dialog/confirm.dialog';
 
 @Component({
     selector: 'app-view-line-dialog',
@@ -68,6 +69,26 @@ export class ViewLineDialog implements OnInit, OnDestroy {
 
     removeChildtoLine(child: Child): void {
         console.log("REMOVE CHILD", child);
+        const dialogRef = this.dialog.open(ConfirmDialog, {
+            width: '350px',
+            data: {
+                title: 'Confirm?',
+                message: `Are you sure deleted this child: \n- ${child.name}\n- ${child.surname}\n- ${child.parentId}`,
+                YES: true, NO: true
+            }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            switch (result) {
+                case "YES":
+                    this.adminSvc.removeChildrenToLine(this.line.name, child).toPromise()
+                        .then(() => this.adminSvc.linesChanged("Child removed" + child.name))
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                    break;
+                default: break;
+            }
+        });
     }
 
     isAdminOfLine() {
