@@ -1,6 +1,7 @@
 import { Passenger } from './passenger';
 import { Companion } from './companion';
 import { Line } from './line';
+import { Stop } from './stop';
 
 export enum DirectionType {
     OUTWARD = "OUTWARD",
@@ -22,6 +23,8 @@ export class Race {
     public companions: Companion[];
     public raceState: RaceState;
     public companion: Companion;
+    public reachedStops: {stopName:string, arrivalDelay:number, departureDelay:number}[];
+    public currentStop: Stop;
     
     constructor() {
         this.line = new Line();

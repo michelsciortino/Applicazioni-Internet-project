@@ -16,6 +16,7 @@ import { LinesComponent } from '../components/lines/lines.component';
 import { AccountComponent } from '../components/account/account.component';
 import { UserRole } from '../models/roles';
 import { ParentComponent } from '../components/parent/parent.component';
+import { RunningRaceComponent } from '../components/home/companion/running-race/running-race.component';
 
 const routes: Routes = [
   // basic routes
@@ -45,6 +46,11 @@ const routes: Routes = [
     component: CompanionComponent,
     canActivate: [AuthGuard],
     data: { roles: [UserRole.COMPANION] }
+  },
+  {
+    path: 'runningRace/:lineName/:date/:direction', canActivate:[AuthGuard],
+    component: RunningRaceComponent,
+    data:{ roles: [UserRole.COMPANION]}
   },
   {
     path: 'parent',

@@ -25,6 +25,7 @@ import {
   MatSortModule,
   MatBottomSheetModule,
   MatExpansionModule,
+  MatBadgeModule,
 } from '@angular/material';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
@@ -55,6 +56,7 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
     MatSortModule,
     MatBottomSheetModule,
     MatExpansionModule,
+    MatBadgeModule,
     NgxMaterialTimepickerModule
   ],
   exports: [
@@ -83,6 +85,7 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
     MatSortModule,
     MatBottomSheetModule,
     MatExpansionModule,
+    MatBadgeModule,
     NgxMaterialTimepickerModule
   ],
 })

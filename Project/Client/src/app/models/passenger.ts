@@ -2,11 +2,11 @@ import { Stop } from './stop';
 import { Child } from './child';
 
 export enum PassengerState {
-    ABSENT,
-    TAKEN,
-    DELIVERED,
-    PRESENT,
-    NULL
+    ABSENT="ABSENT",
+    TAKEN="TAKEN",
+    DELIVERED="DELIVERED",
+    PRESENT="PRESENT",
+    NULL="NULL"
 }
 
 export class Passenger {
