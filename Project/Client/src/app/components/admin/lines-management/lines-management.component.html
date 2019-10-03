@@ -43,7 +43,7 @@
                 <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"></tr>
             </mat-table>
 
-            <div *ngIf="dataSource.empty===true" class="grey">NO RACES FOUND</div>
+            <div *ngIf="dataSource?.isEmpty()" class="grey">NO RACES FOUND</div>
 
         </div>
 

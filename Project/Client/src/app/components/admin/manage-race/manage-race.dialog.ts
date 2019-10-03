@@ -27,7 +27,6 @@ export class ManageRaceDialog implements OnInit, OnDestroy {
     racesChangesSub: Subscription;
 
     constructor(private adminSvc: AdminService, private userSvc: UserService, private lineSvc: LineService, public dialogRef: MatDialogRef<ManageRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
-        console.log(data);
         this.stopCoverage = new Map<string, boolean>();
     }
 
@@ -55,7 +54,6 @@ export class ManageRaceDialog implements OnInit, OnDestroy {
     private getRace() {
         this.lineSvc.getRace(this.data.lineName, this.data.date, this.data.direction)
             .then(race => {
-                console.log(race);
                 this.race = race;
                 this.updateCoverage();
             })
@@ -71,7 +69,6 @@ export class ManageRaceDialog implements OnInit, OnDestroy {
         this.stopCoverage.clear();
         stops.forEach(stop => this.stopCoverage.set(stop.name, false));
         this.race.companions.forEach(companion => {
-            console.log(companion.state);
             if (companion.state === CompanionState.CONFIRMED || companion.state === CompanionState.VALIDATED) {
                 let mark = false;
                 for (let stop of stops) {

@@ -97,9 +97,9 @@
                         <tbody *ngIf="race?.passengers?.length>0">
                             <tr *ngFor="let passenger of race.passengers">
                                 <td>{{passenger.childDetails.name}}</td>
-                                <td>{{passenger.stopReserved.name}}</td>
-                                <td>{{passenger.stopTaken.name}}</td>
-                                <td>{{passenger.stopDelivered.name}}</td>
+                                <td>{{passenger.stopReserved?.name}}</td>
+                                <td>{{passenger.stopTaken?.name}}</td>
+                                <td>{{passenger.stopDelivered?.name}}</td>
                                 <td *ngIf="passenger.reserved" class="center-vertical centered-text">
                                     <mat-icon class="green opacity50">check</mat-icon>
                                 </td>
@@ -122,6 +122,6 @@
 
     <div mat-dialog-actions>
         <button mat-raised-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
-        <button class="right absolute" [disabled]="!isRaceValidable()" *ngIf="isAdmin && race?.raceState != 'VALIDATED'" mat-raised-button (click)="validate()">Validate</button>
+        <button class="right absolute" [disabled]="!isRaceValidable()" *ngIf="isAdmin && race?.raceState == 'SCHEDULED'" mat-raised-button (click)="validate()">Validate</button>
     </div>
 </div>
