@@ -85,7 +85,7 @@ public class ParentController {
                                          @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  @RequestParam Date fromDate,
                                          @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  @RequestParam Date toDate,
                                          @Nullable @RequestParam boolean reserved,
-                                         @RequestParam @Valid DirectionType direction,
+                                         @Nullable @RequestParam @Valid DirectionType direction,
                                          @RequestParam @Valid String lineName)
     {
         try

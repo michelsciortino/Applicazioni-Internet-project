@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 public class Companion {
-    @Reference
     private User userDetails;
 
     private PediStop initialStop;

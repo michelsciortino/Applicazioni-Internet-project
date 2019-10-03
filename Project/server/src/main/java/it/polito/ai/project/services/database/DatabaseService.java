@@ -818,10 +818,18 @@ public class DatabaseService implements DatabaseServiceInterface {
         List<Race> races;
 
         try {
-            if (fromDate == null || toDate == null)
-                races = raceRepository.findAllByLineNameAndDirection(lineName, direction);
-            else
-                races = raceRepository.findAllByLineNameAndDirectionAndDateBetween(lineName, direction,removeTime(fromDate), midnightTime(toDate));
+            if(direction==null){
+                if (fromDate == null || toDate == null)
+                    races = raceRepository.findAllByLineName(lineName);
+                else
+                    races = raceRepository.findAllByLineNameAndDateBetween(lineName,removeTime(fromDate), midnightTime(toDate));
+            }
+            else{
+                if (fromDate == null || toDate == null)
+                    races = raceRepository.findAllByLineNameAndDirection(lineName, direction);
+                else
+                    races = raceRepository.findAllByLineNameAndDirectionAndDateBetween(lineName, direction,removeTime(fromDate), midnightTime(toDate));
+            }
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
@@ -841,10 +849,18 @@ public class DatabaseService implements DatabaseServiceInterface {
         List<Race> races;
 
         try {
-            if (fromDate == null || toDate == null)
-                races = raceRepository.findAllByLineNameAndDirection(lineName, direction);
-            else
-                races = raceRepository.findAllByLineNameAndDirectionAndDateBetween(lineName, direction, removeTime(fromDate), midnightTime(toDate));
+            if(direction==null){
+                if (fromDate == null || toDate == null)
+                    races = raceRepository.findAllByLineName(lineName);
+                else
+                    races = raceRepository.findAllByLineNameAndDateBetween(lineName,removeTime(fromDate), midnightTime(toDate));
+            }
+            else{
+                if (fromDate == null || toDate == null)
+                    races = raceRepository.findAllByLineNameAndDirection(lineName, direction);
+                else
+                    races = raceRepository.findAllByLineNameAndDirectionAndDateBetween(lineName, direction,removeTime(fromDate), midnightTime(toDate));
+            }
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
@@ -3260,8 +3276,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         } else {
             throw new BadRequestException();
         }
-
-
     }
 
     @Override
@@ -3287,7 +3301,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                 throw new UnauthorizedRequestException("Line Admins only can perform this operation");
         }
 
-        Child c = new Child(child.getName(), child.getSurname(), child.getCf(), child.getParentId(), EntryState.ISENABLE);
+        Child c = new Child(child.getName(), child.getSurname(), child.getCf(), child.getParentId(), null);
 
         if (l.get().getSubscribedChildren().contains(c)) {
 
@@ -3296,12 +3310,14 @@ public class DatabaseService implements DatabaseServiceInterface {
                     if (p.getChildDetails().getCF().equals(child.getCf())) {
                         r.getPassengers().remove(p);
                         raceRepository.save(r);
+                        break;
                     }
             for (Race r : childValidatedRaces)
                 for (Passenger p : r.getPassengers())
                     if (p.getChildDetails().getCF().equals(child.getCf())) {
                         r.getPassengers().remove(p);
                         raceRepository.save(r);
+                        break;
                     }
             l.get().getSubscribedChildren().remove(c);
             lineRepository.save(l.get());
@@ -3309,8 +3325,6 @@ public class DatabaseService implements DatabaseServiceInterface {
         } else {
             throw new BadRequestException();
         }
-
-
     }
 
     /**
@@ -3809,7 +3823,7 @@ public class DatabaseService implements DatabaseServiceInterface {
     //----------------------------------------------###CompanionRequest###----------------------------------------------//
 
     private Child clientChildToChild(ClientChild clientChild) {
-        return new Child(clientChild.getName(), clientChild.getSurname(), clientChild.getCf(), clientChild.getParentId(), EntryState.ISENABLE);
+        return new Child(clientChild.getName(), clientChild.getSurname(), clientChild.getCf(), clientChild.getParentId(), null);
     }
 
     @Override
