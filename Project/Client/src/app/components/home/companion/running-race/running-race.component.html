@@ -1,0 +1,189 @@
+<div>
+    <h1>RUNNING RACE COMPONENT</h1>
+    <ngu-carousel *ngIf="race && (race.raceState == 'STARTED' || race.raceState == 'ENDED')" class="fit-content center-horizontal marged" #lineCarousel [inputs]="carouselTile" [dataSource]="tiledStops">
+        <div NguCarouselPoint>
+            <span class="stop-index">{{lineCarousel.currentSlide+1}}/{{tiledStops.length}}</span>
+            <span class="stop-direction">{{race.direction}}</span>
+        </div>
+        <ngu-tile class="tile fit-content" *nguCarouselDef="let stop; let stopIndex = index">
+            <div class="tile-content">
+                <div class="stop-header" [ngClass]="{ 'first' : stopIndex === 0, 'last' : stopIndex === tiledStops.length-1 }">
+                    <span class="stop-name">{{stop.name}}</span>
+                </div>
+                <!-- OUTWARD -->
+                <div *ngIf="race.direction=='OUTWARD'" class="children-container marged center-horizontal">
+                    <!-- NOT AT SCHOOL -->
+                    <div *ngIf="stopIndex!=tiledStops.length-1">
+                        <!-- RESERVED CHILDREN -->
+                        <div>
+                            <p class="children-title">Reserved children</p>
+                            <table class="center-horizontal m-b-8" *ngIf="stop.reservedChildren && stop.reservedChildren.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>Child</th>
+                                        <th>Taken</th>
+                                        <th>Absent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let child of stop.reservedChildren">
+                                        <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
+                                        <td>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.reached" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN' || child.state === 'DELIVERED'" (click)="setChildState(takenRadio,child,stop)"></mat-radio-button>
+                                        </td>
+                                        <td>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.reached" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT'" (click)="setChildState(absentRadio,child,stop)"></mat-radio-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="!stop.reservedChildren || stop.reservedChildren.length == 0" class="m-b-8">
+                                <span>No children</span>
+                            </div>
+                        </div>
+                        <!-- NON RESERVED - BEFORE STOP REACHED -->
+                        <div *ngIf="!stop.reached && stop.index==race.reachedStops.length">
+                            <p class="children-title">Non Reserved</p>
+                            <table class="center-horizontal">
+                                <thead>
+                                    <tr>
+                                        <th>Child</th>
+                                        <th>Taken</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let child of otherChildren">
+                                        <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
+                                        <td>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" #takenNonRegisteredRadio value="TAKEN" [checked]="child.state==='TAKEN'" (click)="setNonRegisteredState(takenNonRegisteredRadio,child,stop)" color="primary"></mat-radio-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="!otherChildren || otherChildren.length == 0" class="m-b-8">
+                                <span>No children</span>
+                            </div>
+                        </div>
+
+                        <!-- NON RESERVED - AFTER STOP REACHED -->
+                        <div *ngIf="stop.reached && stop.nonReservedChildren?.length>0">
+                            <p class="children-title">Non Reserved</p>
+                            <table class="center-horizontal">
+                                <thead>
+                                    <tr>
+                                        <th>Child</th>
+                                        <th>Taken</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let child of stop.nonReservedChildren">
+                                        <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
+                                        <td>
+                                            <mat-radio-button disabled name="{{child.childDetails.cf}}" #takenNonRegisteredRadio value="TAKEN" [checked]="child.state==='TAKEN' || child.state === 'DELIVERED'" color="primary"></mat-radio-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="!stop.nonReservedChildren || stop.nonReservedChildren.length == 0" class="m-b-8">
+                                <span>No children</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- AT SCHOOL -->
+                    <div *ngIf="stopIndex===tiledStops.length-1">
+                        <div>
+                            <p class="children-title">Taken children</p>
+                            <table class="center-horizontal m-b-8" *ngIf="takenChildren && takenChildren.length > 0">
+                                <tbody>
+                                    <tr *ngFor="let child of takenChildren">
+                                        <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="!takenChildren || takenChildren.length == 0" class="m-b-8">
+                                <span>No children</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- BACKWARD -->
+                <div *ngIf="race.direction=='RETURN'" class="children-container marged center-horizontal">
+                    <!-- AT SCHOOL -->
+                    <div *ngIf="stopIndex===0">
+                        <!-- RESERVED CHILDREN -->
+                        <div>
+                            <p class="children-title">Reserved children</p>
+                            <table class="center-horizontal m-b-8" *ngIf="takeableChildren && takeableChildren.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>Child</th>
+                                        <th>Taken</th>
+                                        <th>Absent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let child of takeableChildren">
+                                        <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
+                                        <td>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.reached" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN'" (click)="setChildState(takenRadio,child,stop)"></mat-radio-button>
+                                        </td>
+                                        <td>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.reached" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT'" (click)="setChildState(absentRadio,child,stop)"></mat-radio-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="!takeableChildren || takeableChildren.length == 0" class="m-b-8">
+                                <span>No children</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- NOT AT SCHOOL -->
+                    <div *ngIf="stopIndex>0">
+                        <!-- RESERVED CHILDREN -->
+                        <div>
+                            <p class="children-title">Reserved children</p>
+                            <table class="center-horizontal m-b-8" *ngIf="stop.reservedChildren && stop.reservedChildren.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>Child</th>
+                                        <th>Delivered</th>
+                                        <th>Absent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let child of stop.reservedChildren">
+                                        <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
+                                        <td>
+                                            <mat-radio-button name="{{child.childDetails.cf+'DELIVERED'}}" [disabled]="stop.reached|| stop.name != currentStop.name ||child.state=='ABSENT'" #deliveredRadio value="DELIVERED" color="primary" [checked]="child.state === 'DELIVERED'" (click)="setChildState(deliveredRadio,child,stop)"></mat-radio-button>
+                                        </td>
+                                        <td>
+                                            <mat-radio-button name="{{child.childDetails.cf+'ABSENT'}}" [disabled]="true" value="ABSENT" color="primary" [checked]="child.state === 'ABSENT'"></mat-radio-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div *ngIf="!stop.reservedChildren || stop.reservedChildren.length == 0" class="m-b-8">
+                                <span>No children</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ngu-tile>
+        <button *ngIf="race" NguCarouselPrev class="leftRs" [style.opacity]="lineCarousel.isFirst ? 0.5:1">&lt;</button>
+        <button *ngIf="race" NguCarouselNext class="rightRs" [style.opacity]="lineCarousel.isLast ? 0.5:1">&gt;</button>
+        <div class="bottom-actions" NguCarouselPoint *ngIf="canShowConfirmButton(tiledStops[lineCarousel.currentSlide])">
+            <button mat-raised-button color="primary" [disabled]="!canConfirm(tiledStops[lineCarousel.currentSlide])" (click)="confirmStop()">Confirm</button>
+        </div>
+        <div class="bottom-actions" NguCarouselPoint *ngIf="canShowDeliverAllButton()">
+            <button mat-raised-button color="primary" (click)="deliverAll()">Deliver All</button>
+        </div>
+        <div class="bottom-actions" NguCarouselPoint *ngIf="canShowEndRaceButton()">
+            <button mat-raised-button color="primary" (click)="endRace()">End Race</button>
+        </div>
+        <ul *ngIf="race" class="dots" NguCarouselPoint>
+            <li *ngFor="let dot of lineCarousel?.pointNumbers" [class.active]="dot===lineCarousel.activePoint" (click)="lineCarousel.moveTo(dot)" [style.background]="red"></li>
+        </ul>
+    </ngu-carousel>
+</div>

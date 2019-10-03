@@ -5,10 +5,14 @@
             <mat-spinner [diameter]="70"></mat-spinner>
         </div>
         <div class="marged overflow-auto">
-            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource" *ngIf="!loading">
+            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource" *ngIf="!loading && !dataSource?.isEmpty()">
                 <ng-container matColumnDef="lineName">
                     <th mat-header-cell *matHeaderCellDef>Line</th>
                     <td mat-cell *matCellDef="let race">{{race.line.name}}</td>
+                </ng-container>
+                <ng-container matColumnDef="direction">
+                    <th mat-header-cell *matHeaderCellDef>Direction</th>
+                    <td mat-cell *matCellDef="let race">{{race.direction}}</td>
                 </ng-container>
                 <ng-container matColumnDef="initialStop">
                     <th mat-header-cell *matHeaderCellDef>Initial stop</th>
@@ -22,9 +26,17 @@
                     <th mat-header-cell *matHeaderCellDef>Status</th>
                     <td mat-cell *matCellDef="let race">{{race.raceState}}</td>
                 </ng-container>
+                <ng-container matColumnDef="start">
+                    <th mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell *matCellDef="let race">
+                        <button mat-raised-button color="primary" *ngIf="race.raceState=='VALIDATED'" (click)="startRace(race)">Start Race</button>
+                        <button mat-raised-button color="accent" *ngIf="race.raceState=='STARTED'" (click)="continueRace(race)">Continue Race</button>
+                    </td>
+                </ng-container>
                 <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
                 <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" (click)="viewRace(row)"></tr>
             </mat-table>
+            <div *ngIf="dataSource?.isEmpty()" class="grey">NO RACES TODAY</div>
         </div>
     </mat-card>
 </div>

@@ -1,0 +1,160 @@
+.leftRs {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    width: 38px;
+    font-style: bold;
+    height: 20%;
+    border: transparent;
+    border-radius: 0 20px 20px 0;
+    background-color: transparent; //rgba(0, 0, 0, 0.2);
+    font-size: 20px;
+    left: 0;
+    &:focus {
+        outline: 0;
+    }
+}
+
+.rightRs {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    width: 38px;
+    font-style: bold;
+    height: 20%;
+    border: transparent;
+    // border-radius: 20px 0 0 20px;
+    background-color: transparent; //rgba(0, 0, 0, 0.2);
+    font-size: 20px;
+    right: 0px;
+    &:focus {
+        outline: 0;
+    }
+}
+
+.dots {
+    list-style-type: none;
+    text-align: center;
+    padding: 12px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: auto;
+    box-sizing: border-box;
+    li {
+        display: inline-block;
+        border-radius: 50%;
+        background: rgb(200, 200, 200);
+        padding: 6px;
+        margin: 0 3px;
+        transition-timing-function: cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        transition: 0.4s;
+        &.active {
+            background: #40a8dd;
+            transform: scale(1.2);
+        }
+    }
+}
+
+.carouselHoved {
+    opacity: 0.4;
+}
+
+::ng-deep ngu-tile {
+    padding: 0px !important;
+    div {
+        box-shadow: initial !important;
+    }
+}
+
+.tile-content {
+    position: relative;
+    text-align: center;
+}
+
+.stop-header {
+    padding-top: 50px;
+    &::after {
+        content: '';
+        position: absolute;
+        height: 2px;
+        background-color: gray;
+        top: 50px;
+        left: 0px;
+        width: 100%;
+        z-index: 0;
+    }
+    &.first::after {
+        left: 50%;
+        width: 50%;
+    }
+    &.last::after {
+        left: 0;
+        width: 50%;
+    }
+}
+
+.stop-direction {
+    position: absolute;
+    padding: 8px;
+    top: 0;
+    left: 0;
+    width: fit-content;
+    z-index: 10;
+}
+
+.stop-index {
+    position: absolute;
+    padding: 8px;
+    top: 0;
+    right: 0;
+    width: fit-content;
+    z-index: 10;
+}
+
+.stop-name {
+    position: absolute;
+    border: 1px solid gray;
+    background-color: white;
+    padding: 10px;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    width: fit-content;
+    z-index: 10;
+}
+
+.children-container {
+    margin-top: 32px;
+    padding: 0 20px;
+    width: fit-content;
+    min-height: 350px;
+}
+
+ngu-carousel {
+    border: 1px solid gray;
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 175px
+}
+
+::ng-deep .ngucarousel-items {
+    max-width: 350px !important;
+}
+
+::ng-deep .ngucarousel {
+    margin-top: 10px !important;
+}
+
+.children-title {
+    border-bottom: 1px gray solid;
+    margin-left: auto;
+    margin-right: auto;
+    margin-block-start: 0;
+    padding: 0px 20px;
+}
+
+.bottom-actions {
+    text-align: center;
+    margin-bottom: 20px;
+}

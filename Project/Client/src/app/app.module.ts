@@ -19,7 +19,6 @@ import { MessageService } from './services/bridges/message.service';
 import { HomeComponent } from './components/home/home.component';
 import { UserService } from './services/user/user.service';
 import { LineService } from './services/lines/line-races.service';
-import { MessagesComponent } from './components/messages/messages.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { CompanionComponent } from './components/companion/companion.component';
 import { WelcomeComponent } from './components/welcome/welcome.component';
@@ -58,6 +57,13 @@ import { ParentService } from './services/parent/parent.service';
 import { SubscribeChildDialog } from './components/admin/lines-management/add-child-dialog/add-child.dialog';
 import { LinesManagementComponent } from './components/admin/lines-management/lines-management.component';
 import { ViewLineDialog } from './components/admin/lines-management/view-line-dialog/view-line.dialog';
+import { NotificationService } from './services/notifications/notification.service';
+import { RunningRaceComponent } from './components/home/companion/running-race/running-race.component';
+import { NguCarouselModule } from '@ngu/carousel';
+import { ReserveChildDialog } from './components/parent/reserve-child/reserve-child-dialog/reserve-child.dialog';
+import { ViewParentRaceDialog } from './components/parent/view-race/view-race-parent.dialog';
+import { ReservedRacesComponent } from './components/parent/reserved-races/reserved-races';
+import { ReserveChildComponent } from './components/parent/reserve-child/reserve-child';
 
 @NgModule({
   declarations: [
@@ -67,16 +73,19 @@ import { ViewLineDialog } from './components/admin/lines-management/view-line-di
     LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent, RegisterComponent,
 
     // Home
-    HomeComponent, MessagesComponent, CompanionTodayLinesComponent,
+    HomeComponent, CompanionTodayLinesComponent,
 
     // Parent
-    ParentComponent,
+    ParentComponent, ReservedRacesComponent, ReserveChildComponent, ReserveChildDialog, ViewParentRaceDialog,
 
     // Lines
     LinesComponent, ViewMapComponent,
 
     // Companion
     CompanionComponent, PendingRequestsComponent, RacesCompanionComponent, GiveAvailabilityDialog,
+
+    //RunningRace
+    RunningRaceComponent,
 
     // Admin
     AdminComponent, UserManagementComponent, RacesManagementComponent, CompanionRequestsManagementComponent, LinesManagementComponent,
@@ -97,7 +106,7 @@ import { ViewLineDialog } from './components/admin/lines-management/view-line-di
   ],
   entryComponents: [
     ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog,
-    EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ManageRaceDialog, SubscribeChildDialog, ViewLineDialog,
+    EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ManageRaceDialog, SubscribeChildDialog, ViewLineDialog, ReserveChildDialog, ViewParentRaceDialog
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,
@@ -106,6 +115,7 @@ import { ViewLineDialog } from './components/admin/lines-management/view-line-di
     FormsModule, ReactiveFormsModule,
     HttpClientModule,
     AngularSvgIconModule,
+    NguCarouselModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyA039REtD8cDNtCN-VMciUzLgkbUH87JCg'
     }),
@@ -120,6 +130,7 @@ import { ViewLineDialog } from './components/admin/lines-management/view-line-di
     ParentService,
     MessageService,
     IsMobileService,
+    NotificationService,
     DatePipe,
     { provide: GoogleMapsAPIWrapper, useClass: GoogleMapsAPIWrapper },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
