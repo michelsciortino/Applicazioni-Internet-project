@@ -186,6 +186,8 @@ export class ReserveChildComponent implements OnInit, OnDestroy {
     search() {
         this.isDataAvailable = false;
 
+        if (!this.lineSelected || !this.directionSelected) return;
+
         this.dataSource.loadReservableRaces(this.lineSelected.name, this.directionSelected.id, null, null)
             .then((data) =>
                 this.dataSource.getReservableRacesForChild(this.childSelected.cf)

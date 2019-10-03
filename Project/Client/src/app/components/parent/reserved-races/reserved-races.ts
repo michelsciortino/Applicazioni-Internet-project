@@ -130,6 +130,7 @@ export class ReservedRacesComponent implements OnInit, OnDestroy {
 
     private search() {
         //console.log(this.lineSelected.name, this.directionSelected.id, this.fromDateSelected, this.toDateSelected)
+        if (!this.lineSelected || !this.directionSelected || !this.fromDateSelected || !this.toDateSelected) return;
         this.dataSource.loadReservedRaces(this.lineSelected.name, this.directionSelected.id, this.fromDateSelected, this.toDateSelected)
             .then((data) =>
                 this.dataSource.getRaces()
