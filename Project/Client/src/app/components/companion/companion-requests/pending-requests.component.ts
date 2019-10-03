@@ -42,11 +42,11 @@ export class PendingRequestsComponent implements OnInit, OnDestroy {
         this.requestsSub = this.datasource.getPendingRequests()
             .subscribe((requests) => {
                 this.requests = requests;
-                console.log(requests);
+                // console.log(requests);
             });
         this._CompaionChangeSub = this.companionSvc.getCompanionInfoChanges().subscribe((value) => {
             this.datasource.reload();
-            console.log(value);
+            // console.log(value);
         });
     }
 

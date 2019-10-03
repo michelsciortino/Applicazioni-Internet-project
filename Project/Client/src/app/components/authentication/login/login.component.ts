@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
     showSpinner = false;
     busy = false;
 
-    constructor(private authService: AuthService, private router: Router, private fb: FormBuilder, private titleService: Title) {
+    constructor(private ngZone: NgZone,private authService: AuthService, private router: Router, private fb: FormBuilder, private titleService: Title) {
         this.titleService.setTitle('Login');
     }
 
@@ -34,9 +34,10 @@ export class LoginComponent implements OnInit {
             this.authService.login(this.form.value)
                 .then(_ => {
                     console.log("login completato ->navigo verso home");
-                    this.router.navigate(['../../']);
+                    this.ngZone.run(() => this.router.navigate(['../../'])).then();
                 })
                 .catch(error => {
+                    console.log(error);
                     this.loginError = error;
                     this.busy = false;
                     this.showSpinner = false;

@@ -41,7 +41,7 @@ export class CompanionRequestsManagementComponent implements OnInit, OnDestroy {
         this.requestsSub = this.datasource.getPendingRequests()
             .subscribe((requests) => {
                 this.requests = requests;
-                console.log(requests);
+                //console.log(requests);
             });
         this.racesChangesSub = this.adminSvc.getRacesChanges().subscribe((reason) => this.datasource.reload());
     }

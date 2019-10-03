@@ -59,7 +59,7 @@ export class LinesManagementComponent implements OnInit, OnDestroy {
     private getLines() {
         this.linesSub = this.lineSvc.getLines().subscribe(
             (data: Line[]) => {
-                console.log(data);
+                //console.log(data);
                 this.lines = data;
                 this.dataSource.loadLines();
             });

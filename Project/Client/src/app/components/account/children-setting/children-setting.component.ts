@@ -40,12 +40,12 @@ export class ChildrenSettingComponent implements OnInit, OnDestroy {
     }
 
     openAddChildDialog(): void {
-        console.log("OPEN DIALOG ADD CHILD")
+        //console.log("OPEN DIALOG ADD CHILD")
         this.dialog.open(AddChildDialog, { data: { user: this.userInfo } });
     }
 
     removeChild(child: Child): void {
-        console.log("REMOVE CHILD:", child)
+        //console.log("REMOVE CHILD:", child)
 
         this.dialog.open(ConfirmDialog, {
             width: '300px',

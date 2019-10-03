@@ -90,7 +90,7 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
                 )
             )
             .subscribe((data: Line[]) => {
-                console.log(data);
+                //console.log(data);
                 if (data.length == 0) return;
                 this.lines = data;
                 //console.log(this.lines[0].name);
