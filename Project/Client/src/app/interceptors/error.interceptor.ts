@@ -3,23 +3,32 @@ import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/c
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../services/auth/auth.service';
+import { MatSnackBar } from '@angular/material';
 
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-    constructor(private authSvc: AuthService) { }
+    constructor(private authSvc: AuthService,private _snackBar: MatSnackBar) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(catchError(err => {
-            console.error(err);
-            if ([401, 403].indexOf(err.status) !== -1) {
-                // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
-                this.authSvc.logout();
-                //location.reload(true);
+            switch (err.status) {
+                case 0:
+                    this._snackBar.open("Unalbe to cotact the server.", null, {
+                        duration: 5000, //ms
+                    });
+                    return throwError("Unalbe to cotact the server.");
+                case 403:
+                    this.authSvc.logout();
+                    location.reload(true);
+                    return throwError("JWT token expired or invalid.");
+                default:
+                    console.error(err);
+                    this._snackBar.open(err.error.error + ": " + err.error.message, null, {
+                        duration: 5000, //ms
+                    });
+                    return throwError(err.error.message);
             }
-
-            const error = err.error || err.statusText;
-            return throwError(error);
         }));
     }
 }
