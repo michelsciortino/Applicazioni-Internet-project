@@ -1,0 +1,88 @@
+<div class="padded-content">
+    <mat-card class="compact-card scroll">
+
+        <p>Reserved Races</p>
+
+        <!-- line selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>Line</mat-label>
+            <mat-select [(value)]="lineSelected">
+                <mat-option *ngFor="let line of lines" [value]="line">
+                    {{line.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Way selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>Direction</mat-label>
+            <mat-select [(value)]="directionSelected">
+                <mat-option *ngFor="let dir of directions" [value]="dir">
+                    {{dir.text}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- From Date selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>From Date</mat-label>
+            <input matInput [matDatepicker]="pickerFrom" [(ngModel)]="fromDateSelected">
+            <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFrom disabled="false" [startAt]="fromDateSelected"></mat-datepicker>
+        </mat-form-field>
+
+        <!-- To Date selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>To Date</mat-label>
+            <input matInput [matDatepicker]="pickerTo" [(ngModel)]="toDateSelected">
+            <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+            <mat-datepicker #pickerTo disabled="false" [startAt]="toDateSelected"></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-raised-button [disabled]="lineSelected==null || directionSelected==null"
+            (click)="searchReservedRaces()">Search</button>
+
+        <div class="marged overflow-auto">
+            <table *ngIf="racesReserved.length>0" class="expanded mat-table">
+                <thead>
+                    <tr class="mat-header-row">
+                        <th class="mat-header-cell">Child Name</th>
+                        <!--<th class="mat-header-cell">LineName</th>-->
+                        <th class="mat-header-cell">Direction</th>
+                        <th class="mat-header-cell">Date</th>
+                        <th class="mat-header-cell">Status</th>
+                        <th class="mat-header-cell mat-cell-button">Remove</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let childRace of racesReserved" class="mat-row" (click)="viewRace(childRace)">
+                        <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                            {{childRace.child.name}} {{childRace.child.surname}}
+                        </td>
+                        <!--<td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                            {{childRace.race.line.name}}
+                        </td>-->
+                        <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                            {{childRace.race.direction}}
+                        </td>
+                        <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                            {{childRace.race.date.toDateString()}}
+                        </td>
+                        <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                            {{childRace.race.raceState}}
+                        </td>
+                        <td class="mat-cell mat-cell-button">
+                            <button mat-icon-button (click)="$event.stopPropagation();removeChildFromRace(childRace)">
+                                <mat-icon class="red">remove</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="racesReserved.length==0" class="marged padded grey">
+                NO RACES WITH RESERVED CHILDREN
+            </div>
+        </div>
+    </mat-card>
+</div>

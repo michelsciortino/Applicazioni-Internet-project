@@ -1,26 +1,9 @@
 <h3 class="centered-text">PARENT SECTION</h3>
-<div class="components-grid">
-    <div class="padded-content">
-        <mat-card class="compact-card centered">
-            <h4>Races</h4>
-            <table *ngIf="races && races.length>0">
-                <thead>
-                    <tr>
-                        <th>Line</th>
-                        <th>Direction</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let race of races; let i = index">
-                        <td> {{race.line.name}}</td>
-                        <td> {{race.direction}}</td>
-                        <td> {{dates[i]}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p *ngIf="!races">There are no races for today.</p>
-            <button mat-raised-button (click)="openConfirmChildToRaceDialog()">Confirm child to race</button>
-        </mat-card>
+<div>
+    <div class="components-grid">
+        <app-reserve-child class="components-grid-cell"></app-reserve-child>
+    </div>
+    <div class="components-grid">
+        <app-reserved-races class="components-grid-cell"></app-reserved-races>
     </div>
 </div>
