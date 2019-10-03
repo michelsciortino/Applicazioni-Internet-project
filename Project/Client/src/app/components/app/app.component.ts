@@ -8,6 +8,8 @@ import { UserService } from 'src/app/services/user/user.service';
 import { IsMobileService } from 'src/app/services/is-mobile/is-mobile.service';
 import { UserInfo } from 'src/app/models/user';
 import { DomSanitizer } from '@angular/platform-browser';
+import { NotificationService } from 'src/app/services/notifications/notification.service';
+import { Notification } from 'src/app/models/notification';
 
 @Component({
   selector: 'app-root',
@@ -18,24 +20,27 @@ export class AppComponent implements OnInit, OnDestroy {
   private isLoggedSub: Subscription;
   private userInfoSub: Subscription;
   private isMobileSub: Subscription;
+  private unreadCountSub: Subscription;
 
-  userLogged: string;
+  loggedUser: UserInfo;
 
   isLogged: boolean;
   isAdmin: boolean;
   isCompanion: boolean;
-
+  unreadCount: number;
+  notifications: Notification[]
   isMobile: boolean;
 
   @ViewChild('snav', { static: true })
   sidenav: MatSidenav;
 
-  constructor(private router: Router, private authSvc: AuthService, private userSvc: UserService, private isMobileSvc: IsMobileService, private matIconRegistry: MatIconRegistry,
+  constructor(private router: Router, private authSvc: AuthService, private notificationSvc: NotificationService, private userSvc: UserService, private isMobileSvc: IsMobileService, private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer) {
-    this.matIconRegistry.addSvgIcon(
+    /*this.matIconRegistry.addSvgIcon(
       "imageUser",
       this.domSanitizer.bypassSecurityTrustResourceUrl("../../assets/userColor.svg")
-    );
+    );*/
+    this.unreadCount = 0;
   }
 
   ngOnInit() {
@@ -43,14 +48,19 @@ export class AppComponent implements OnInit, OnDestroy {
       (value: boolean) => this.isLogged = value);
 
     this.userInfoSub = this.userSvc.getUserInfo().subscribe(
-      (info: UserInfo) => {
-        if (info != null) {
-          this.userLogged = info.name + " " + info.surname;
-          this.isAdmin = info.isAdmin();
-          this.isCompanion = info.isCompanion();
+      (user: UserInfo) => {
+        if (user != null) {
+          this.loggedUser = user;
+          this.isAdmin = user.isAdmin();
+          this.isCompanion = user.isCompanion();
         }
       }
     );
+
+    this.unreadCountSub = this.notificationSvc.getUnreadCount()
+      .subscribe(count => this.unreadCount = count);
+    
+    this.notificationSvc.listen(() => { this.getNotifications() });
 
     this.isMobileSub = this.isMobileSvc.getIsMobile()
       .subscribe((isMobile) => {
@@ -72,5 +82,15 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.isLoggedSub.unsubscribe();
     this.userInfoSub.unsubscribe();
+    this.isMobileSub.unsubscribe();
+    this.unreadCountSub.unsubscribe();
+  }
+  
+  getNotifications() {
+    this.notifications=this.notificationSvc.getNotifications()
+  }
+
+  openNotification(notification) {
+    this.notificationSvc.readNotification(notification)
   }
 }
