@@ -48,9 +48,9 @@ const routes: Routes = [
     data: { roles: [UserRole.COMPANION] }
   },
   {
-    path: 'runningRace/:lineName/:date/:direction', canActivate:[AuthGuard],
+    path: 'runningRace/:lineName/:date/:direction', canActivate: [AuthGuard],
     component: RunningRaceComponent,
-    data:{ roles: [UserRole.COMPANION]}
+    data: { roles: [UserRole.COMPANION] }
   },
   {
     path: 'parent',

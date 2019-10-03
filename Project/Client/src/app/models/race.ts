@@ -23,9 +23,9 @@ export class Race {
     public companions: Companion[];
     public raceState: RaceState;
     public companion: Companion;
-    public reachedStops: {stopName:string, arrivalDelay:number, departureDelay:number}[];
+    public reachedStops: { stopName: string, arrivalDelay: number, departureDelay: number }[];
     public currentStop: Stop;
-    
+
     constructor() {
         this.line = new Line();
     }

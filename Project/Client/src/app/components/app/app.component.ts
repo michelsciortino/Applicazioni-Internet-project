@@ -1,5 +1,4 @@
-import { Component, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild, OnInit, AfterViewInit, AfterContentInit } from '@angular/core';
-import { MediaMatcher } from '@angular/cdk/layout';
+import { Component, OnDestroy, ViewChild, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';

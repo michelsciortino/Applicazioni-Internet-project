@@ -1,16 +1,11 @@
 import { Component, Inject, OnInit, OnDestroy } from "@angular/core";
-import { AdminService } from 'src/app/services/admin/admin.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Companion, CompanionState } from 'src/app/models/companion';
-import { Line } from 'src/app/models/line';
-import { Race, DirectionType, RaceState } from 'src/app/models/race';
+import { CompanionState } from 'src/app/models/companion';
+import { Race, DirectionType } from 'src/app/models/race';
 import { LineService } from 'src/app/services/lines/line-races.service';
 import Utils from 'src/app/utils/utils';
 import { Stop } from 'src/app/models/stop';
 import { Subscription } from 'rxjs';
-import { UserService } from 'src/app/services/user/user.service';
-import { UserInfo } from 'src/app/models/user';
-import { CompanionService } from 'src/app/services/companion/companion.service';
 
 @Component({
     selector: 'app-view-race-parent-dialog',

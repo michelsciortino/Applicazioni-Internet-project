@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { UserService } from '../user/user.service';
 import * as Stomp from 'stompjs';
 import * as SockJs from 'sockjs-client'
 import { environment } from 'src/environments/environment';
@@ -63,13 +62,13 @@ export class NotificationService {
                 console.log(frame);
 
                 this.connectedSbj.next(true);
-                this.stompClient.subscribe(`/user/queue/notifications`, (message:any) => {
-                    message= JSON.parse(message.body);
+                this.stompClient.subscribe(`/user/queue/notifications`, (message: any) => {
+                    message = JSON.parse(message.body);
                     console.log(message);
                     const notification = new Notification();
                     notification.sender = message.performerUsername;
                     notification.message = message.message;
-                    const date=new Date(message.date);
+                    const date = new Date(message.date);
                     notification.date = Utils.getTime(date.getTime()) + ", " + date.toLocaleDateString();
                     notification.unread = true;
                     this.notifications.push(notification);

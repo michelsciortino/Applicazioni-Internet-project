@@ -1,14 +1,12 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Race, DirectionType } from 'src/app/models/race';
-import { LineService } from 'src/app/services/lines/line-races.service';
+import { DirectionType } from 'src/app/models/race';
 import { ParentService } from 'src/app/services/parent/parent.service';
 import { reserveChildrenRequest } from 'src/app/models/reserve-children-request';
 import { Line } from 'src/app/models/line';
 import { Child } from 'src/app/models/child';
 import { Stop } from 'src/app/models/stop';
-import { Passenger, PassengerState } from 'src/app/models/passenger';
-import { DatePipe } from '@angular/common';
+import { Passenger } from 'src/app/models/passenger';
 import { ChildRace } from 'src/app/models/child-race';
 import Utils from 'src/app/utils/utils';
 

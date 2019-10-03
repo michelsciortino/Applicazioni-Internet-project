@@ -1,6 +1,5 @@
 import { UserInfo } from "./user";
 
-
 export class Users {
     content: UserInfo[];
     totalPages: number;
