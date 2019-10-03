@@ -68,11 +68,12 @@
                             <td>{{child.name}}</td>
                             <td>{{child.surname}}</td>
                             <td>{{child.parentId}}</td>
-                            <!--<td><button mat-icon-button *ngIf="isAdminOfLine()" class="center-vertical centered-text"
+                            <td>
+                                <button mat-icon-button *ngIf="isAdminOfLine()" class="center-vertical centered-text"
                                     (click)="removeChildtoLine(child)">
                                     <mat-icon class="red">remove</mat-icon>
                                 </button>
-                            </td>-->
+                            </td>
                         </tr>
                     </tbody>
                     <tbody *ngIf="line?.subscribedChildren?.length===0">

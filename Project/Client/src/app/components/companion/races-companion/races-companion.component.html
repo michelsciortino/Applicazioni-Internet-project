@@ -83,6 +83,13 @@
                         {{element.companions.length}} </td>
                 </ng-container>
 
+                <!-- State Column -->
+                <ng-container matColumnDef="State">
+                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> Status</th>
+                    <td mat-cell class="center-vertical centered-text" *matCellDef="let element">{{element.raceState}}
+                    </td>
+                </ng-container>
+
                 <!-- Edit-Action Column -->
                 <ng-container matColumnDef="Availability-Action">
                     <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>

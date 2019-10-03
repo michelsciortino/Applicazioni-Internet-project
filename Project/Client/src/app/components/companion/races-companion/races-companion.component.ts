@@ -42,6 +42,7 @@ export class RacesCompanionComponent implements OnInit, OnDestroy {
         { def: 'Date' },
         { def: 'Passengers' },
         { def: 'Companions' },
+        { def: 'State' },
         { def: 'Availability-Action' }];
 
     @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -63,17 +64,17 @@ export class RacesCompanionComponent implements OnInit, OnDestroy {
                 )
             )
             .subscribe((data: Line[]) => {
-                //console.log(data[0]);
+                // console.log(data[0]);
                 if (data.length == 0) return;
                 this.lines = data;
-                //console.log(this.lines[0].name);
+                // console.log(this.lines[0].name);
                 this.lineSelected = this.lines[0];
                 this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
             })
 
         this.compaionChangeSub = this.companionSvc.getCompanionInfoChanges().subscribe((value) => {
             this.search();
-            console.log(value);
+            // console.log(value);
         });
     }
 

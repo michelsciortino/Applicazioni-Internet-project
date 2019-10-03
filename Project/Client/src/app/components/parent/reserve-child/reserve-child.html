@@ -1,0 +1,101 @@
+<div class="padded-content">
+    <mat-card class="compact-card scroll">
+
+        <p>Reserve child for Race</p>
+        <!-- line selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>Line</mat-label>
+            <mat-select [(value)]="lineSelected">
+                <mat-option *ngFor="let line of lines" [value]="line">
+                    {{line?.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Way selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>Direction</mat-label>
+            <mat-select [(value)]="directionSelected">
+                <mat-option *ngFor="let dir of directions" [value]="dir">
+                    {{dir?.text}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- child selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>Child</mat-label>
+            <mat-select [(value)]="childSelected">
+                <mat-option *ngFor="let child of children" [value]="child">
+                    {{child?.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button class="search-button"
+            [disabled]="lineSelected==null || directionSelected==null || childSelected==null"
+            (click)="searchRaces()">Search</button>
+
+        <div *ngIf="isDataAvailable" class="marged overflow-auto calendar-table-container block">
+            <p>Select date for races</p>
+            <div class="flex fit-content">
+                <mat-calendar class="calendar inline-block" [dateClass]="dateClass()" [selected]="selectedDate"
+                    startView="month" [startAt]="selectedDate" (selectedChange)="onSelectDate($event)">
+                </mat-calendar>
+                <div class="marged overflow-auto inline-block">
+                    <table *ngIf="racesReservable?.length>0" class="expanded mat-table">
+                        <thead>
+                            <tr class="mat-header-row">
+                                <th class="mat-header-cell">Date</th>
+                                <th class="mat-header-cell mat-cell-button">Select</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let race of racesReservable" class="mat-row">
+                                <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                                    {{race?.race?.date?.toLocaleTimeString()}}
+                                </td>
+                                <td class="mat-cell">
+                                    <mat-checkbox [checked]="race.checked" (change)="onSelectRace(race, $event)">
+                                    </mat-checkbox>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="racesReservable.length==0" class="marged padded grey">
+                        NOTHING FOR THIS DAY
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="marged overflow-auto selected-races">
+            <p class="border">Selected races</p>
+            <div class="marged overflow-auto initial">
+                <table *ngIf="racesReservableChecked?.length>0" class="expanded mat-table">
+                    <thead>
+                        <tr class="mat-header-row">
+                            <th class="mat-header-cell">Date</th>
+                            <th class="mat-header-cell mat-cell-button">Select</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let race of racesReservableChecked" class="mat-row">
+                            <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                                {{race?.race?.date?.toLocaleDateString()}}, {{race?.race?.date?.toLocaleTimeString()}}
+                            </td>
+                            <td class="mat-cell  mat-cell-button">
+                                <mat-checkbox [checked]="race.checked" (change)="onSelectRace(race, $event)">
+                                </mat-checkbox>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div *ngIf="racesReservableChecked?.length==0" class="grey">
+                NO RACES SELECTED
+            </div>
+        </div>
+        <button mat-raised-button class="checkout-button" [disabled]="checkCheckoutBox()"
+            (click)="openReserveChildToRaceDialog()">Checkout</button>
+    </mat-card>
+</div>

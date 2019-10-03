@@ -117,6 +117,14 @@ export class AdminService {
             });
     }
 
+    public removeChildrenToLine(lineName: string, child: Child) {
+        return this.http.post(`${AdminService.adminEndpoint}/removeChildrenFromLine`,
+            {
+                lineName: lineName,
+                child: child
+            });
+    }
+
     public getRacesChanges(): Observable<string> {
         return this.racesChangeSbj.asObservable();
     }
