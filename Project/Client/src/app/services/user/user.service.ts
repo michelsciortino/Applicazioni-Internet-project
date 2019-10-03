@@ -46,8 +46,8 @@ export class UserService implements OnDestroy {
         return this.http.post(`${userEndpoint}/${user.mail}`, user).toPromise()
             .then(
                 (result) => {
-                    console.log(result);
-                    this.userInfo = user;
+                    // console.log(result);
+                    this.userInfo = new UserInfo(user);
                     this.userSbj.next(this.userInfo);
                     return result;
                 }
@@ -63,7 +63,7 @@ export class UserService implements OnDestroy {
                         this.lineSvc.getLines().subscribe(
                             (lines: any) => {
                                 this.userInfo.lines = lines.map(line => line.name);
-                                console.log(this.userInfo.lines)
+                                // console.log(this.userInfo.lines)
                                 this.userSbj.next(this.userInfo);
                             }
                         )
