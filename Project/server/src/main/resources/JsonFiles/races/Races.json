@@ -98,7 +98,7 @@
             "longitude": 7.659967,
             "delayInMillis": 1200000
           },
-          "state": "VALIDATED"
+          "state": "CONFIRMED"
         }
       ]
     },
@@ -190,7 +190,7 @@
             "longitude": 7.666355,
             "delayInMillis": 1200000
           },
-          "state": "VALIDATED"
+          "state": "CONFIRMED"
         },
         {
           "userDetails": {
