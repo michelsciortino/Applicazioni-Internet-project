@@ -15,7 +15,8 @@ import { timeout, timeInterval } from 'rxjs/operators';
 enum StopState {
   REACHED="REACHED",
   UNREACHED="UNREACHED",
-  UNREACHABLE="UNREACHABLE"
+  UNREACHABLE = "UNREACHABLE",
+  LEFT="LEFT"
 }
 
 class TiledStop {
@@ -44,9 +45,13 @@ export class RunningRaceComponent implements AfterViewInit {
   lineName: string;
   date: Date;
   direction: DirectionType;
-  currentStop: TiledStop;
+
   takenChildren: Passenger[];
-  takeableChildren: Passenger[];
+  reservedChildren: Passenger[];
+  otherChildren: Passenger[];
+
+  lastReachedStop: TiledStop;
+  currentStop: TiledStop;
 
   private loading: boolean;
 
@@ -55,7 +60,6 @@ export class RunningRaceComponent implements AfterViewInit {
 
   // Shown Data
   tiledStops: TiledStop[];
-  otherChildren: Passenger[];
 
   public carouselTile: NguCarouselConfig = {
     grid: { xs: 1, sm: 1, md: 1, lg: 1, all: 0 },
@@ -73,8 +77,8 @@ export class RunningRaceComponent implements AfterViewInit {
   constructor(private companionSvc: CompanionService, private lineSvc: LineService, private router: Router, private route: ActivatedRoute, private cdRef: ChangeDetectorRef) {
     this.tiledStops = [];
     this.otherChildren = [];
+    this.reservedChildren = [];
     this.takenChildren = [];
-    this.takeableChildren = [];
     this.loading = false;
   }
 
@@ -93,7 +97,7 @@ export class RunningRaceComponent implements AfterViewInit {
 
   private getRace() {
     this.loading = true;
-    this.lineSvc.getRace(this.lineName, this.date, this.direction)
+    return this.lineSvc.getRace(this.lineName, this.date, this.direction)
       .then(race => {
         console.log(race);
         this.race = race;
@@ -111,6 +115,8 @@ export class RunningRaceComponent implements AfterViewInit {
     this.currentStop = null;
     this.otherChildren = [];
     this.takenChildren = [];
+
+    this.reservedChildren = [];
     let i = 0;
     stops.forEach(
       stop => {
@@ -123,12 +129,11 @@ export class RunningRaceComponent implements AfterViewInit {
         tiledStop.reservedChildren = [];
         tiledStop.nonReservedChildren = [];
         tiledStop.stopRef = stop;
-        if (this.race.currentStop && stop.name == this.race.currentStop.name)
-          this.currentStop = tiledStop;
         this.tiledStops.push(tiledStop);
         i++;
       }
     )
+    //setting companion stops range
     let accompanying = false;
     for (let stop of this.tiledStops) {
       if (stop.name == this.race.companion.initialStop.name)
@@ -139,14 +144,27 @@ export class RunningRaceComponent implements AfterViewInit {
         accompanying = false;
       }
     }
-    console.log("inserting reached stops + time")
+    
+    //setting stops state based on reachedStops
     for (i = 0; this.race.reachedStops && i < this.race.reachedStops.length; i++) {
-      this.tiledStops[i].state = StopState.REACHED;
-      this.tiledStops[i].reachedAt = Utils.getTime(this.race.date.getTime() + this.race.reachedStops[i].arrivalDelay)
       this.tiledStops[i].reached = true;
-      this.tiledStops[i].left = this.race.reachedStops[i].departureDelay != -1;
+      this.currentStop = this.tiledStops[i];
+      this.tiledStops[i].reachedAt = Utils.getTime(this.race.date.getTime() + this.race.reachedStops[i].arrivalDelay);
+      if (this.race.reachedStops[i].departureDelay > -1) {
+        this.tiledStops[i].state = StopState.LEFT;
+        this.tiledStops[i].left = true;
+        this.tiledStops[i].leftAt = Utils.getTime(this.race.date.getTime() + this.race.reachedStops[i].departureDelay);
+        this.lastReachedStop = this.tiledStops[i];
+        if (i < this.tiledStops.length - 1)
+          this.currentStop = this.tiledStops[i + 1];
+      }
+      else {
+        this.tiledStops[i].state = StopState.REACHED;
+        this.tiledStops[i].left = false;
+      }
     }
-    console.log("inserting passengers")
+
+    //Inserting passengers
     for (let passenger of this.race.passengers) {
       if (!passenger.stopDelivered.name)
         passenger.stopDelivered = null;
@@ -154,13 +172,16 @@ export class RunningRaceComponent implements AfterViewInit {
         passenger.stopReserved = null;
       if (!passenger.stopTaken.name)
         passenger.stopTaken = null;
+      
       if (passenger.reserved) {
-        console.log(passenger)
         let stop = this.tiledStops.find(stop => stop.name == passenger.stopReserved.name);
-        if (stop)
+        if (stop) {
           stop.reservedChildren.push(passenger);
+          this.reservedChildren.push(passenger);
+        }
       }
       else {
+        //non reserved child that has been taken in a previous stop or has been delivered
         if (passenger.state == PassengerState.TAKEN || passenger.state == PassengerState.DELIVERED) {
           let stop = this.tiledStops.find(s => s.name == passenger.stopTaken.name);
           if (stop)
@@ -172,12 +193,6 @@ export class RunningRaceComponent implements AfterViewInit {
       if (passenger.state == "TAKEN")
         this.takenChildren.push(passenger);
     }
-
-    if (this.race.direction == DirectionType.RETURN)
-      this.takeableChildren = this.race.passengers.filter(p => p.reserved);
-
-    if (this.currentStop && this.currentStop.index < this.tiledStops.length - 1)
-      this.currentStop = this.tiledStops[this.currentStop.index + 1];
     
     if (this.carousel && this.currentStop) {
       this.moveTo(this.currentStop.index);
@@ -221,73 +236,126 @@ export class RunningRaceComponent implements AfterViewInit {
     this.cdRef.detectChanges();
   }
 
-  confirmStop() {
-    if (!this.tiledStops || !this.carousel) return false;
+  confirmOutwardStop() {
+    if (!this.tiledStops || !this.carousel) return;
     const stop = this.tiledStops[this.carousel.currentSlide];
-    console.log("sending stop reached");
     this.loading = true;
-    this.companionSvc.stopReached(this.race.line.name, this.race.direction, this.race.date, stop.name)
-      .then(() => {
-        console.log("sending taken children");
-        return this.companionSvc.takeChildren(this.race.line.name,
-          this.race.direction,
-          this.race.date,
-          stop.name,
-          this.race.direction == DirectionType.OUTWARD ?
-            stop.reservedChildren.filter(child => child.state == PassengerState.TAKEN)
-              .concat(this.otherChildren.filter(child => child.state == PassengerState.TAKEN && child.stopTaken.name === stop.name))
-            : this.takeableChildren.filter(child => child.state == PassengerState.TAKEN));
-      })
-      .then(() => {
-        console.log("sending delivered children");
-        return this.companionSvc.deliverChildren(this.race.line.name,
-          this.race.direction,
-          this.race.date,
-          stop.name,
-          this.race.direction == DirectionType.OUTWARD ?
-            stop.reservedChildren.filter(child => child.state == PassengerState.DELIVERED)
-            : this.takeableChildren.filter(child => child.state == PassengerState.DELIVERED));
-      })
-      .then(() => {
-        console.log("sending absent children");
-        return this.companionSvc.absentChildren(this.race.line.name,
-          this.race.direction,
-          this.race.date,
-          stop.name,
+    const confirmPromise = Promise.resolve();
 
-          this.race.direction == DirectionType.OUTWARD ?
-            stop.reservedChildren.filter(child => child.state == PassengerState.ABSENT)
-            : this.takeableChildren.filter(child => child.state == PassengerState.ABSENT));
+    confirmPromise
+      .then(() => {
+        if (!stop.reached) {
+          console.log("sending stop reached");
+          return this.companionSvc.stopReached(this.race.line.name, this.race.direction, this.race.date, stop.name);
+        }
+      })
+      .then(() => {
+        const takenChildrenInStop = stop.reservedChildren.filter(child => child.state == PassengerState.TAKEN)
+          .concat(this.otherChildren.filter(child => child.state == PassengerState.TAKEN && child.stopTaken.name === stop.name));
+        if (takenChildrenInStop.length > 0) {
+          console.log("sending taken children");
+          return this.companionSvc.takeChildren(this.race.line.name,
+            this.race.direction,
+            this.race.date,
+            stop.name,
+            takenChildrenInStop);
+        }
+      })
+      .then(() => {
+        const absentChildrenInStop = stop.reservedChildren.filter(child => child.state == PassengerState.ABSENT);
+        if (absentChildrenInStop.length > 0) {
+          console.log("sending absent children");
+          return this.companionSvc.absentChildren(this.race.line.name,
+            this.race.direction,
+            this.race.date,
+            stop.name,
+            absentChildrenInStop);
+        }
       })
       .then(() => {
         console.log("sendig stop left");
         return this.companionSvc.stopLeft(this.race.line.name, this.race.direction, this.race.date, stop.name);
       })
+      .catch((error) => {
+        console.log(error);
+      })
+      .then(
+        () => {
+          console.log("refreshing race");
+          this.getRace();
+        })
+      .catch(() => { });
+  }
+
+  public confirmReturnStop() {
+    if (!this.tiledStops || !this.carousel) return;
+    const stop = this.tiledStops[this.carousel.currentSlide];
+    this.loading = true;
+    const confirmPromise = Promise.resolve();
+
+    confirmPromise
       .then(() => {
-        console.log("refreshing race");
-        this.getRace();
+        if (!stop.reached) {
+          console.log("sending stop reached");
+          return this.companionSvc.stopReached(this.race.line.name, this.race.direction, this.race.date, stop.name);
+        }
+      })
+      .then(() => {
+        if (stop.index > 0) return;
+        const takenChildrenInStop = this.reservedChildren.filter(child => child.state == PassengerState.TAKEN);
+        if (takenChildrenInStop.length > 0) {
+          console.log("sending taken children");
+          return this.companionSvc.takeChildren(this.race.line.name,
+            this.race.direction,
+            this.race.date,
+            stop.name,
+            takenChildrenInStop);
+        }
+      })
+      .then(() => {
+        if (stop.index > 0) return;
+        const absentChildrenInStop = this.reservedChildren.filter(child => child.state == PassengerState.ABSENT);
+        if (absentChildrenInStop.length > 0) {
+          console.log("sending absent children");
+          return this.companionSvc.absentChildren(this.race.line.name,
+            this.race.direction,
+            this.race.date,
+            stop.name,
+            absentChildrenInStop);
+        }
+      })
+      .then(() => {
+        if (stop.index == 0) return;
+        const deliverChildrenInStop = stop.reservedChildren.filter(child => child.state == PassengerState.DELIVERED);
+        if (deliverChildrenInStop.length > 0) {
+          console.log("sending delivered children");
+          return this.companionSvc.deliverChildren(this.race.line.name,
+            this.race.direction,
+            this.race.date,
+            stop.name,
+            deliverChildrenInStop);
+        }
+      })
+      .then(() => {
+        console.log("sendig stop left");
+        return this.companionSvc.stopLeft(this.race.line.name, this.race.direction, this.race.date, stop.name);
       })
       .catch((error) => {
         console.log(error);
       })
-      .then(() => this.loading = false);
-    console.log(stop);
+      .then(
+        () => {
+          console.log("refreshing race");
+          this.getRace();
+        })
+      .catch(() => { });
   }
 
-  public deliverAll() {
+  public deliverAllAtSchool() {
     if (!this.tiledStops || !this.carousel) return false;
     const stop = this.tiledStops[this.carousel.currentSlide];
     this.loading = true;
     this.companionSvc.stopReached(this.race.line.name, this.race.direction, this.race.date, stop.name)
-      .then(() => {
-        console.log("sending taken children");
-        return this.companionSvc.takeChildren(this.race.line.name,
-          this.race.direction,
-          this.race.date,
-          stop.name,
-          stop.reservedChildren.filter(child => child.state == PassengerState.TAKEN)
-            .concat(this.otherChildren.filter(child => child.state == PassengerState.TAKEN && child.stopTaken.name === stop.name)));
-      })
       .then(() => {
         console.log("delivering all children");
         return this.companionSvc.deliverChildren(this.race.line.name,
@@ -328,10 +396,15 @@ export class RunningRaceComponent implements AfterViewInit {
   private canConfirm() {
     if (this.loading || !this.tiledStops || !this.carousel || !this.race || this.race.raceState == RaceState.ENDED) return false;
     const stop = this.tiledStops[this.carousel.currentSlide];
+    if (!stop) return false;
     if (this.race.direction == DirectionType.OUTWARD)
       return stop && stop.reservedChildren.filter(c => c.reserved && c.state == PassengerState.NULL).length == 0;
-    else
-      return this.takeableChildren && this.takeableChildren.filter(c => c.state == PassengerState.NULL).length == 0;
+    else {
+      if (stop.index == 0)
+        return this.reservedChildren && this.reservedChildren.filter(c => c.state == PassengerState.NULL).length == 0;
+      else
+        return stop && stop.reservedChildren.filter(c => c.state == PassengerState.NULL).length == 0;
+    }
   }
 
   public canShowConfirmButton(): boolean {
