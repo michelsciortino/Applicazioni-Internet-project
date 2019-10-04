@@ -1,6 +1,5 @@
 package it.polito.ai.project.services.database.models;
 
-import jdk.nashorn.internal.ir.annotations.Reference;
 import lombok.Data;
 
 @Data

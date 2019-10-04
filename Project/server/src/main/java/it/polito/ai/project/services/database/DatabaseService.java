@@ -2745,7 +2745,7 @@ public class DatabaseService implements DatabaseServiceInterface {
             race.get().getReachedStops().add(new ReachedStop(stopName, new Date().getTime()-race.get().getDate().getTime(), -1));
             raceRepository.save(race.get());
         }
-        else
+        else //the stop has already been reached
             return;
 
         Date d = new Date();
@@ -2860,9 +2860,16 @@ public class DatabaseService implements DatabaseServiceInterface {
             }
         }
 
-        for (ReachedStop r : race.get().getReachedStops())
-            if (r.getStopName().equals(stopName))
-                race.get().getReachedStops().get(race.get().getReachedStops().indexOf(r)).setDepartureDelay(new Date().getTime() - race.get().getDate().getTime());
+        ReachedStop reachedStop =race.get().getReachedStops().stream()
+                .filter(s -> s.getStopName().equals(stopName))
+                .findFirst().orElse(null);
+
+        if(reachedStop!=null)
+            reachedStop.setDepartureDelay(new Date().getTime() - race.get().getDate().getTime());
+
+        else
+            throw new BadRequestException("The stop is not yet reached");
+
         raceRepository.save(race.get());
     }
 
