@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-    constructor(private authSvc: AuthService,private _snackBar: MatSnackBar) { }
+    constructor(private authSvc: AuthService, private _snackBar: MatSnackBar) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(catchError(err => {

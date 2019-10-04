@@ -13,15 +13,21 @@ import Utils from 'src/app/utils/utils'
 import { timeout, timeInterval } from 'rxjs/operators';
 
 enum StopState {
+<<<<<<< HEAD
   REACHED="REACHED",
   UNREACHED="UNREACHED",
   UNREACHABLE = "UNREACHABLE",
   LEFT="LEFT"
+=======
+  REACHED = "REACHED",
+  UNREACHED = "UNREACHED",
+  UNREACHABLE = "UNREACHABLE"
+>>>>>>> 39e558b116e0f05de1db3067f3a7db21952d7c36
 }
 
 class TiledStop {
-  isEditable:boolean;
-  index:number;
+  isEditable: boolean;
+  index: number;
   name: string;
   timespanFromStart: number;
   reservedChildren: Passenger[];
@@ -193,7 +199,17 @@ export class RunningRaceComponent implements AfterViewInit {
       if (passenger.state == "TAKEN")
         this.takenChildren.push(passenger);
     }
+<<<<<<< HEAD
     
+=======
+
+    if (this.race.direction == DirectionType.RETURN)
+      this.takeableChildren = this.race.passengers.filter(p => p.reserved);
+
+    if (this.currentStop && this.currentStop.index < this.tiledStops.length - 1)
+      this.currentStop = this.tiledStops[this.currentStop.index + 1];
+
+>>>>>>> 39e558b116e0f05de1db3067f3a7db21952d7c36
     if (this.carousel && this.currentStop) {
       this.moveTo(this.currentStop.index);
     }

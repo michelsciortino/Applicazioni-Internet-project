@@ -1,5 +1,4 @@
-import { Component, ChangeDetectorRef, OnDestroy, ElementRef, ViewChild, OnInit, AfterViewInit, AfterContentInit } from '@angular/core';
-import { MediaMatcher } from '@angular/cdk/layout';
+import { Component, OnDestroy, ViewChild, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
@@ -24,6 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   loggedUser: UserInfo;
 
+  hasChildren: boolean;
   isLogged: boolean;
   isAdmin: boolean;
   isCompanion: boolean;
@@ -53,13 +53,14 @@ export class AppComponent implements OnInit, OnDestroy {
           this.loggedUser = user;
           this.isAdmin = user.isAdmin();
           this.isCompanion = user.isCompanion();
+          this.hasChildren = (user.children != null && user.children.length > 0);
         }
       }
     );
 
     this.unreadCountSub = this.notificationSvc.getUnreadCount()
       .subscribe(count => this.unreadCount = count);
-    
+
     this.notificationSvc.listen(() => { this.getNotifications() });
 
     this.isMobileSub = this.isMobileSvc.getIsMobile()
@@ -85,9 +86,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.isMobileSub.unsubscribe();
     this.unreadCountSub.unsubscribe();
   }
-  
+
   getNotifications() {
-    this.notifications=this.notificationSvc.getNotifications()
+    this.notifications = this.notificationSvc.getNotifications()
   }
 
   openNotification(notification) {

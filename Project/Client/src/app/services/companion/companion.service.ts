@@ -70,17 +70,17 @@ export class CompanionService {
         );
     }
 
-    public startRace(lineName: string, direction: string, date: Date){
+    public startRace(lineName: string, direction: string, date: Date) {
         return this.http.post(`${CompanionService.companionEndpoint}/startRace/${lineName}/${date.toISOString()}/${direction}`, {})
             .toPromise();
     }
 
-    public endRace(lineName: string, direction: string, date: Date){
+    public endRace(lineName: string, direction: string, date: Date) {
         return this.http.post(`${CompanionService.companionEndpoint}/endRace/${lineName}/${date.toISOString()}/${direction}`, {})
             .toPromise();
     }
 
-    public stopReached(lineName: string, direction: string, date: Date,stopName:string) {
+    public stopReached(lineName: string, direction: string, date: Date, stopName: string) {
         return this.http.post(`${CompanionService.companionEndpoint}/stopReached/${lineName}/${date.toISOString()}/${direction}/${stopName}`, {})
             .toPromise();
     }
@@ -90,7 +90,7 @@ export class CompanionService {
             .toPromise();
     }
 
-    public takeChildren(lineName: string, direction: string, date: Date,stopName:string,children: Passenger[]){
+    public takeChildren(lineName: string, direction: string, date: Date, stopName: string, children: Passenger[]) {
         return this.http.post(`${CompanionService.companionEndpoint}/takeChildren`, {
             lineName: lineName,
             direction: direction,
@@ -100,7 +100,7 @@ export class CompanionService {
         }).toPromise();
     }
 
-    public deliverChildren(lineName: string, direction: string, date: Date,stopName:string,children: Passenger[]){
+    public deliverChildren(lineName: string, direction: string, date: Date, stopName: string, children: Passenger[]) {
         return this.http.post(`${CompanionService.companionEndpoint}/deliverChildren`, {
             lineName: lineName,
             direction: direction,
@@ -110,7 +110,7 @@ export class CompanionService {
         }).toPromise();
     }
 
-    public absentChildren(lineName: string, direction: string, date: Date,stopName:string,children: Passenger[]){
+    public absentChildren(lineName: string, direction: string, date: Date, stopName: string, children: Passenger[]) {
         return this.http.post(`${CompanionService.companionEndpoint}/absentChildren`, {
             lineName: lineName,
             direction: direction,
@@ -190,7 +190,7 @@ export class CompanionRacesDataSource implements DataSource<Race>{
             });
     }
 
-    public isEmpty():boolean{
-        return this.racesSbj && this.racesSbj.value && this.racesSbj.value.length>0 ? false:true;
+    public isEmpty(): boolean {
+        return this.racesSbj && this.racesSbj.value && this.racesSbj.value.length > 0 ? false : true;
     }
 }

@@ -22,7 +22,7 @@ export class CompanionTodayLinesComponent implements OnInit {
 
   getTimeWithSecond = Utils.getTimeWithSecond;
 
-  constructor(private ngZone: NgZone,private router:Router,private companionSvc: CompanionService, public dialog: MatDialog) {
+  constructor(private ngZone: NgZone, private router: Router, private companionSvc: CompanionService, public dialog: MatDialog) {
     this.dataSource = new CompanionRacesDataSource(this.companionSvc);
     this.isLoading = false;
   }
@@ -36,14 +36,14 @@ export class CompanionTodayLinesComponent implements OnInit {
     return this.displayedColumns;
   }
 
-  startRace(race:Race){
+  startRace(race: Race) {
     event.stopPropagation();
-    this.companionSvc.startRace(race.line.name,race.direction,race.date)
-    .then(()=>this.ngZone.run(()=>this.router.navigate([`runningRace/${race.line.name}/${race.date.toISOString()}/${race.direction}`])))
-    .catch((error)=>console.log(error));
+    this.companionSvc.startRace(race.line.name, race.direction, race.date)
+      .then(() => this.ngZone.run(() => this.router.navigate([`runningRace/${race.line.name}/${race.date.toISOString()}/${race.direction}`])))
+      .catch((error) => console.log(error));
   }
 
-  continueRace(race:Race){
+  continueRace(race: Race) {
     event.stopPropagation();
     this.ngZone.run(() => this.router.navigate([`runningRace/${race.line.name}/${race.date.toISOString()}/${race.direction}`]));
   }

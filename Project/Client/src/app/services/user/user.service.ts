@@ -3,11 +3,9 @@ import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { UserInfo } from 'src/app/models/user';
 import { LineService } from '../lines/line-races.service';
-import { Line } from 'src/app/models/line';
-import { debug } from 'util';
 import { NotificationService } from '../notifications/notification.service';
 
 const credentialsEndpoint = `${environment.baseEndpoint}/credentials`;
@@ -18,7 +16,7 @@ export class UserService implements OnDestroy {
     private userInfo: UserInfo;
     private authSub: Subscription;
 
-    constructor(private authSvc: AuthService, private lineSvc: LineService, private notificationSvc:NotificationService, private router: Router, private http: HttpClient) {
+    constructor(private authSvc: AuthService, private lineSvc: LineService, private notificationSvc: NotificationService, private router: Router, private http: HttpClient) {
         this.userSbj = new BehaviorSubject(null);
         this.userInfo = new UserInfo();
         this.authSub = this.authSvc.observeLoggedStatus().subscribe(

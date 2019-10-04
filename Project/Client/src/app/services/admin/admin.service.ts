@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
 import { map, catchError, finalize } from 'rxjs/operators'
 import { UserInfo } from '../../models/user';
-import { UserRole } from '../../models/roles';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Users } from 'src/app/models/users_paginated';

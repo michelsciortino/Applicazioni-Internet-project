@@ -1,14 +1,11 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
-import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { HttpHeaders, HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Line } from '../../models/line';
-import { Race, DirectionType } from 'src/app/models/race';
-import { map, merge } from 'rxjs/operators';
+import { Race } from 'src/app/models/race';
 import { DataSource } from '@angular/cdk/table';
-import { AdminService } from '../admin/admin.service';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 
