@@ -2740,9 +2740,13 @@ public class DatabaseService implements DatabaseServiceInterface {
             }
         }
 
-        race.get().setCurrentStop(stop.get());
-        race.get().getReachedStops().add(new ReachedStop(stopName, new Date().getTime()-race.get().getDate().getTime(), -1));
-        raceRepository.save(race.get());
+        if (race.get().getReachedStops().stream().filter(s->s.getStopName().equals(stopName)).findAny().orElse(null)==null){
+            race.get().setCurrentStop(stop.get());
+            race.get().getReachedStops().add(new ReachedStop(stopName, new Date().getTime()-race.get().getDate().getTime(), -1));
+            raceRepository.save(race.get());
+        }
+        else
+            return;
 
         Date d = new Date();
         UserNotification notification = new UserNotification();
