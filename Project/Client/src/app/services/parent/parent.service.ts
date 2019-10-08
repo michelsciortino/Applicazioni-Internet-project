@@ -9,6 +9,7 @@ import { reserveChildrenRequest } from 'src/app/models/reserve-children-request'
 import { map } from 'rxjs/operators';
 import { Line } from 'src/app/models/line';
 import { DatePipe } from '@angular/common';
+import { DataSource } from '@angular/cdk/table';
 
 
 const parentEndpoint = `${environment.baseEndpoint}/parent`;
@@ -205,7 +206,7 @@ export class ReservableRacesDataSource {
     }
 
     public setDate(date: Date) {
-        console.log("cambio data")
+        //console.log("cambio data")
         this.date = new Date(date);
     }
 }
@@ -231,5 +232,66 @@ export class ReservedRacesDataSource {
                 this.reservedRacesSbj.next(data);
             })
             .finally(() => this.loadingSbj.next(false))
+    }
+
+    public loadTodayReservedRaces() {
+        this.loadingSbj.next(true);
+        return this.parentSvc.getParentRaces(new Date(), new Date(), true, null, null)
+            .then((data: Race[]) => {
+                data.map(x => x.date = new Date(x.date));
+                console.log(data)
+                this.reservedRacesSbj.next(data);
+            })
+            .finally(() => this.loadingSbj.next(false))
+    }
+
+    public isEmpty(): boolean {
+        return this.reservedRacesSbj && this.reservedRacesSbj.value && this.reservedRacesSbj.value.length > 0 ? false : true;
+    }
+}
+
+export class RacesDataSource implements DataSource<Race> {
+    private racesSbj = new BehaviorSubject<Race[]>([]);
+    private loadingSbj: BehaviorSubject<boolean>;
+
+    constructor(private parentSvc: ParentService) {
+        this.loadingSbj = new BehaviorSubject<boolean>(false);
+    }
+
+    connect(collectionViewer: import("@angular/cdk/collections").CollectionViewer): Observable<Race[] | readonly Race[]> {
+        return this.racesSbj.asObservable();
+    }
+    disconnect(collectionViewer: import("@angular/cdk/collections").CollectionViewer): void {
+    }
+
+    public getRaces(): Observable<Race[]> {
+        return this.racesSbj.asObservable();
+    }
+
+    public loadReservedRaces(lineName: string, direction: string, fromDate: Date, toDate: Date) {
+        this.loadingSbj.next(true);
+        return this.parentSvc.getParentRaces(fromDate, toDate, true, lineName, direction)
+            .then((data: Race[]) => {
+                data.map(x => x.date = new Date(x.date));
+                console.log(data)
+                this.racesSbj.next(data);
+            })
+            .finally(() => this.loadingSbj.next(false))
+    }
+
+    public loadTodayReservedRaces() {
+        this.loadingSbj.next(true);
+        //console.log("gettttt")
+        return this.parentSvc.getParentRaces(new Date(), new Date(), true, null, null)
+            .then((data: Race[]) => {
+                data.map(x => x.date = new Date(x.date));
+                console.log(data)
+                this.racesSbj.next(data);
+            })
+            .finally(() => this.loadingSbj.next(false))
+    }
+
+    public isEmpty(): boolean {
+        return this.racesSbj && this.racesSbj.value && this.racesSbj.value.length > 0 ? false : true;
     }
 }

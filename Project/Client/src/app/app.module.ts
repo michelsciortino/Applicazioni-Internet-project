@@ -64,6 +64,8 @@ import { ReserveChildDialog } from './components/parent/reserve-child/reserve-ch
 import { ViewParentRaceDialog } from './components/parent/view-race/view-race-parent.dialog';
 import { ReservedRacesComponent } from './components/parent/reserved-races/reserved-races';
 import { ReserveChildComponent } from './components/parent/reserve-child/reserve-child';
+import { ViewParentTodayRaceDialog } from './components/home/parent/view-race/view-race.dialog';
+import { ParentTodayLinesComponent } from './components/home/parent/today-races/today-parent-races.component';
 
 @NgModule({
   declarations: [
@@ -73,7 +75,7 @@ import { ReserveChildComponent } from './components/parent/reserve-child/reserve
     LoginComponent, LogoutComponent, RecoveryComponent, PasswordResetComponent, ConfirmComponent, RegisterComponent,
 
     // Home
-    HomeComponent, CompanionTodayLinesComponent,
+    HomeComponent, CompanionTodayLinesComponent, ParentTodayLinesComponent, ViewParentTodayRaceDialog,
 
     // Parent
     ParentComponent, ReservedRacesComponent, ReserveChildComponent, ReserveChildDialog, ViewParentRaceDialog,
@@ -106,7 +108,7 @@ import { ReserveChildComponent } from './components/parent/reserve-child/reserve
   ],
   entryComponents: [
     ConfirmDialog, MessageDialogComponent, ViewUserDialog, NewRaceDialog,
-    EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ManageRaceDialog, SubscribeChildDialog, ViewLineDialog, ReserveChildDialog, ViewParentRaceDialog
+    EditUserDialog, GiveAvailabilityDialog, AddChildDialog, ManageRaceDialog, SubscribeChildDialog, ViewLineDialog, ReserveChildDialog, ViewParentRaceDialog, ViewParentTodayRaceDialog
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,

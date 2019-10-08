@@ -1,0 +1,80 @@
+<div mat-dialog-content class="no-scroll">
+    <div>
+        <h3 class="title">Race</h3>
+        <div class="overflow-auto p-b-8">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Line Name</th>
+                        <th>Direction</th>
+                        <th>Date</th>
+                        <th>Hour</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{race?.line.name}}</td>
+                        <td>{{race?.direction}}</td>
+                        <td>{{race?.date?.toLocaleDateString()}}</td>
+                        <td>{{race?.date?.toLocaleTimeString()}}</td>
+                        <td>{{race?.raceState}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="overflow-auto">
+            <div class="overflow-auto">
+                <h3 class="title">Companions</h3>
+                <div class="overflow-auto p-b-8">
+                    <table *ngIf="race" class="max-width mat-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Initial Stop</th>
+                                <th>Final Stop</th>
+                                <th>State</th>
+                                <th *ngIf="isAdmin && race?.raceState=='SCHEDULED'">Accept</th>
+                                <th *ngIf="isAdmin && race?.raceState=='SCHEDULED'">Reject</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="race.companions.length>0">
+                            <tr *ngFor="let companion of race.companions">
+                                <td class="mat-cell center-vertical">{{companion.userDetails.mail}} </td>
+                                <td class="mat-cell">{{companion.initialStop.name}} </td>
+                                <td class="mat-cell">{{companion.finalStop.name}} </td>
+                                <td class="mat-cell">{{companion.state}}</td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="race.companions.length==0">
+                            <tr class="grey">
+                                <td colspan="6" class="centered-text mat-cell center-vertical">NO COMPANIONS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h3 class="title">Line</h3>
+            <div class="timeline">
+                <div class="stop-container"
+                    *ngFor="let stop of race?.direction=='OUTWARD'? race?.line.outwardStops : race?.line.returnStops">
+                    <div class="stop" [ngClass]="{ 'reached': isStopReached(stop), 'unreached': !isStopReached(stop)}">
+                        <p>
+                            <span class="block">{{stop.name}}</span>
+                            <span class="block">{{getTime(race.date.getTime()+stop.delayInMillis)}}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+    </div>
+</div>
