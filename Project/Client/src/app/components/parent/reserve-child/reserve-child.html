@@ -53,7 +53,8 @@
                         <tbody>
                             <tr *ngFor="let race of racesReservable" class="mat-row">
                                 <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
-                                    {{race?.race?.date?.toLocaleTimeString()}}
+                                    {{race?.race?.date?.toLocaleDateString()}},
+                                    {{race?.race?.date?.toLocaleTimeString([],{ hour: '2-digit', minute: '2-digit' })}}
                                 </td>
                                 <td class="mat-cell">
                                     <mat-checkbox [checked]="race.checked" (change)="onSelectRace(race, $event)">
@@ -81,7 +82,8 @@
                     <tbody>
                         <tr *ngFor="let race of racesReservableChecked" class="mat-row">
                             <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
-                                {{race?.race?.date?.toLocaleDateString()}}, {{race?.race?.date?.toLocaleTimeString()}}
+                                {{race?.race?.date?.toLocaleDateString()}},
+                                {{race?.race?.date?.toLocaleTimeString([],{ hour: '2-digit', minute: '2-digit' })}}
                             </td>
                             <td class="mat-cell  mat-cell-button">
                                 <mat-checkbox [checked]="race.checked" (change)="onSelectRace(race, $event)">

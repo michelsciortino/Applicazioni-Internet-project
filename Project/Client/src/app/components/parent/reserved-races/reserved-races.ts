@@ -12,6 +12,7 @@ import { Passenger, PassengerState } from 'src/app/models/passenger';
 import { reserveChildrenRequest } from 'src/app/models/reserve-children-request';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { ViewParentRaceDialog } from '../view-race/view-race-parent.dialog';
+import Utils from 'src/app/utils/utils';
 
 @Component({
     selector: 'app-reserved-races',
@@ -55,6 +56,8 @@ export class ReservedRacesComponent implements OnInit, OnDestroy {
         this.toDateSelected = new Date();
         this.toDateSelected.setMonth(this.fromDateSelected.getMonth() + 1);
     }
+
+    getTimeString = Utils.getTimeString;
 
     ngOnInit() {
         this.userSub = this.userSvc.getUserInfo().subscribe(

@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { CompanionRequestsDataSource, AdminService } from 'src/app/services/admin/admin.service';
 import { ManageRaceDialog } from '../manage-race/manage-race.dialog';
+import Utils from 'src/app/utils/utils';
 
 
 enum RequestsType {
@@ -36,6 +37,8 @@ export class CompanionRequestsManagementComponent implements OnInit, OnDestroy {
         this.activeTab = RequestsType.PENDING;
         this.datasource = new CompanionRequestsDataSource(this.adminSvc);
     }
+
+    getTimeString = Utils.getTimeString;
 
     ngOnInit() {
         this.requestsSub = this.datasource.getPendingRequests()

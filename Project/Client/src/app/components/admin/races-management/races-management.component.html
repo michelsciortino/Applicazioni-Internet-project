@@ -68,7 +68,7 @@
                 <!-- Date Column -->
                 <ng-container matColumnDef="Date">
                     <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
-                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.date.toDateString()}}
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{getTimeString(element.date)}}
                     </td>
                 </ng-container>
 
@@ -76,7 +76,7 @@
                 <ng-container matColumnDef="Passengers">
                     <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> Passengers </th>
                     <td mat-cell class="center-vertical centered-text" *matCellDef="let element">
-                        {{element.passengers.length}} </td>
+                        {{getPassengerReservedNumber(element.passengers)}} </td>
                 </ng-container>
 
                 <!-- Companions Column -->

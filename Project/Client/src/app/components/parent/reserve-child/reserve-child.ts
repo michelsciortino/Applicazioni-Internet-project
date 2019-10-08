@@ -12,6 +12,7 @@ import { Stop } from 'src/app/models/stop';
 import { LineService } from 'src/app/services/lines/line-races.service';
 import { ReserveChildDialog } from './reserve-child-dialog/reserve-child.dialog';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
+import Utils from 'src/app/utils/utils';
 
 export class CheckedRace {
     checked: boolean;
@@ -68,6 +69,8 @@ export class ReserveChildComponent implements OnInit, OnDestroy {
         this.dataSource = new ReservableRacesDataSource(this.parentSvc, this.datePipe);
     }
 
+    getTimeString = Utils.getTimeString;
+
     dateClass() {
         return (date: Date): MatCalendarCellCssClasses => {
             //console.log(date)
@@ -95,6 +98,7 @@ export class ReserveChildComponent implements OnInit, OnDestroy {
                         this.directionSelected = this.directions[0];
                         this.search();
                         //console.log(this.racesReservable);
+                        this.onSelectDate(new Date())
                     })
                 }
             }

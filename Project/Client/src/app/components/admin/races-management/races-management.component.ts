@@ -14,6 +14,8 @@ import { UserService } from 'src/app/services/user/user.service';
 import { UserInfo } from 'src/app/models/user';
 import { AdminService } from 'src/app/services/admin/admin.service';
 import { ManageRaceDialog } from '../manage-race/manage-race.dialog';
+import Utils from 'src/app/utils/utils';
+import { Passenger } from 'src/app/models/passenger';
 
 @Component({
     selector: 'app-races-management',
@@ -60,6 +62,8 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(private adminSvc: AdminService, private lineSvc: LineService, private userSvc: UserService, public dialog: MatDialog, private isMobileSvc: IsMobileService) { }
+
+    getTimeString = Utils.getTimeString;
 
     ngOnInit() {
 
@@ -122,7 +126,7 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
             width: '350px',
             data: {
                 title: 'Confirm?',
-                message: `Are you sure deleted this race: \n- ${race.line.name}\n- ${race.direction}\n- ${race.date.toISOString()}`,
+                message: `Are you sure deleted this race: \n- ${race.line.name}\n- ${race.direction}\n- ${race.date.toLocaleString()}`,
                 YES: true, NO: true
             }
         });
@@ -163,6 +167,10 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     isAdminOfLine(race: Race) {
         if (!this.userInfo) return false;
         return this.userInfo.lines.find((line) => line === race.line.name) != null;
+    }
+
+    getPassengerReservedNumber(passengers: Passenger[]) {
+        passengers.filter(p => p.reserved == true).length;
     }
 }
 
