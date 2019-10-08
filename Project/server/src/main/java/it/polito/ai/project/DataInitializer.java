@@ -112,21 +112,24 @@ public class DataInitializer implements CommandLineRunner {
                 }
                 JsonRaces races = new ObjectMapper().readValue(jsonReservations, JsonRaces.class);
 
-                ClientUserCredentials admin=db.getCredentials("admin@mail.com");
+                ClientUserCredentials admin = db.getCredentials("admin@mail.com");
 
                 for (JsonRace race : races.races) {
-                    if (db.getRacesByLineAndDateAndDirection(ClientUserCredentialsToUserCredentials(admin),race.getLineName(), race.getDate(), race.getDirection()).isEmpty()) {
+                    if (db.getRacesByLineAndDateAndDirection(ClientUserCredentialsToUserCredentials(admin), race.getLineName(), race.getDate(), race.getDirection()).isEmpty()) {
                         ClientRace clientRace = new ClientRace();
-                        ClientLine line=db.getLinebyName(race.getLineName());
+                        ClientLine line = db.getLinebyName(race.getLineName());
                         clientRace.setLine(line);
                         clientRace.setDirection(race.getDirection());
                         clientRace.setDate(race.getDate());
                         clientRace.setReachedStops(new ArrayList<>());
-                        if(race.getDirection().equals(DirectionType.OUTWARD))
+                        if (race.getDirection().equals(DirectionType.OUTWARD))
                             clientRace.setCurrentStop(line.getOutwardStops().get(0));
                         else
                             clientRace.setCurrentStop(line.getReturnStops().get(0));
-                        clientRace.setRaceState(RaceState.SCHEDULED);
+                        if (race.getRaceState() != null)
+                            clientRace.setRaceState(race.getRaceState());
+                        else
+                            clientRace.setRaceState(RaceState.SCHEDULED);
                         for (JsonCompanion companion : race.getCompanions()) {
                             ClientPediStop initialStop = new ClientPediStop(companion.getInitialStop().getName(), companion.getInitialStop().getLongitude(), companion.getInitialStop().getLatitude(), companion.getInitialStop().getDelayInMillis());
                             ClientPediStop finalStop = new ClientPediStop(companion.getFinalStop().getName(), companion.getFinalStop().getLongitude(), companion.getFinalStop().getLatitude(), companion.getFinalStop().getDelayInMillis());
@@ -141,7 +144,7 @@ public class DataInitializer implements CommandLineRunner {
                             ClientCompanion clientCompanion = new ClientCompanion(clientUser, initialStop, finalStop, companion.getState());
                             clientRace.getCompanions().add(clientCompanion);
                         }
-                        List<ClientPassenger> listC=new ArrayList<>();
+                        List<ClientPassenger> listC = new ArrayList<>();
                         for (JsonPassenger passenger : race.getPassengers()) {
                             ClientPassenger clientPassenger = new ClientPassenger();
                             clientPassenger.setChildDetails(new ClientChild(passenger.getChildDetails().getName(), passenger.getChildDetails().getSurname(), passenger.getChildDetails().getCF(), passenger.getChildDetails().getParentId()));
@@ -188,9 +191,9 @@ public class DataInitializer implements CommandLineRunner {
                         if (db.getCredentials(child.getParentId()) != null)
                             db.addChildToLine(line.getAdmins().get(0), child, line.getName(), db.getCredentials(line.getAdmins().get(0)).getRoles());
                     }
-                    for(String admin : line.getAdmins()){
-                        if(!db.getCredentials(admin).getRoles().contains("ROLE_ADMIN"))
-                            db.makeLineAdmin("admin@mail.com",admin,line.getName());
+                    for (String admin : line.getAdmins()) {
+                        if (!db.getCredentials(admin).getRoles().contains("ROLE_ADMIN"))
+                            db.makeLineAdmin("admin@mail.com", admin, line.getName());
                     }
                 } catch (BadRequestException e) {
                     System.out.println(e.getMessage());
@@ -262,7 +265,7 @@ public class DataInitializer implements CommandLineRunner {
      * @return ClientUserCredentials converted
      */
     private UserCredentials ClientUserCredentialsToUserCredentials(ClientUserCredentials uc) {
-        UserCredentials user= new UserCredentials();
+        UserCredentials user = new UserCredentials();
         user.setUsername(uc.getUsername());
         user.setRoles(uc.getRoles());
         return user;

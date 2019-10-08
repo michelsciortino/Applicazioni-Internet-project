@@ -6,7 +6,6 @@ import it.polito.ai.project.exceptions.InternalServerErrorException;
 import it.polito.ai.project.exceptions.ResourceNotFoundException;
 import it.polito.ai.project.exceptions.UnauthorizedRequestException;
 import it.polito.ai.project.generalmodels.ClientLine;
-import it.polito.ai.project.generalmodels.ClientPediStop;
 import it.polito.ai.project.generalmodels.ClientRace;
 import it.polito.ai.project.services.database.DatabaseService;
 import it.polito.ai.project.services.database.models.DirectionType;
@@ -136,7 +135,7 @@ public class LinesController {
     public ResponseEntity validRace(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value = "line_name") String line_name, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable(value = "date") Date date, @PathVariable(value = "direction") DirectionType direction) {
         try {
             ClientRace clientRace = new ClientRace(new ClientLine(line_name), direction, date, null, RaceState.SCHEDULED, new ArrayList<>(), new ArrayList<>(),new ArrayList<>(), null);
-            db.validRace(userCredentials.getUsername(), clientRace);
+            db.validateRace(userCredentials.getUsername(), clientRace);
             return ok(HttpStatus.OK);
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, re.getMessage());

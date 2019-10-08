@@ -291,7 +291,7 @@ public class AdminController {
     {
         try
         {
-            db.validCompanions(performerUserCredentials.getUsername(), clientRace);
+            db.validateCompanions(performerUserCredentials.getUsername(), clientRace);
             return ok(HttpStatus.OK);
         }
         catch(ResourceNotFoundException re)

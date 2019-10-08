@@ -48,11 +48,11 @@ public interface DatabaseServiceInterface {
     ClientUser controlledUpdateUser(ClientUser user);
 
     void deleteUser(ClientUser user);
-
-    //----------------------------------------------###Notification###------------------------------------------------//
-
-    void insertNotification(String performerUsername, ClientUserNotification clientUserNotification, String targetUsername);
-
+//
+//    //----------------------------------------------###Notification###------------------------------------------------//
+//
+//    void insertNotification(String performerUsername, ClientUserNotification clientUserNotification, String targetUsername);
+//
 
 
     //-------------------------------------------------###Parent###---------------------------------------------------//
@@ -60,7 +60,7 @@ public interface DatabaseServiceInterface {
 
     Page<ClientUserNotification> getUserNotifications(int pageNumber, int pageSize, String username);
 
-    List<Page<ClientUserNotification>> getUserBroadcastNotifications(int pageNumber, int pageSize, String username);
+   // List<Page<ClientUserNotification>> getUserBroadcastNotifications(int pageNumber, int pageSize, String username);
 
     void reserveChildren(String performerUsername, ClientRace clientRace, List<ClientPassenger> passengers);
 
@@ -88,23 +88,19 @@ public interface DatabaseServiceInterface {
 
     void acceptCompanion(String performerUsername, ClientRace clientRace, String companion);
 
-    void unselectCompanions(String performerUsername, ClientRace clientRace);
-
     void unAcceptCompanion(String performerUsername, ClientRace clientRace, String companion);
 
     void rejectCompanion(String performerUsername, ClientRace clientRace, String companion);
 
-    void validCompanions(String performerUsername, ClientRace clientRace);
+    void validateCompanions(String performerUsername, ClientRace clientRace);
 
-    void validRace(String performerUsername, ClientRace clientRace);
+    void validateRace(String performerUsername, ClientRace clientRace);
+
+    void updateRace(ClientRace clientRace, String performerUsername);
+
+    void deleteRace(ClientRace clientRace, String performerUsername);
 
     //------------------------------------------------###Companion###-------------------------------------------------//
-
-    //void stateCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
-
-    //void removeCompanionAvailability(ClientCompanion clientcompanion, String performerUsername, ClientRace clientRace);
-
-    //void confirmChosenState(String performerUsername, ClientRace clientRace);
 
     void giveCompanionAvailability(String performerUsername, CompanionRequest companionRequest);
 
@@ -124,7 +120,6 @@ public interface DatabaseServiceInterface {
 
     void stopReached(String performerUsername, String lineName,Date date, DirectionType direction, String stopName);
 
-    @Transactional
     void stopLeft(String performerUsername, String lineName,Date date, DirectionType direction, String stopName);
 
     List<ClientRace> getCompanionRacesFromDate(String performerUsername, Date date);
@@ -174,8 +169,4 @@ public interface DatabaseServiceInterface {
 
     Collection<CompanionRequest> getCompanionRequestsByAdmin(String username, RaceState state);
 
-
-    void updateRace(ClientRace clientRace, String performerUsername);
-
-    void deleteRace(ClientRace clientRace, String performerUsername);
 }

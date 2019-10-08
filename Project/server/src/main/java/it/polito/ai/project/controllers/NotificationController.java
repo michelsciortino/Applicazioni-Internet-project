@@ -49,7 +49,7 @@ public class NotificationController {
     public void notify(@AuthenticationPrincipal Authentication performer, @Payload ClientUserNotification notification) throws Exception {
         UserCredentials credentials = (UserCredentials) performer.getPrincipal();
         try{
-            db.insertNotification(credentials.getUsername(),notification,notification.getTargetUsername());
+            //db.insertNotification(credentials.getUsername(),notification,notification.getTargetUsername());
         }
         catch(InternalServerErrorException ie)
         {
@@ -70,7 +70,7 @@ public class NotificationController {
     @SendTo("/topic/notifications/{line_name}/{date}/{direction}")
     public ClientUserNotification notifyAll(@AuthenticationPrincipal UserCredentials performer, @DestinationVariable String line_name, @DestinationVariable Date date, @DestinationVariable DirectionType direction, @Payload ClientUserNotification notification, String targetUsername) throws Exception {
         try {
-            db.insertNotification(performer.getUsername(), notification, targetUsername);
+            //db.insertNotification(performer.getUsername(), notification, targetUsername);
             return notification;
         } catch (InternalServerErrorException ie) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ie.getMessage());
@@ -79,7 +79,8 @@ public class NotificationController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-
     }
+
+
 
 }

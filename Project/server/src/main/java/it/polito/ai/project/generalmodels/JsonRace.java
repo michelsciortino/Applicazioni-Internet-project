@@ -1,9 +1,11 @@
 package it.polito.ai.project.generalmodels;
 
 import it.polito.ai.project.services.database.models.DirectionType;
+import it.polito.ai.project.services.database.models.RaceState;
 import lombok.Data;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -22,8 +24,9 @@ public class JsonRace {
     private Date date;
     private JsonPediStop currentStop;
     private List<JsonPassenger> passengers;
-
     private List<JsonCompanion> companions;
+    @Nullable
+    private RaceState raceState;
 
     public JsonRace() {
     }

@@ -30,40 +30,34 @@ public class UserNotification {
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private Date date;
-    private Boolean broadcast;
     @Nullable
     @Reference
-    private Race broadcastRace;
-    @Nullable
-    private Object parameters;
+    private Race referredRace;
     @Size(min = 2, max = 140)
     private String message;
     @NotNull
     private Boolean isRead;
 
-    public UserNotification(){
+    public UserNotification() {
     }
 
-    public UserNotification(String id, @Email String performerUsername,@Email String targetUsername, @NotNull NotificationsType type, @NotNull Date date, boolean broadcast, Race broadcastRace, @Nullable Object parameters, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
+    public UserNotification(String id, @Email String performerUsername, @Email String targetUsername, @NotNull NotificationsType type, @NotNull Date date, Race race, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
         this.id = id;
         this.performerUsername = performerUsername;
         this.targetUsername = targetUsername;
         this.type = type;
         this.date = date;
-        this.broadcast = broadcast;
-        this.broadcastRace = broadcastRace;
-        this.parameters = parameters;
+        this.referredRace = race;
         this.message = message;
         this.isRead = isRead;
     }
-    public UserNotification(@Email String performerUsername,@Email String targetUsername, @NotNull NotificationsType type, @NotNull Date date, boolean broadcast, Race broadcastRace, @Nullable Object parameters, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
+
+    public UserNotification(@Email String performerUsername, @Email String targetUsername, @NotNull NotificationsType type, @NotNull Date date, Race race, @Size(min = 2, max = 140) String message, @NotNull Boolean isRead) {
         this.performerUsername = performerUsername;
         this.targetUsername = targetUsername;
         this.type = type;
         this.date = date;
-        this.broadcast = broadcast;
-        this.broadcastRace = broadcastRace;
-        this.parameters = parameters;
+        this.referredRace = race;
         this.message = message;
         this.isRead = isRead;
     }

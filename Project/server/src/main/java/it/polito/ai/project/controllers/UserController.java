@@ -58,8 +58,9 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @RequestMapping(value = "/readNotification", method = RequestMethod.POST)
-    public ResponseEntity readNotification( @AuthenticationPrincipal UserCredentials userCredentials, @RequestBody String notificationId) {
+    public ResponseEntity readNotification(@AuthenticationPrincipal UserCredentials userCredentials, @RequestBody String notificationId) {
         try {
             db.readNotification(userCredentials.getUsername(), notificationId);
             return ok(HttpStatus.OK);
@@ -89,11 +90,16 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "{username}/getNotifications", method = RequestMethod.GET)
-    public ResponseEntity getNotifications(@AuthenticationPrincipal UserCredentials userCredentials,@PathVariable(value = "username") String username, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "0") int pageNumber) {
+    @RequestMapping(value = "{username}/notifications", method = RequestMethod.GET)
+    public ResponseEntity getNotifications(@AuthenticationPrincipal UserCredentials userCredentials,
+                                           @PathVariable(value = "username") String username,
+                                           @RequestParam(defaultValue = "10") int pageSize,
+                                           @RequestParam(defaultValue = "0") int pageNumber) {
         try {
-
-            return ok(db.getUserNotifications(pageNumber, pageSize, userCredentials.getUsername()));
+            if (username.equals(userCredentials.getUsername()))
+                return ok(db.getUserNotifications(pageNumber, pageSize, userCredentials.getUsername()));
+            else
+                throw new UnauthorizedRequestException();
         } catch (ResourceNotFoundException re) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         } catch (InternalServerErrorException ie) {
@@ -104,21 +110,22 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @RequestMapping(value = "{username}/getBroadcastNotifications", method = RequestMethod.GET)
-    public ResponseEntity getBroadcastNotifications(@AuthenticationPrincipal UserCredentials userCredentials,@PathVariable(value = "username") String username, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "0") int pageNumber) {
-        try {
 
-            return ok(db.getUserBroadcastNotifications(pageNumber, pageSize, userCredentials.getUsername()));
-        } catch (ResourceNotFoundException re) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        } catch (InternalServerErrorException ie) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (UnauthorizedRequestException ue) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @RequestMapping(value = "{username}/broadcastNotifications", method = RequestMethod.GET)
+//    public ResponseEntity getBroadcastNotifications(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value = "username") String username, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "0") int pageNumber) {
+//        try {
+//
+//            return ok(db.getUserBroadcastNotifications(pageNumber, pageSize, userCredentials.getUsername()));
+//        } catch (ResourceNotFoundException re) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//        } catch (InternalServerErrorException ie) {
+//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//        } catch (UnauthorizedRequestException ue) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+//        } catch (Exception e) {
+//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @RequestMapping(value = "{username}", method = RequestMethod.GET)
     public ResponseEntity getUser(@PathVariable(value = "username") String username) {

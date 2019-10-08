@@ -18,13 +18,14 @@ public enum NotificationsType {
     //From Companion to 1 Admin(iterative), companion has not confirmed chosen statement
     COMPANION_REMOVECHOSEN,
     //From Admin to everyone related to this race, race and companions are validated
-    ROUND_CONFIRM,
+    RACE_CONFIRMED,
     //From Admin to Companion(iterative), Admin need to change Companions round due to a Companion refuse
-    ROUND_DELETED,
+    RACE_DELETED,
     //From Companion to everyone related to this race, race is starting
     RACE_STARTED,
     //From Companion to everyone related to this race, race ended
     RACE_ENDED,
     //From Companion to everyone related to this race, stop x reached
-    STOP_REACHED
+    STOP_REACHED,
+    STOP_LEFT
 }
