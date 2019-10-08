@@ -1,9 +1,9 @@
 <div>
-    <h1>RUNNING RACE COMPONENT</h1>
-    <ngu-carousel *ngIf="race && (race.raceState == 'STARTED' || race.raceState == 'ENDED')" class="fit-content center-horizontal marged" #lineCarousel [inputs]="carouselTile" [dataSource]="tiledStops">
+    <p class="centered-text">{{race?.line.name}} {{race?.date.toDateString()}} {{race?.direction}}</p>
+    <ngu-carousel *ngIf="race && (race.raceState === 'STARTED' || race.raceState === 'ENDED')" class="fit-content center-horizontal marged" #lineCarousel [inputs]="carouselTile" [dataSource]="tiledStops">
         <div NguCarouselPoint>
             <span class="stop-index">{{lineCarousel.currentSlide+1}}/{{tiledStops.length}}</span>
-            <span class="stop-direction">{{race.direction}}</span>
+            <span class="stop-direction">{{tiledStops[lineCarousel.currentSlide]?.time}}</span>
         </div>
         <ngu-tile class="tile fit-content" *nguCarouselDef="let stop; let stopIndex = index">
             <div class="tile-content">
@@ -29,10 +29,10 @@
                                     <tr *ngFor="let child of stop.reservedChildren">
                                         <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.reached" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN' || child.state === 'DELIVERED'" (click)="setChildState(takenRadio,child,stop)"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN' || child.state === 'DELIVERED'" (click)="setChildState(takenRadio,child,stop)"></mat-radio-button>
                                         </td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.reached" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT'" (click)="setChildState(absentRadio,child,stop)"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT'" (click)="setChildState(absentRadio,child,stop)"></mat-radio-button>
                                         </td>
                                     </tr>
                                 </tbody>

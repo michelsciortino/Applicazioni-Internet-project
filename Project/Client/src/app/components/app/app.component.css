@@ -56,7 +56,7 @@ h1.app-name {
 }
 
 .fill-remaining-space {
-    /* This fills the remaining space, by using flexbox. 
+    /* This fills the remaining space, by using flexbox.
        Every toolbar row uses a flexbox row layout. */
     flex: 1 1 auto;
     height: inherit;
@@ -142,25 +142,35 @@ h1.app-name {
     border-bottom: none;
 }
 
-.unread td {
+.unread {
     background-color: rgb(233, 233, 233);
 }
 
-.notifications td {
-    margin: 2px 0 2px 0px;
-}
-
-.notifications td:last-child {
-    border-radius: 0 4px 4px 0;
-    padding-right: 8px;
-}
-
-.notifications td:first-child {
-    border-radius: 4px 0 0 4px;
-    padding-left: 8px !important;
+.notification.unread::before {
+    content: "";
+    position: absolute;
+    margin-top: 12px;
+    margin-left: -16px;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    border-radius: 4px;
 }
 
 .notifications {
     max-height: 450px;
     overflow: auto;
+    max-width: 328px;
+}
+
+.notification {
+    margin-left: 14px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.notification .date {
+    color: rgb(80, 80, 80);
+    font-size: 10px;
 }

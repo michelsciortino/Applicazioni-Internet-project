@@ -26,7 +26,7 @@ class TiledStop {
   isEditable: boolean;
   index: number;
   name: string;
-  timespanFromStart: number;
+  time: string;
   reservedChildren: Passenger[];
   nonReservedChildren: Passenger[];
   reached: boolean;
@@ -54,6 +54,8 @@ export class RunningRaceComponent implements AfterViewInit {
 
   lastReachedStop: TiledStop;
   currentStop: TiledStop;
+
+  utils = Utils;
 
   private loading: boolean;
 
@@ -106,7 +108,7 @@ export class RunningRaceComponent implements AfterViewInit {
     return this.lineSvc
       .getRace(this.lineName, this.date, this.direction)
       .then(race => {
-        // console.log(race);
+        console.log(race);
         this.race = race;
         this.race.reachedStops = race.reachedStops || [];
         this.cdRef.detectChanges();
@@ -133,7 +135,9 @@ export class RunningRaceComponent implements AfterViewInit {
       tiledStop.index = i;
       tiledStop.isEditable = false;
       tiledStop.name = stop.name;
-      tiledStop.timespanFromStart = stop.delayInMillis;
+      tiledStop.time = Utils.getTime(
+        this.race.date.getTime() + stop.delayInMillis
+      );
       tiledStop.state = StopState.UNREACHABLE;
       tiledStop.reservedChildren = [];
       tiledStop.nonReservedChildren = [];
@@ -162,7 +166,7 @@ export class RunningRaceComponent implements AfterViewInit {
       this.tiledStops[i].reachedAt = Utils.getTime(
         this.race.date.getTime() + this.race.reachedStops[i].arrivalDelay
       );
-      if (this.race.reachedStops[i].departureDelay > -1) {
+      if (this.race.reachedStops[i].departureDelay !== -1) {
         this.tiledStops[i].state = StopState.LEFT;
         this.tiledStops[i].left = true;
         this.tiledStops[i].leftAt = Utils.getTime(
@@ -179,10 +183,6 @@ export class RunningRaceComponent implements AfterViewInit {
 
     // inserting passengers
     for (const passenger of this.race.passengers) {
-      if (!passenger.stopDelivered.name) passenger.stopDelivered = null;
-      if (!passenger.stopReserved.name) passenger.stopReserved = null;
-      if (!passenger.stopTaken.name) passenger.stopTaken = null;
-
       if (passenger.reserved) {
         const stop = this.tiledStops.find(
           s => s.name === passenger.stopReserved.name
@@ -210,7 +210,7 @@ export class RunningRaceComponent implements AfterViewInit {
 
   setChildState(radio: MatRadioButton, child: Passenger, stop: TiledStop) {
     event.preventDefault();
-    if (stop.reached || radio.disabled) return;
+    if (stop.left || radio.disabled) return;
     if (child.state === radio.value) {
       child.state = PassengerState.NULL;
       if (radio.value === 'TAKEN') child.stopTaken = null;
@@ -391,7 +391,9 @@ export class RunningRaceComponent implements AfterViewInit {
         // console.log('refreshing race');
         this.getRace();
       })
-      .catch(() => {});
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   public deliverAllAtSchool() {
@@ -457,7 +459,6 @@ export class RunningRaceComponent implements AfterViewInit {
     if (!stop) return false;
     if (this.race.direction === DirectionType.OUTWARD)
       return (
-        stop &&
         stop.reservedChildren.filter(
           c => c.reserved && c.state === PassengerState.NULL
         ).length === 0
@@ -489,17 +490,28 @@ export class RunningRaceComponent implements AfterViewInit {
     )
       return false;
     const stop = this.tiledStops[this.carousel.currentSlide];
-    if (stop.index > 0 && this.tiledStops[stop.index - 1].left === false)
+    if (
+      !stop ||
+      stop.left ||
+      (stop.index > 0 && this.tiledStops[stop.index - 1].left === false) ||
+      (this.race.direction === DirectionType.OUTWARD &&
+        stop.index === this.tiledStops.length - 1)
+    )
       return false;
-    return stop &&
-      stop.state === StopState.UNREACHED &&
+    if (
+      this.race.reachedStops.filter(s => s.departureDelay !== -1).length ===
+      stop.index
+    )
+      return true;
+
+    /*return stop.state !== StopState.LEFT &&
       this.race.reachedStops &&
       this.race.reachedStops.length === stop.index &&
       (this.race.direction === DirectionType.OUTWARD
         ? stop.index !== this.tiledStops.length - 1
         : true)
       ? true
-      : false;
+      : false;*/
   }
 
   public canShowEndRaceButton(): boolean {

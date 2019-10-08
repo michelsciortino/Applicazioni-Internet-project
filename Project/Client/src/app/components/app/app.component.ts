@@ -28,14 +28,21 @@ export class AppComponent implements OnInit, OnDestroy {
   isAdmin: boolean;
   isCompanion: boolean;
   unreadCount: number;
-  notifications: Notification[]
+  notifications: Notification[];
   isMobile: boolean;
 
   @ViewChild('snav', { static: true })
   sidenav: MatSidenav;
 
-  constructor(private router: Router, private authSvc: AuthService, private notificationSvc: NotificationService, private userSvc: UserService, private isMobileSvc: IsMobileService, private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer) {
+  constructor(
+    private router: Router,
+    private authSvc: AuthService,
+    private notificationSvc: NotificationService,
+    private userSvc: UserService,
+    private isMobileSvc: IsMobileService,
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer
+  ) {
     /*this.matIconRegistry.addSvgIcon(
       "imageUser",
       this.domSanitizer.bypassSecurityTrustResourceUrl("../../assets/userColor.svg")
@@ -44,39 +51,38 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isLoggedSub = this.authSvc.observeLoggedStatus().subscribe(
-      (value: boolean) => this.isLogged = value);
+    this.isLoggedSub = this.authSvc
+      .observeLoggedStatus()
+      .subscribe((value: boolean) => (this.isLogged = value));
 
-    this.userInfoSub = this.userSvc.getUserInfo().subscribe(
-      (user: UserInfo) => {
+    this.userInfoSub = this.userSvc
+      .getUserInfo()
+      .subscribe((user: UserInfo) => {
         if (user != null) {
           this.loggedUser = user;
           this.isAdmin = user.isAdmin();
           this.isCompanion = user.isCompanion();
-          this.hasChildren = (user.children != null && user.children.length > 0);
+          this.hasChildren = user.children != null && user.children.length > 0;
         }
-      }
-    );
+      });
 
-    this.unreadCountSub = this.notificationSvc.getUnreadCount()
-      .subscribe(count => this.unreadCount = count);
+    this.unreadCountSub = this.notificationSvc
+      .getUnreadCount()
+      .subscribe(count => (this.unreadCount = count));
 
-    this.notificationSvc.listen(() => { this.getNotifications() });
+    this.notificationSvc.listen(() => this.getNotifications());
 
-    this.isMobileSub = this.isMobileSvc.getIsMobile()
-      .subscribe((isMobile) => {
-        this.isMobile = isMobile;
-        if (isMobile) {
-          console.log("closing sidenav")
-          this.sidenav.close();
-        }
-        else this.sidenav.open();
-      })
+    this.isMobileSub = this.isMobileSvc.getIsMobile().subscribe(isMobile => {
+      this.isMobile = isMobile;
+      if (isMobile) {
+        console.log('closing sidenav');
+        this.sidenav.close();
+      } else this.sidenav.open();
+    });
 
     this.router.events.subscribe(event => {
       // close sidenav on routing
-      if (this.isMobile)
-        this.sidenav.close();
+      if (this.isMobile) this.sidenav.close();
     });
   }
 
@@ -88,10 +94,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   getNotifications() {
-    this.notifications = this.notificationSvc.getNotifications()
+    this.notifications = this.notificationSvc.getNotifications();
   }
 
   openNotification(notification) {
-    this.notificationSvc.readNotification(notification)
+    this.notificationSvc.readNotification(notification);
   }
 }
