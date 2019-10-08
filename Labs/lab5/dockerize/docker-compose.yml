@@ -22,7 +22,7 @@ services:
     depends_on:
       - database
     volumes:
-      - ../server/target/${APP_JAR_NAME}.jar:/application.jar
+      - ./${APP_JAR_NAME}.jar:/application.jar
     command: ["java", "-jar", "application.jar", "${ARGS_SERVER}"]
     ports:
       - 8080:8080
@@ -57,7 +57,7 @@ services:
       - springapi
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - ../client/dist/client/:/usr/share/nginx/html
+      - ./dist/client/:/usr/share/nginx/html
     networks:
       - frontendNetwork
      
