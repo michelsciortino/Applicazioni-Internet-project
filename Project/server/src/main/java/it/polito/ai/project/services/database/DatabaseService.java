@@ -850,18 +850,34 @@ public class DatabaseService implements DatabaseServiceInterface {
         List<Race> races;
 
         try {
-            if (direction == null) {
-                if (fromDate == null || toDate == null)
-                    races = raceRepository.findAllByLineName(lineName);
-                else
-                    races = raceRepository.findAllByLineNameAndDateBetween(lineName, removeTime(fromDate), midnightTime(toDate));
-            } else {
-                if (fromDate == null || toDate == null)
-                    races = raceRepository.findAllByLineNameAndDirection(lineName, direction);
-                else
-                    races = raceRepository.findAllByLineNameAndDirectionAndDateBetween(lineName, direction, removeTime(fromDate), midnightTime(toDate));
+            if(lineName==null){
+                if(direction==null){
+                    if (fromDate == null || toDate == null)
+                        races = raceRepository.findAll();
+                    else
+                        races = raceRepository.findAllByAndDateBetween(removeTime(fromDate), midnightTime(toDate));
+                }
+                else{
+                    if (fromDate == null || toDate == null)
+                        races = raceRepository.findAll();
+                    else
+                        races = raceRepository.findAllByAndDateBetween(removeTime(fromDate), midnightTime(toDate));
+                }
+            }else{
+                if(direction==null){
+                    if (fromDate == null || toDate == null)
+                        races = raceRepository.findAllByLineName(lineName);
+                    else
+                        races = raceRepository.findAllByLineNameAndDateBetween(lineName,removeTime(fromDate), midnightTime(toDate));
+                }
+                else{
+                    if (fromDate == null || toDate == null)
+                        races = raceRepository.findAllByLineNameAndDirection(lineName, direction);
+                    else
+                        races = raceRepository.findAllByLineNameAndDirectionAndDateBetween(lineName, direction,removeTime(fromDate), midnightTime(toDate));
+                }
             }
-        } catch (Exception e) {
+        }  catch (Exception e) {
             throw new InternalServerErrorException();
         }
 
