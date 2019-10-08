@@ -2688,6 +2688,8 @@ public class DatabaseService implements DatabaseServiceInterface {
                 }
             }
         }
+        if(race.get().getRaceState().equals(RaceState.STARTED) || race.get().getRaceState().equals(RaceState.ENDED))
+            return;
 
         race.get().setRaceState(RaceState.STARTED);
         updateRace(raceToClientRace(race.get(), null), performerUsername);
@@ -3020,14 +3022,6 @@ public class DatabaseService implements DatabaseServiceInterface {
                             return null;
                         }
                 ).collect(Collectors.toList());
-
-        //List<ClientRace> clientRaces = new ArrayList<ClientRace>();
-        /*for (Race r : races) {
-            for (Companion c : r.getCompanions())
-                if (c.getUserDetails().getUsername().equals(performerUsername))
-                    if (c.getState().equals(CompanionState.VALIDATED))
-                        clientRaces.add(raceToClientRace(r));
-        }*/
         return companionRaces;
     }
 
@@ -3065,6 +3059,10 @@ public class DatabaseService implements DatabaseServiceInterface {
                 }
             }
         }
+
+        if(race.get().getRaceState().equals(RaceState.ENDED))
+            return;
+
         race.get().setRaceState(RaceState.ENDED);
         updateRace(raceToClientRace(race.get(), null), performerUsername);
 
