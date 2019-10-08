@@ -1,5 +1,5 @@
 <h3 class="centered-text">HOME</h3>
 <div class="components-grid">
     <app-companion-today-lines *ngIf="isCompanion" class="components-grid-cell"></app-companion-today-lines>
-    <app-parent-today-lines class="components-grid-cell"></app-parent-today-lines>
+    <app-parent-today-lines *ngIf="hasChildren" class="components-grid-cell"></app-parent-today-lines>
 </div>
