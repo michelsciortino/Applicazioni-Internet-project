@@ -20,11 +20,14 @@ export class ParentTodayLinesComponent implements OnInit {
   private userSub: Subscription;
 
   dataSource: RacesDataSource;
-  displayedColumns = ["children", "lineName", "direction", "status"];
+
+  displayedColumns = ["children", "lineName", "direction", "date", "status"];
 
   getTime = Utils.getTime;
 
   getTimeWithSecond = Utils.getTimeWithSecond;
+
+  getTimeString = Utils.getTimeString;
 
   constructor(private ngZone: NgZone, private router: Router, private userSvc: UserService, private parentSvc: ParentService, public dialog: MatDialog) {
     this.dataSource = new RacesDataSource(this.parentSvc);

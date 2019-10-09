@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material';
 import { ConfirmDialog } from '../../dialogs/confirm-dialog/confirm.dialog';
 import { CompanionRequestsDataSource, CompanionService } from 'src/app/services/companion/companion.service';
+import Utils from 'src/app/utils/utils';
 
 enum RequestsType {
     PENDING,
@@ -37,6 +38,8 @@ export class PendingRequestsComponent implements OnInit, OnDestroy {
         this.activeTab = RequestsType.PENDING;
         this.datasource = new CompanionRequestsDataSource(this.companionSvc);
     }
+
+    getTimeString = Utils.getTimeString;
 
     ngOnInit() {
         this.requestsSub = this.datasource.getPendingRequests()

@@ -64,7 +64,7 @@
                 <!-- Date Column -->
                 <ng-container matColumnDef="Date">
                     <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
-                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.date.toDateString()}}
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{getTimeString(element.date)}}
                     </td>
                 </ng-container>
 

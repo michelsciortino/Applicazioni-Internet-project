@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 import { GiveAvailabilityDialog } from './give-availability-dialog/give-availability.dialog';
 import { CompanionService } from 'src/app/services/companion/companion.service';
 import { ManageRaceDialog } from '../../admin/manage-race/manage-race.dialog';
+import Utils from 'src/app/utils/utils';
 
 @Component({
     selector: 'app-races-companion',
@@ -49,6 +50,8 @@ export class RacesCompanionComponent implements OnInit, OnDestroy {
 
     constructor(private lineSvc: LineService, public dialog: MatDialog, private isMobileSvc: IsMobileService, private companionSvc: CompanionService) {
     }
+
+    getTimeString = Utils.getTimeString;
 
     ngOnInit() {
 

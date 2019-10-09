@@ -57,6 +57,43 @@
                     </table>
                 </div>
             </div>
+            <div class="overflow-auto m-t-8">
+                <h3 class="title">Passengers</h3>
+                <div class="overflow-auto p-b-8">
+                    <table class="max-width">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Reserved Stop</th>
+                                <th>Taken at Stop</th>
+                                <th>Leaved at Stop</th>
+                                <th>IsReserved</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="race?.passengers?.length>0">
+                            <tr *ngFor="let passenger of race.passengers">
+                                <td>{{passenger.childDetails.name}}</td>
+                                <td>{{passenger.stopReserved?.name}}</td>
+                                <td>{{passenger.stopTaken?.name}}</td>
+                                <td>{{passenger.stopDelivered?.name}}</td>
+                                <td *ngIf="passenger.reserved" class="center-vertical centered-text">
+                                    <mat-icon class="green opacity50">check</mat-icon>
+                                </td>
+                                <td *ngIf="!passenger.reserved" class="center-vertical centered-text">
+                                    <mat-icon class="red opacity50">clear</mat-icon>
+                                </td>
+                                <td>{{passenger.state}}</td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="race?.passengers?.length===0">
+                            <tr class="grey">
+                                <td colspan="6" class="centered-text">NO PASSENGERS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         <div>
             <h3 class="title">Line</h3>
