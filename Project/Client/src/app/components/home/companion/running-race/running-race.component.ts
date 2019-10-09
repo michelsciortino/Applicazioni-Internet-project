@@ -101,8 +101,6 @@ export class RunningRaceComponent implements AfterViewInit {
     });
   }
 
-  public onConfirm() {}
-
   private getRace() {
     this.loading = true;
     return this.lineSvc
@@ -114,7 +112,7 @@ export class RunningRaceComponent implements AfterViewInit {
         this.cdRef.detectChanges();
         this.populateView();
       })
-      .catch(() => {})
+      .catch(() => { })
       .then(() => (this.loading = false));
   }
 
@@ -310,7 +308,7 @@ export class RunningRaceComponent implements AfterViewInit {
         // console.log('refreshing race');
         this.getRace();
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   public confirmReturnStop() {

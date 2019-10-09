@@ -6,7 +6,6 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { UserInfo } from 'src/app/models/user';
 import { LineService } from '../lines/line-races.service';
-import { NotificationService } from '../notifications/notification.service';
 
 const credentialsEndpoint = `${environment.baseEndpoint}/credentials`;
 const userEndpoint = `${environment.baseEndpoint}/users`;
@@ -16,12 +15,7 @@ export class UserService implements OnDestroy {
   private userInfo: UserInfo;
   private authSub: Subscription;
 
-  constructor(
-    private authSvc: AuthService,
-    private lineSvc: LineService,
-    private router: Router,
-    private http: HttpClient
-  ) {
+  constructor(private authSvc: AuthService, private lineSvc: LineService, private router: Router, private http: HttpClient) {
     this.userSbj = new BehaviorSubject(null);
     this.userInfo = new UserInfo();
     this.authSub = this.authSvc
@@ -78,9 +72,13 @@ export class UserService implements OnDestroy {
 
   public getNotifications(pageSize: number, pageNumber: number): Promise<any> {
     return this.http
-      .get(
-        `${userEndpoint}/${this.authSvc.getCurrentUser().mail}/notifications`
-      )
+      .get(`${userEndpoint}/${this.authSvc.getCurrentUser().mail}/notifications`)
+      .toPromise();
+  }
+
+  public readNotification(notificationId: string) {
+    return this.http
+      .post(`${userEndpoint}/${this.authSvc.getCurrentUser().mail}/notifications/${notificationId}/read`, {})
       .toPromise();
   }
 }

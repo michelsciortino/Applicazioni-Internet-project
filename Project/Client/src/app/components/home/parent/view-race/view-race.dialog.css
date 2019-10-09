@@ -152,10 +152,10 @@ td span {
     text-align: center;
 }
 
-.covered::after {
+.reached::after {
     background-color: greenyellow !important;
 }
 
-.uncovered::after {
-    background-color: red !important;
+.unreached::after {
+    background-color: gray !important;
 }

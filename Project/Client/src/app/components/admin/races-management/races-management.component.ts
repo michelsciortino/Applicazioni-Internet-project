@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { LineService, RacesDataSource } from 'src/app/services/lines/line-races.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Line } from 'src/app/models/line';
 import { map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -39,9 +39,9 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     lineSelected: Line = new Line();
 
     directions = [
-        { id: null, text: "All" },
-        { id: DirectionType.OUTWARD, text: "Outward" },
-        { id: DirectionType.RETURN, text: "Return" }
+        { id: null, text: 'All' },
+        { id: DirectionType.OUTWARD, text: 'Outward' },
+        { id: DirectionType.RETURN, text: 'Return' }
     ];
     directionSelected = this.directions[0];
 
@@ -57,7 +57,8 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
         { def: 'Passengers' },
         { def: 'Companions' },
         { def: 'State' },
-        { def: 'Remove-Action' }];
+        { def: 'Remove-Action' }
+    ];
 
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -66,38 +67,35 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     getTimeString = Utils.getTimeString;
 
     ngOnInit() {
-
         this.dataSource = new RacesDataSource(this.lineSvc, this.sort);
 
-        this.racesChangesSub = this.adminSvc.getRacesChanges().subscribe((reason) => {
-            console.log(reason)
-            this.search()
+        this.racesChangesSub = this.adminSvc.getRacesChanges().subscribe(reason => {
+            console.log(reason);
+            this.search();
         });
 
         this.toDateSelected.setMonth(this.toDateSelected.getMonth() + 3);
 
-        this.userInfoSub = this.userSvc.getUserInfo().subscribe(
-            (info: UserInfo) => {
-                if (info != null) {
-                    //console.log(info);
+        this.userInfoSub = this.userSvc
+            .getUserInfo()
+            .subscribe((info: UserInfo) => {
+                if (info != null)
                     this.userInfo = info;
-                }
-            }
-        );
+            });
 
-        this.lineSvc.getLines()
+        this.lineSvc
+            .getLines()
             .pipe(
                 map(
                     (data: any) => data,
-                    (error: HttpErrorResponse) =>
-                        console.log(error)
+                    (error: HttpErrorResponse) => console.log(error)
                 )
             )
             .subscribe((data: Line[]) => {
-                //console.log(data);
-                if (data.length == 0) return;
+                // console.log(data);
+                if (data.length === 0) return;
                 this.lines = data;
-                //console.log(this.lines[0].name);
+                // console.log(this.lines[0].name);
                 this.lineSelected = this.lines[0];
                 this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
             });
@@ -108,45 +106,59 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     }
 
     public search() {
-        console.log("searching")
+        console.log('searching');
         if (this.directionSelected.id == null)
-            this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, null);
+            this.dataSource.loadRaces(
+                this.lineSelected.name,
+                this.fromDateSelected,
+                this.toDateSelected,
+                null
+            );
         else
-            this.dataSource.loadRaces(this.lineSelected.name, this.fromDateSelected, this.toDateSelected, this.directionSelected.id.toString());
+            this.dataSource.loadRaces(
+                this.lineSelected.name,
+                this.fromDateSelected,
+                this.toDateSelected,
+                this.directionSelected.id.toString()
+            );
     }
 
     getDisplayedColumns(): string[] {
-        return this.columnDefinitions
-            .map(cd => cd.def);
+        return this.columnDefinitions.map(cd => cd.def);
     }
 
     removeRace(race: Race) {
-        console.log("REMOVE RACE:", race)
+        console.log('REMOVE RACE:', race);
         const dialogRef = this.dialog.open(ConfirmDialog, {
             width: '350px',
             data: {
                 title: 'Confirm?',
-                message: `Are you sure deleted this race: \n- ${race.line.name}\n- ${race.direction}\n- ${race.date.toLocaleString()}`,
-                YES: true, NO: true
+                message: `Are you sure deleted this race: \n- ${race.line.name}\n- ${
+                    race.direction
+                    }\n- ${race.date.toLocaleString()}`,
+                YES: true,
+                NO: true
             }
         });
         dialogRef.afterClosed().subscribe(result => {
             switch (result) {
-                case "YES":
-                    this.lineSvc.deleteRace(race.line.name, race.date, race.direction)
-                        .then(() => this.adminSvc.racesChanged("A race has been deleted"))
-                        .catch((error) => {
+                case 'YES':
+                    this.lineSvc
+                        .deleteRace(race.line.name, race.date, race.direction)
+                        .then(() => this.adminSvc.racesChanged('A race has been deleted'))
+                        .catch(error => {
                             console.log(error);
                         });
                     break;
-                default: break;
+                default:
+                    break;
             }
         });
     }
 
     viewRace(race: Race) {
-        console.log("VIEW RACE:", race)
-        const dialogRef = this.dialog.open(ManageRaceDialog, {
+        // console.log('VIEW RACE:', race);
+        this.dialog.open(ManageRaceDialog, {
             data: {
                 lineName: race.line.name,
                 date: race.date,
@@ -156,21 +168,21 @@ export class RacesManagementComponent implements OnInit, OnDestroy {
     }
 
     openAddRacesDialog(): void {
-        console.log("OPEN DIALOG ADD RACE")
-        const dialogRef = this.dialog.open(NewRaceDialog, { data: { date: this.fromDateSelected } });
+        // console.log('OPEN DIALOG ADD RACE');
+        const dialogRef = this.dialog.open(NewRaceDialog, {
+            data: { date: this.fromDateSelected }
+        });
         dialogRef.afterClosed().subscribe(result => {
-            if (dialogRef.componentInstance.dirty)
-                this.search();
+            if (dialogRef.componentInstance.dirty) this.search();
         });
     }
 
     isAdminOfLine(race: Race) {
         if (!this.userInfo) return false;
-        return this.userInfo.lines.find((line) => line === race.line.name) != null;
+        return this.userInfo.lines.find(line => line === race.line.name) != null;
     }
 
     getPassengerReservedNumber(passengers: Passenger[]) {
-        passengers.filter(p => p.reserved == true).length;
+        return passengers.filter(p => p.reserved === true).length;
     }
 }
-
