@@ -207,7 +207,6 @@ export class RunningRaceComponent implements AfterViewInit {
   }
 
   setChildState(radio: MatRadioButton, child: Passenger, stop: TiledStop) {
-    event.preventDefault();
     if (stop.left || radio.disabled) return;
     if (child.state === radio.value) {
       child.state = PassengerState.NULL;
@@ -225,15 +224,10 @@ export class RunningRaceComponent implements AfterViewInit {
     this.cdRef.detectChanges();
   }
 
-  setNonRegisteredState(
-    radio: MatRadioButton,
-    child: Passenger,
-    stop: TiledStop
-  ) {
+  setNonRegisteredState(radio: MatRadioButton, child: Passenger, stop: TiledStop) {
     if (child.state === radio.value) {
       child.state = PassengerState.NULL;
       child.stopTaken = null;
-      event.preventDefault();
     } else {
       child.state = PassengerState.TAKEN;
       child.stopTaken = stop.stopRef;

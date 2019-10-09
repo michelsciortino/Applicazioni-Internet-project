@@ -10,6 +10,7 @@ import { UserService } from 'src/app/services/user/user.service';
 import { NotificationService } from 'src/app/services/notifications/notification.service';
 import { Passenger } from 'src/app/models/passenger';
 import { UserInfo } from 'src/app/models/user';
+import { Notification, NotificationType } from 'src/app/models/notification';
 
 @Component({
     selector: 'app-view-parent-race-dialog',
@@ -18,7 +19,7 @@ import { UserInfo } from 'src/app/models/user';
 })
 export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
 
-    userInfo: UserInfo = new UserInfo;
+    userInfo: UserInfo;
 
     stopReached: Map<string, boolean>;
     race: Race;
@@ -27,12 +28,17 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
     userSub: Subscription;
     racesChangesSub: Subscription;
 
+    dirty: boolean;
+
     constructor(
         private userSvc: UserService,
         private lineSvc: LineService,
         private notificationSvc: NotificationService,
         public dialogRef: MatDialogRef<ViewParentTodayRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.stopReached = new Map<string, boolean>();
+        this.userInfo = new UserInfo();
+        this.childrenPassengers = [];
+        this.dirty = false;
     }
 
     getTime = Utils.getTime;
@@ -47,11 +53,21 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
                     .then(race => {
                         this.race = race;
                         this.updateReachedStop();
+                        this.childrenPassengers = [];
                         race.passengers.forEach(pass => {
                             if (pass.reserved && pass.childDetails.parentId === this.userInfo.mail)
                                 this.childrenPassengers.push(pass);
-                        })
-                        this.notificationSvc.subscribeToRace(this.race.line.name, this.race.date, this.race.direction, (value) => this.getRace());
+                        });
+                        this.notificationSvc.subscribeToRace(
+                            this.race.line.name,
+                            this.race.date,
+                            this.race.direction,
+                            (value: Notification) => {
+                                if (value.type === NotificationType.RACE_ENDED || value.type === NotificationType.RACE_STARTED)
+                                    this.dirty = true;
+                                this.getRace();
+                            }
+                        );
                     })
                     .catch(error => console.log(error));
             }
@@ -62,7 +78,6 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
     ngOnDestroy() {
         !this.userSub || this.userSub.unsubscribe();
         !this.racesChangesSub || this.racesChangesSub.unsubscribe();
-        //!this.notificationSub || this.notificationSub.unsubscribe();
     }
 
     private getRace() {
@@ -70,6 +85,11 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
             .then(race => {
                 this.race = race;
                 this.updateReachedStop();
+                this.childrenPassengers = [];
+                race.passengers.forEach(pass => {
+                    if (pass.reserved && pass.childDetails.parentId === this.userInfo.mail)
+                        this.childrenPassengers.push(pass);
+                });
             })
             .catch(error => console.log(error));
     }

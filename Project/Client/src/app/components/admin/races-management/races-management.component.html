@@ -47,11 +47,9 @@
             <mat-datepicker #pickerTo disabled="false" [startAt]="toDateSelected"></mat-datepicker>
         </mat-form-field>
 
-        <button mat-raised-button [disabled]="lineSelected==null || directionSelected==null"
-            (click)="search()">Search</button>
+        <button mat-raised-button [disabled]="lineSelected==null || directionSelected==null" (click)="search()">Search</button>
         <div class="overflow-auto">
-            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource" matSort
-                [ngClass]="{'hidden': dataSource.isEmpty()}">
+            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource" matSort [ngClass]="{'hidden': dataSource.isEmpty()}">
 
                 <!-- LineName Column -->
                 <ng-container matColumnDef="LineName">
@@ -98,16 +96,14 @@
                 <ng-container matColumnDef="Remove-Action">
                     <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
                     <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
-                        <button *ngIf="isAdminOfLine(element)" mat-icon-button
-                            (click)="$event.stopPropagation(); removeRace(element)">
+                        <button *ngIf="isAdminOfLine(element) && element.raceState==='SCHEDULED'" mat-icon-button (click)="$event.stopPropagation(); removeRace(element)">
                             <mat-icon>delete_outline</mat-icon>
                         </button>
                     </td>
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
-                <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"
-                    (click)="viewRace(row)"></tr>
+                <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}" (click)="viewRace(row)"></tr>
             </mat-table>
 
             <div *ngIf="dataSource.empty===true" class="grey">NO RACES FOUND</div>

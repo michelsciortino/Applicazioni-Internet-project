@@ -37,19 +37,16 @@ export class CompanionTodayLinesComponent implements OnInit {
   }
 
   startRace(race: Race) {
-    event.stopPropagation();
     this.companionSvc.startRace(race.line.name, race.direction, race.date)
       .then(() => this.ngZone.run(() => this.router.navigate([`runningRace/${race.line.name}/${race.date.toISOString()}/${race.direction}`])))
       .catch((error) => console.log(error));
   }
 
   continueRace(race: Race) {
-    event.stopPropagation();
     this.ngZone.run(() => this.router.navigate([`runningRace/${race.line.name}/${race.date.toISOString()}/${race.direction}`]));
   }
 
   viewRace(race: Race) {
-    console.log("VIEW RACE:", race)
     this.dialog.open(ManageRaceDialog, {
       data: {
         lineName: race.line.name,

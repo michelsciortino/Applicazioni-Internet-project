@@ -50,21 +50,25 @@ export class ParentTodayLinesComponent implements OnInit {
 
   viewRace(race: Race) {
     // console.log("VIEW RACE:", race)
-    this.dialog.open(ViewParentTodayRaceDialog, {
+    const dialogRef = this.dialog.open(ViewParentTodayRaceDialog, {
       data: {
         lineName: race.line.name,
         date: race.date,
         direction: race.direction
       }
     });
+    dialogRef.afterClosed().subscribe(() => {
+      if (dialogRef.componentInstance.dirty)
+        this.dataSource.loadTodayReservedRaces();
+    });
   }
 
   getChildren(race: Race) {
-    let children: Child[] = [];
+    const children: Child[] = [];
     race.passengers.forEach(pass => {
       if (pass.reserved && pass.childDetails.parentId === this.userInfo.mail)
         children.push(pass.childDetails);
-    })
+    });
     // console.log(children);
     return children;
   }

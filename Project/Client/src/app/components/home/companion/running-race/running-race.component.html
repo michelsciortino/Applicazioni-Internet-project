@@ -29,10 +29,10 @@
                                     <tr *ngFor="let child of stop.reservedChildren">
                                         <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN' || child.state === 'DELIVERED'" (click)="setChildState(takenRadio,child,stop)"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN' || child.state === 'DELIVERED'" (click)="$event.preventDefault(); setChildState(takenRadio,child,stop)"></mat-radio-button>
                                         </td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT'" (click)="setChildState(absentRadio,child,stop)"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT'" (click)="$event.preventDefault(); setChildState(absentRadio,child,stop)"></mat-radio-button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -55,7 +55,7 @@
                                     <tr *ngFor="let child of otherChildren">
                                         <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf}}" #takenNonRegisteredRadio value="TAKEN" [checked]="child.state==='TAKEN'" (click)="setNonRegisteredState(takenNonRegisteredRadio,child,stop)" color="primary"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" #takenNonRegisteredRadio value="TAKEN" [checked]="child.state==='TAKEN'" (click)="$event.preventDefault(); setNonRegisteredState(takenNonRegisteredRadio,child,stop)" color="primary"></mat-radio-button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -125,10 +125,10 @@
                                     <tr *ngFor="let child of reservedChildren">
                                         <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf+'AT-SCHOOL'}}" [disabled]="stop.reached" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN' || child.state=='DELIVERED'" (click)="setChildState(takenRadio,child,stop)"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf+'AT-SCHOOL'}}" [disabled]="stop.reached" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN' || child.state=='DELIVERED'" (click)="$event.preventDefault(); setChildState(takenRadio,child,stop)"></mat-radio-button>
                                         </td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf+'AT-SCHOOL'}}" [disabled]="stop.reached" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT'" (click)="setChildState(absentRadio,child,stop)"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf+'AT-SCHOOL'}}" [disabled]="stop.reached" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT'" (click)="$event.preventDefault(); setChildState(absentRadio,child,stop)"></mat-radio-button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -155,7 +155,7 @@
                                     <tr *ngFor="let child of stop.reservedChildren">
                                         <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf+'DELIVERED'}}" [disabled]="stop.reached || stop.name != currentStop?.name || child.state=='ABSENT'" #deliveredRadio value="DELIVERED" color="primary" [checked]="child.state === 'DELIVERED'" (click)="setChildState(deliveredRadio,child,stop)"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf+'DELIVERED'}}" [disabled]="stop.reached || stop.name != currentStop?.name || child.state=='ABSENT'" #deliveredRadio value="DELIVERED" color="primary" [checked]="child.state === 'DELIVERED'" (click)="$event.preventDefault(); setChildState(deliveredRadio,child,stop)"></mat-radio-button>
                                         </td>
                                         <td>
                                             <mat-radio-button name="{{child.childDetails.cf+'ABSENT'}}" [disabled]="true" value="ABSENT" color="primary" [checked]="child.state === 'ABSENT'"></mat-radio-button>
