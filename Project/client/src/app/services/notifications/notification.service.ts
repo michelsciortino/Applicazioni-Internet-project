@@ -54,7 +54,7 @@ export class NotificationService {
 
         this.connectedSbj.next(true);
         this.userSvc
-          .getNotifications(10, 0)
+          .getNotifications(20, 0)
           .then(lastNotifications => {
             this.notifications = [];
             this.unreadSbj.next(0);
