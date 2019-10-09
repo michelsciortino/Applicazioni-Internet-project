@@ -46,7 +46,7 @@ export class ParentTodayLinesComponent implements OnInit {
   }
 
   viewRace(race: Race) {
-    console.log("VIEW RACE:", race)
+    // console.log("VIEW RACE:", race)
     this.dialog.open(ViewParentTodayRaceDialog, {
       data: {
         lineName: race.line.name,
@@ -62,7 +62,7 @@ export class ParentTodayLinesComponent implements OnInit {
       if (pass.reserved && pass.childDetails.parentId === this.userInfo.mail)
         children.push(pass.childDetails);
     })
-    console.log(children);
+    // console.log(children);
     return children;
   }
 }

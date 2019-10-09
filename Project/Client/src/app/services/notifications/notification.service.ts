@@ -62,18 +62,19 @@ export class NotificationService {
             lastNotifications.content.forEach(
               (incomingN: IncomingNotification) => {
                 const notification = new Notification();
-                notification.id = incomingN.performerUsername;
+                notification.id = incomingN.id;
                 notification.sender = incomingN.performerUsername;
                 notification.targetUser = incomingN.targetUsername;
                 notification.targetRace = incomingN.referredRace;
                 notification.type = incomingN.type;
                 notification.message = incomingN.message;
-                notification.date = incomingN.date;
+                notification.date = new Date(incomingN.date);
                 notification.unread = !incomingN.isRead;
                 if (notification.unread) unread++;
                 this.notifications.push(notification);
               }
             );
+            this.notifications = this.notifications.sort((a: Notification, b: Notification) => b.date.getTime() - a.date.getTime());
             this.unreadSbj.next(unread);
             this.notifier.emit('notification');
           })
@@ -91,9 +92,10 @@ export class NotificationService {
                 notification.type = incomingN.type;
                 notification.sender = incomingN.performerUsername;
                 notification.message = incomingN.message;
-                notification.date = incomingN.date;
+                notification.date = new Date(incomingN.date);
                 notification.unread = true;
                 this.notifications.push(notification);
+                this.notifications = this.notifications.sort((a: Notification, b: Notification) => b.date.getTime() - a.date.getTime());
                 this.unreadSbj.next(this.unreadSbj.getValue() + 1);
                 this.notifier.emit('notification');
               }
@@ -112,8 +114,10 @@ export class NotificationService {
     this.notifier.removeListener('notification', listener);
   }
 
-  public subscribeToRace(lineName: string, date: Date, direction: DirectionType) {
-    return this.stompClient.subscribe(`/topic/notifications/${lineName}/${date.toISOString()}/${direction}`,
+  public subscribeToRace(lineName: string, date: Date, direction: DirectionType, callback) {
+    const dateUTC = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(),
+      date.getMinutes(), date.getSeconds(), date.getMilliseconds());
+    return this.stompClient.subscribe(`/topic/notifications/${lineName}/${new Date(dateUTC).toISOString()}/${direction}`,
       (message: Stomp.Message) => {
         const incomingN = JSON.parse(message.body) as IncomingNotification;
         const notification = new Notification();
@@ -124,8 +128,7 @@ export class NotificationService {
         notification.targetRace = incomingN.referredRace;
         notification.type = incomingN.type;
         notification.unread = !incomingN.isRead;
-        this.notifications.push(notification);
-        return notification;
+        callback(notification);
       }
     );
   }

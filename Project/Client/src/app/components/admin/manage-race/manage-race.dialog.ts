@@ -35,9 +35,9 @@ export class ManageRaceDialog implements OnInit, OnDestroy {
     getTimeWithSecond = Utils.getTimeWithSecond;
 
     ngOnInit() {
-        this.userSub = this.userSvc.getUserInfo().subscribe(userInfo =>{
+        this.userSub = this.userSvc.getUserInfo().subscribe(userInfo => {
             this.isAdmin = userInfo.isAdminOfLine(this.data.lineName);
-            if(this.isAdmin){
+            if (this.isAdmin) {
                 this.racesChangesSub = this.adminSvc.getRacesChanges().subscribe((reason) => {
                     this.getRace();
                 });
@@ -105,7 +105,9 @@ export class ManageRaceDialog implements OnInit, OnDestroy {
     }
 
     isRaceValidable() {
-        for (let covered of this.stopCoverage.values())
+        if (!this.stopCoverage) return false;
+        const vect = Array.from(this.stopCoverage.values());
+        for (const covered of vect)
             if (!covered) return false;
         return true;
     }

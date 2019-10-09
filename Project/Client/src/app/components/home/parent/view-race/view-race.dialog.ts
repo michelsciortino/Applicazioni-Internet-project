@@ -22,9 +22,14 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
 
     userSub: Subscription;
     racesChangesSub: Subscription;
-    notificationSub: Subscription;
 
-    constructor(private adminSvc: AdminService, private userSvc: UserService, private lineSvc: LineService, private notificationSvc: NotificationService, public dialogRef: MatDialogRef<ViewParentTodayRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
+
+    constructor(
+        private adminSvc: AdminService,
+        private userSvc: UserService,
+        private lineSvc: LineService,
+        private notificationSvc: NotificationService,
+        public dialogRef: MatDialogRef<ViewParentTodayRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.stopReached = new Map<string, boolean>();
     }
 
@@ -40,15 +45,12 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
                     this.getRace();
                 });
             }
-        })
+        });
         this.lineSvc.getRace(this.data.lineName, this.data.date, this.data.direction)
             .then(race => {
                 this.race = race;
                 this.updateReachedStop();
-
-                // this.notificationSub = this.notificationSvc.subscribeToRace(this.race.line.name, this.race.date, this.race.direction).subscribe(
-                //     (value) => { this.getRace() }
-                // )
+                this.notificationSvc.subscribeToRace(this.race.line.name, this.race.date, this.race.direction, (value) => this.getRace());
             })
             .catch(error => console.log(error));
     }
@@ -56,7 +58,7 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
     ngOnDestroy() {
         !this.userSub || this.userSub.unsubscribe();
         !this.racesChangesSub || this.racesChangesSub.unsubscribe();
-        !this.notificationSub || this.notificationSub.unsubscribe();
+        //!this.notificationSub || this.notificationSub.unsubscribe();
     }
 
     private getRace() {
@@ -73,16 +75,14 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
     }
 
     updateReachedStop() {
-        const stops = this.race.direction == DirectionType.OUTWARD ? this.race.line.outwardStops : this.race.line.returnStops;
+        const stops = this.race.direction === DirectionType.OUTWARD ? this.race.line.outwardStops : this.race.line.returnStops;
         this.stopReached.clear();
         stops.forEach(stop => this.stopReached.set(stop.name, false));
         this.race.reachedStops.forEach(stopReached => {
-            for (let stop of stops) {
-                if (stopReached.stopName === stop.name) {
+            for (const stop of stops)
+                if (stopReached.stopName === stop.name)
                     this.stopReached.set(stop.name, true);
-                }
-            }
-        })
+        });
     }
 
     onCancel() {

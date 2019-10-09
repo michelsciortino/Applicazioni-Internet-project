@@ -285,10 +285,10 @@ export class RacesDataSource implements DataSource<Race> {
         return this.parentSvc.getParentRaces(new Date(), new Date(), true, null, null)
             .then((data: Race[]) => {
                 data.map(x => x.date = new Date(x.date));
-                console.log(data)
+                console.log(data);
                 this.racesSbj.next(data);
             })
-            .finally(() => this.loadingSbj.next(false))
+            .finally(() => this.loadingSbj.next(false));
     }
 
     public isEmpty(): boolean {

@@ -162,6 +162,7 @@ h1.app-name {
     max-height: 450px;
     overflow: auto;
     max-width: 328px;
+    cursor: pointer;
 }
 
 .notification {
