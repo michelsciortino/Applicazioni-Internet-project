@@ -29,10 +29,10 @@
                                     <tr *ngFor="let child of stop.reservedChildren">
                                         <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN' || child.state === 'DELIVERED'" (click)="$event.preventDefault(); setChildState(takenRadio,child,stop)"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #takenRadio value="TAKEN" color="primary" [checked]="(child.state=='TAKEN' || child.state === 'DELIVERED') && child.stopTaken.name === stop.name" (click)="$event.preventDefault(); setChildState(takenRadio,child,stop)"></mat-radio-button>
                                         </td>
                                         <td>
-                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT'" (click)="$event.preventDefault(); setChildState(absentRadio,child,stop)"></mat-radio-button>
+                                            <mat-radio-button name="{{child.childDetails.cf}}" [disabled]="stop.left" #absentRadio value="ABSENT" color="warn" [checked]="child.state=='ABSENT' || (child.state=='TAKEN' || child.state === 'DELIVERED') && child.stopTaken.name !== stop.name" (click)="$event.preventDefault(); setChildState(absentRadio,child,stop)"></mat-radio-button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -87,6 +87,48 @@
                             <div *ngIf="!stop.nonReservedChildren || stop.nonReservedChildren.length == 0" class="m-b-8">
                                 <span>No children</span>
                             </div>
+                        </div>
+
+                        <!-- ABSENT CHILDREN -->
+                        <div *ngIf="!stop.left && absentChildren && absentChildren.length > 0 && stop.name === currentStop?.name">
+                            <p class="children-title">Absent children</p>
+                            <table class="center-horizontal m-b-8">
+                                <thead>
+                                    <tr>
+                                        <th>Child</th>
+                                        <th>Taken</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let child of absentChildren">
+                                        <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
+                                        <td>
+                                            <mat-radio-button name="{{child.childDetails.cf+'LATE_ABSENT'}}" [disabled]="stop.left" #takenRadio value="TAKEN" color="primary" [checked]="child.state=='TAKEN' || child.state === 'DELIVERED'" (click)="$event.preventDefault(); setAbsentState(takenRadio,child,stop)"></mat-radio-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ABSENT CHILDREN - AFTER STOP REACHED -->
+                        <div *ngIf="stop.left && stop.absentChildren && stop.absentChildren.length > 0">
+                            <p class="children-title">Absent children</p>
+                            <table class="center-horizontal m-b-8">
+                                <thead>
+                                    <tr>
+                                        <th>Child</th>
+                                        <th>Taken</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let child of stop.absentChildren">
+                                        <td>{{child.childDetails.name}} {{child.childDetails.surname}}</td>
+                                        <td>
+                                            <mat-radio-button name="{{child.childDetails.cf+'LATE_ABSENT_AFTER'}}" [disabled]="stop.left" #takenRadio value="TAKEN" color="primary" [checked]="true" (click)="$event.preventDefault()"></mat-radio-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <!-- AT SCHOOL -->

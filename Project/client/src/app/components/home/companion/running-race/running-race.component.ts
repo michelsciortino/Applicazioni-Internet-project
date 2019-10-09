@@ -29,6 +29,7 @@ class TiledStop {
   time: string;
   reservedChildren: Passenger[];
   nonReservedChildren: Passenger[];
+  absentChildren: Passenger[];
   reached: boolean;
   reachedAt: any;
   left: boolean;
@@ -51,6 +52,7 @@ export class RunningRaceComponent implements AfterViewInit {
   takenChildren: Passenger[];
   reservedChildren: Passenger[];
   otherChildren: Passenger[];
+  absentChildren: Passenger[];
 
   lastReachedStop: TiledStop;
   currentStop: TiledStop;
@@ -89,6 +91,7 @@ export class RunningRaceComponent implements AfterViewInit {
     this.otherChildren = [];
     this.reservedChildren = [];
     this.takenChildren = [];
+    this.absentChildren = [];
     this.loading = false;
   }
 
@@ -125,7 +128,7 @@ export class RunningRaceComponent implements AfterViewInit {
     this.currentStop = null;
     this.otherChildren = [];
     this.takenChildren = [];
-
+    this.absentChildren = [];
     this.reservedChildren = [];
     let i = 0;
     stops.forEach(stop => {
@@ -139,6 +142,7 @@ export class RunningRaceComponent implements AfterViewInit {
       tiledStop.state = StopState.UNREACHABLE;
       tiledStop.reservedChildren = [];
       tiledStop.nonReservedChildren = [];
+      tiledStop.absentChildren = [];
       tiledStop.stopRef = stop;
       this.tiledStops.push(tiledStop);
       i++;
@@ -154,11 +158,7 @@ export class RunningRaceComponent implements AfterViewInit {
     }
 
     // setting stops state based on reachedStops
-    for (
-      i = 0;
-      this.race.reachedStops && i < this.race.reachedStops.length;
-      i++
-    ) {
+    for (i = 0; this.race.reachedStops && i < this.race.reachedStops.length; i++) {
       this.tiledStops[i].reached = true;
       this.currentStop = this.tiledStops[i];
       this.tiledStops[i].reachedAt = Utils.getTime(
@@ -182,17 +182,18 @@ export class RunningRaceComponent implements AfterViewInit {
     // inserting passengers
     for (const passenger of this.race.passengers) {
       if (passenger.reserved) {
-        const stop = this.tiledStops.find(
-          s => s.name === passenger.stopReserved.name
-        );
+        const stop = this.tiledStops.find(s => s.name === passenger.stopReserved.name);
         if (stop) {
           stop.reservedChildren.push(passenger);
           this.reservedChildren.push(passenger);
         }
-      } else if (
-        passenger.state === PassengerState.TAKEN ||
-        passenger.state === PassengerState.DELIVERED
-      ) {
+        if (passenger.state === PassengerState.TAKEN && passenger.stopTaken.name !== passenger.stopReserved.name) {
+          const otherStop = this.tiledStops.find(s => s.name === passenger.stopTaken.name);
+          if (otherStop) otherStop.absentChildren.push(passenger);
+        }
+        if (passenger.state === PassengerState.ABSENT)
+          this.absentChildren.push(passenger);
+      } else if (passenger.state === PassengerState.TAKEN || passenger.state === PassengerState.DELIVERED) {
         // non reserved child that has been taken in a previous stop or has been delivered
         const stop = this.tiledStops.find(
           s => s.name === passenger.stopTaken.name
@@ -220,6 +221,18 @@ export class RunningRaceComponent implements AfterViewInit {
       child.state = radio.value;
       if (radio.value === 'TAKEN') child.stopTaken = stop.stopRef;
       else if (radio.value === 'DELIVERED') child.stopDelivered = stop.stopRef;
+    }
+    this.cdRef.detectChanges();
+  }
+
+  setAbsentState(radio: MatRadioButton, child: Passenger, stop: TiledStop) {
+    if (stop.left || radio.disabled) return;
+    if (child.state === radio.value) {
+      child.state = PassengerState.NULL;
+      child.stopTaken = null;
+    } else {
+      child.state = radio.value;
+      child.stopTaken = stop.stopRef;
     }
     this.cdRef.detectChanges();
   }
@@ -257,6 +270,13 @@ export class RunningRaceComponent implements AfterViewInit {
           .filter(child => child.state === PassengerState.TAKEN)
           .concat(
             this.otherChildren.filter(
+              child =>
+                child.state === PassengerState.TAKEN &&
+                child.stopTaken.name === stop.name
+            )
+          )
+          .concat(
+            this.absentChildren.filter(
               child =>
                 child.state === PassengerState.TAKEN &&
                 child.stopTaken.name === stop.name
