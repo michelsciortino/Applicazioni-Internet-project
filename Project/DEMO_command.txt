@@ -1,0 +1,9 @@
+In dockerize folder run 
+    docker-compose up
+then run DEMO_setup_mongo.sh    (This script load data in DEMO_millepedibus_db in mongo docker)
+
+For usage go on browser: http://localhost:4200/#
+
+    System_admin: 
+        username: admin@mail.com 
+        password: password
