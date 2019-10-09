@@ -71,8 +71,8 @@
                                 <th>State</th>
                             </tr>
                         </thead>
-                        <tbody *ngIf="race?.passengers?.length>0">
-                            <tr *ngFor="let passenger of race.passengers">
+                        <tbody *ngIf="childrenPassengers?.length>0">
+                            <tr *ngFor="let passenger of childrenPassengers">
                                 <td>{{passenger.childDetails.name}}</td>
                                 <td>{{passenger.stopReserved?.name}}</td>
                                 <td>{{passenger.stopTaken?.name}}</td>
@@ -86,7 +86,7 @@
                                 <td>{{passenger.state}}</td>
                             </tr>
                         </tbody>
-                        <tbody *ngIf="race?.passengers?.length===0">
+                        <tbody *ngIf="childrenPassengers?.length===0">
                             <tr class="grey">
                                 <td colspan="6" class="centered-text">NO PASSENGERS</td>
                             </tr>

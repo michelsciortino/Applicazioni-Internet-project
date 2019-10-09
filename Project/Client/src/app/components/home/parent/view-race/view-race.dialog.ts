@@ -8,6 +8,8 @@ import { Stop } from 'src/app/models/stop';
 import { Subscription } from 'rxjs';
 import { UserService } from 'src/app/services/user/user.service';
 import { NotificationService } from 'src/app/services/notifications/notification.service';
+import { Passenger } from 'src/app/models/passenger';
+import { UserInfo } from 'src/app/models/user';
 
 @Component({
     selector: 'app-view-parent-race-dialog',
@@ -16,16 +18,16 @@ import { NotificationService } from 'src/app/services/notifications/notification
 })
 export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
 
-    isAdmin: boolean;
+    userInfo: UserInfo = new UserInfo;
+
     stopReached: Map<string, boolean>;
     race: Race;
+    childrenPassengers: Passenger[];
 
     userSub: Subscription;
     racesChangesSub: Subscription;
 
-
     constructor(
-        private adminSvc: AdminService,
         private userSvc: UserService,
         private lineSvc: LineService,
         private notificationSvc: NotificationService,
@@ -39,20 +41,22 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.userSub = this.userSvc.getUserInfo().subscribe(userInfo => {
-            this.isAdmin = userInfo.isAdminOfLine(this.data.lineName);
-            if (this.isAdmin) {
-                this.racesChangesSub = this.adminSvc.getRacesChanges().subscribe((reason) => {
-                    this.getRace();
-                });
+            if (userInfo != null) {
+                this.userInfo = userInfo;
+                this.lineSvc.getRace(this.data.lineName, this.data.date, this.data.direction)
+                    .then(race => {
+                        this.race = race;
+                        this.updateReachedStop();
+                        race.passengers.forEach(pass => {
+                            if (pass.reserved && pass.childDetails.parentId === this.userInfo.mail)
+                                this.childrenPassengers.push(pass);
+                        })
+                        this.notificationSvc.subscribeToRace(this.race.line.name, this.race.date, this.race.direction, (value) => this.getRace());
+                    })
+                    .catch(error => console.log(error));
             }
         });
-        this.lineSvc.getRace(this.data.lineName, this.data.date, this.data.direction)
-            .then(race => {
-                this.race = race;
-                this.updateReachedStop();
-                this.notificationSvc.subscribeToRace(this.race.line.name, this.race.date, this.race.direction, (value) => this.getRace());
-            })
-            .catch(error => console.log(error));
+
     }
 
     ngOnDestroy() {
