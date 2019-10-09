@@ -12,6 +12,8 @@ import { UserInfo } from 'src/app/models/user';
 })
 export class HomeComponent implements OnInit, OnDestroy {
     isCompanion: boolean;
+    hasChildren: boolean;
+
     userSub: Subscription;
 
     constructor(private authSvc: AuthService, private userSvc: UserService, private router: Router) {
@@ -19,7 +21,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.userSub = this.userSvc.getUserInfo().subscribe(
-            (info) => { if (info) this.isCompanion = info.isCompanion(); }
+            (info: UserInfo) => {
+                if (info != null) {
+                    this.isCompanion = info.isCompanion();
+                    this.hasChildren = info.children != null && info.children.length > 0;
+                }
+            }
         )
     }
 

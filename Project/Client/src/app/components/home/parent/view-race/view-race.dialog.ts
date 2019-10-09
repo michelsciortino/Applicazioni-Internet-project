@@ -7,6 +7,7 @@ import Utils from 'src/app/utils/utils';
 import { Stop } from 'src/app/models/stop';
 import { Subscription } from 'rxjs';
 import { UserService } from 'src/app/services/user/user.service';
+import { NotificationService } from 'src/app/services/notifications/notification.service';
 
 @Component({
     selector: 'app-view-parent-race-dialog',
@@ -21,8 +22,9 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
 
     userSub: Subscription;
     racesChangesSub: Subscription;
+    notificationSub: Subscription;
 
-    constructor(private adminSvc: AdminService, private userSvc: UserService, private lineSvc: LineService, public dialogRef: MatDialogRef<ViewParentTodayRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(private adminSvc: AdminService, private userSvc: UserService, private lineSvc: LineService, private notificationSvc: NotificationService, public dialogRef: MatDialogRef<ViewParentTodayRaceDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {
         this.stopReached = new Map<string, boolean>();
     }
 
@@ -39,12 +41,22 @@ export class ViewParentTodayRaceDialog implements OnInit, OnDestroy {
                 });
             }
         })
-        this.getRace();
+        this.lineSvc.getRace(this.data.lineName, this.data.date, this.data.direction)
+            .then(race => {
+                this.race = race;
+                this.updateReachedStop();
+
+                // this.notificationSub = this.notificationSvc.subscribeToRace(this.race.line.name, this.race.date, this.race.direction).subscribe(
+                //     (value) => { this.getRace() }
+                // )
+            })
+            .catch(error => console.log(error));
     }
 
     ngOnDestroy() {
         !this.userSub || this.userSub.unsubscribe();
         !this.racesChangesSub || this.racesChangesSub.unsubscribe();
+        !this.notificationSub || this.notificationSub.unsubscribe();
     }
 
     private getRace() {
