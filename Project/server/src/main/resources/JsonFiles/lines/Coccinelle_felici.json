@@ -1,0 +1,126 @@
+{
+  "name": "Coccinelle_felici",
+  "outwardStops": [
+    {
+      "name": "Via Stefano Clemente 19",
+      "latitude": 45.078289,
+      "longitude": 7.658898,
+      "delayInMillis": 0
+    },
+    {
+      "name": "Via Morghen 28",
+      "latitude": 45.079025,
+      "longitude": 7.657551,
+      "delayInMillis": 300000
+    },
+    {
+      "name": "Corso Tassoni 32",
+      "latitude": 45.080138,
+      "longitude": 7.656366,
+      "delayInMillis": 600000
+    },
+    {
+      "name": "Via Cibrario 61",
+      "latitude": 45.080711,
+      "longitude": 7.658034,
+      "delayInMillis": 900000
+    },
+    {
+      "name": "Scuola",
+      "latitude": 45.080868,
+      "longitude": 7.659967,
+      "delayInMillis": 1200000
+    }
+  ],
+  "returnStops": [
+    {
+      "name": "Scuola",
+      "latitude": 45.080868,
+      "longitude": 7.659967,
+      "delayInMillis": 0
+    },
+    {
+      "name": "Via Cibrario 61",
+      "latitude": 45.080711,
+      "longitude": 7.658034,
+      "delayInMillis": 300000
+    },
+    {
+      "name": "Corso Tassoni 32",
+      "latitude": 45.080138,
+      "longitude": 7.656366,
+      "delayInMillis": 600000
+    },
+    {
+      "name": "Via Morghen 28",
+      "latitude": 45.079025,
+      "longitude": 7.657551,
+      "delayInMillis": 900000
+    },
+    {
+      "name": "Via Stefano Clemente 19",
+      "latitude": 45.078289,
+      "longitude": 7.658898,
+      "delayInMillis": 1200000
+    }
+  ],
+  "subscribedChildren": [
+    {
+      "parentId": "pantani@mail.com",
+      "name": "Giacomo",
+      "surname": "Pantani",
+      "CF": "PNTGCM03A01L219S"
+    },
+    {
+      "parentId": "palermo@mail.com",
+      "name": "Jessica",
+      "surname": "Palermo",
+      "CF": "PLRJSC06A46L219G"
+    },
+    {
+      "parentId": "palermo@mail.com",
+      "name": "Giovanni",
+      "surname": "Palermo",
+      "CF": "PLRGNN00A13L219F"
+    },
+    {
+      "parentId": "argentero@mail.com",
+      "name": "Alice",
+      "surname": "Argentero",
+      "CF": "RGNLCA12L70F205J"
+    },
+    {
+      "parentId": "albanese@mail.com",
+      "name": "Paolo",
+      "surname": "Albanese",
+      "CF": "LBNPLA07E02L219A"
+    },
+    {
+      "parentId": "serravalle@mail.com",
+      "name": "Viola",
+      "surname": "Serravalle",
+      "CF": "SRRVLI06A59F205X"
+    },
+    {
+      "parentId": "ferrari@mail.com",
+      "name": "Beatrice",
+      "surname": "Ferrari",
+      "CF": "FRRBRC07A61F205J"
+    },
+    {
+      "parentId": "silvestri@mail.com",
+      "name": "Alessandro",
+      "surname": "Silvestri",
+      "CF": "SLVLSN07A26F205O"
+    },
+    {
+      "parentId": "ciceu@mail.com",
+      "name": "Razvan",
+      "surname": "Ciceu",
+      "CF": "CCIRVN05H26F205Z"
+    }
+  ],
+  "admins": [
+    "testa@mail.com"
+  ]
+}

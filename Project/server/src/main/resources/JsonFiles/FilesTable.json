@@ -1,0 +1,10 @@
+{
+  "lines": [
+    "JsonFiles/lines/Bruchi_cantanti.json",
+    "JsonFiles/lines/Coccinelle_felici.json"
+  ],
+  "reservations": [
+    "JsonFiles/races/Races.json"
+  ],
+  "users": "JsonFiles/Users.json"
+}

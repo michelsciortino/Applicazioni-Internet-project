@@ -1,0 +1,862 @@
+{
+  "races": [
+    {
+      "lineName": "Bruchi_cantanti",
+      "direction": "OUTWARD",
+      "date": "2019-10-02T10:44:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Benedetta",
+            "surname": "Rossi",
+            "CF": "BNDRSS01C25B919P",
+            "parentId": "rossi@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Aurora",
+            "surname": "Bianchi",
+            "CF": "ARRBNC01C25B919P",
+            "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Matteo",
+            "surname": "Bruno",
+            "CF": "MTTBRN01C25B919P",
+            "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Giacomo",
+            "surname": "Pantani",
+            "CF": "PNTGCM03A01L219S",
+            "parentId": "pantani@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
+            "delayInMillis": 900000
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Jessica",
+            "surname": "Palermo",
+            "CF": "PLRJSC06A46L219G",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 1200000
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    },
+    {
+      "lineName": "Bruchi_cantanti",
+      "direction": "RETURN",
+      "date": "2019-10-02T16:54:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Benedetta",
+            "surname": "Rossi",
+            "CF": "BNDRSS01C25B919P",
+            "parentId": "rossi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
+            "delayInMillis": 900000
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Aurora",
+            "surname": "Bianchi",
+            "CF": "ARRBNC01C25B919P",
+            "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Matteo",
+            "surname": "Bruno",
+            "CF": "MTTBRN01C25B919P",
+            "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Paolo",
+            "surname": "Albanese",
+            "CF": "LBNPLA07E02L219A",
+            "parentId": "albanese@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 1200000
+          },
+          "state": "CONFIRMED"
+        },
+        {
+          "userDetails": {
+            "username": "pascoli@mail.com",
+            "name": "Sergio",
+            "surname": "Pascoli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
+            "delayInMillis": 600000
+          },
+          "state": "AVAILABLE"
+        }
+      ]
+    },
+    {
+      "lineName": "Bruchi_cantanti",
+      "direction": "OUTWARD",
+      "date": "2019-12-10T10:44:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Benedetta",
+            "surname": "Rossi",
+            "CF": "BNDRSS01C25B919P",
+            "parentId": "rossi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Aurora",
+            "surname": "Bianchi",
+            "CF": "ARRBNC01C25B919P",
+            "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Flavio",
+            "surname": "Serravalle",
+            "CF": "SRRFLV06A19F205Q",
+            "parentId": "serravalle@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
+            "delayInMillis": 600000
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Matteo",
+            "surname": "Bruno",
+            "CF": "MTTBRN01C25B919P",
+            "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
+            "delayInMillis": 300000
+          },
+          "state": "AVAILABLE"
+        },
+        {
+          "userDetails": {
+            "username": "pascoli@mail.com",
+            "name": "Sergio",
+            "surname": "Pascoli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
+            "delayInMillis": 300000
+          },
+          "finalStop": {
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
+            "delayInMillis": 900000
+          },
+          "state": "AVAILABLE"
+        }
+      ]
+    },
+    {
+      "lineName": "Bruchi_cantanti",
+      "direction": "OUTWARD",
+      "date": "2019-11-21T10:44:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Benedetta",
+            "surname": "Rossi",
+            "CF": "BNDRSS01C25B919P",
+            "parentId": "rossi@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Aurora",
+            "surname": "Bianchi",
+            "CF": "ARRBNC01C25B919P",
+            "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Matteo",
+            "surname": "Bruno",
+            "CF": "MTTBRN01C25B919P",
+            "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
+            "delayInMillis": 600000
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Giacomo",
+            "surname": "Pantani",
+            "CF": "PNTGCM03A01L219S",
+            "parentId": "pantani@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
+            "delayInMillis": 900000
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Jessica",
+            "surname": "Palermo",
+            "CF": "PLRJSC06A46L219G",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 1200000
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    },
+    {
+      "lineName": "Bruchi_cantanti",
+      "direction": "RETURN",
+      "date": "2019-11-22T16:54:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Benedetta",
+            "surname": "Rossi",
+            "CF": "BNDRSS01C25B919P",
+            "parentId": "rossi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Aurora",
+            "surname": "Bianchi",
+            "CF": "ARRBNC01C25B919P",
+            "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Matteo",
+            "surname": "Bruno",
+            "CF": "MTTBRN01C25B919P",
+            "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Paolo",
+            "surname": "Albanese",
+            "CF": "LBNPLA07E02L219A",
+            "parentId": "albanese@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
+            "delayInMillis": 600000
+          },
+          "finalStop": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 1200000
+          },
+          "state": "CHOSEN"
+        },
+        {
+          "userDetails": {
+            "username": "pascoli@mail.com",
+            "name": "Sergio",
+            "surname": "Pascoli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Via San Donato 47",
+            "latitude": 45.080973,
+            "longitude": 7.662972,
+            "delayInMillis": 600000
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    },
+    {
+      "lineName": "Bruchi_cantanti",
+      "direction": "OUTWARD",
+      "date": "2019-12-11T10:44:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Benedetta",
+            "surname": "Rossi",
+            "CF": "BNDRSS01C25B919P",
+            "parentId": "rossi@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Aurora",
+            "surname": "Bianchi",
+            "CF": "ARRBNC01C25B919P",
+            "parentId": "bianchi@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Flavio",
+            "surname": "Serravalle",
+            "CF": "SRRFLV06A19F205Q",
+            "parentId": "serravalle@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Matteo",
+            "surname": "Bruno",
+            "CF": "MTTBRN01C25B919P",
+            "parentId": "bruno@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Sobrero 30",
+            "latitude": 45.082077,
+            "longitude": 7.666355,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
+            "delayInMillis": 300000
+          },
+          "state": "AVAILABLE"
+        },
+        {
+          "userDetails": {
+            "username": "pascoli@mail.com",
+            "name": "Sergio",
+            "surname": "Pascoli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Pinelli 45",
+            "latitude": 45.081723,
+            "longitude": 7.663909,
+            "delayInMillis": 300000
+          },
+          "finalStop": {
+            "name": "Via Galvani 14",
+            "latitude": 45.081246,
+            "longitude": 7.661332,
+            "delayInMillis": 900000
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    },
+    {
+      "lineName": "Coccinelle_felici",
+      "direction": "OUTWARD",
+      "date": "2019-11-25T09:05:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Giacomo",
+            "surname": "Pantani",
+            "CF": "PNTGCM03A01L219S",
+            "parentId": "pantani@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Jessica",
+            "surname": "Palermo",
+            "CF": "PLRJSC06A46L219G",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "name": "Via Morghen 28",
+            "latitude": 45.079025,
+            "longitude": 7.657551,
+            "delayInMillis": 300000
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Giovanni",
+            "surname": "Palermo",
+            "CF": "PLRGNN00A13L219F",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "name": "Corso Tassoni 32",
+            "latitude": 45.080138,
+            "longitude": 7.656366,
+            "delayInMillis": 600000
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Alice",
+            "surname": "Argentero",
+            "CF": "RGNLCA12L70F205J",
+            "parentId": "argentero@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Paolo",
+            "surname": "Albanese",
+            "CF": "LBNPLA07E02L219A",
+            "parentId": "albanese@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "finalStop": {
+            "name": "Via Stefano Clemente 19",
+            "latitude": 45.078289,
+            "longitude": 7.658898,
+            "delayInMillis": 1200000
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    },
+    {
+      "lineName": "Coccinelle_felici",
+      "direction": "RETURN",
+      "date": "2019-11-25T16:05:00.000Z",
+      "passengers": [
+        {
+          "childDetails": {
+            "name": "Giacomo",
+            "surname": "Pantani",
+            "CF": "PNTGCM03A01L219S",
+            "parentId": "pantani@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Jessica",
+            "surname": "Palermo",
+            "CF": "PLRJSC06A46L219G",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Giovanni",
+            "surname": "Palermo",
+            "CF": "PLRGNN00A13L219F",
+            "parentId": "palermo@mail.com"
+          },
+          "stopReserved": {
+            "delayInMillis": 0
+          },
+          "reserved": false,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Alice",
+            "surname": "Argentero",
+            "CF": "RGNLCA12L70F205J",
+            "parentId": "argentero@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        },
+        {
+          "childDetails": {
+            "name": "Paolo",
+            "surname": "Albanese",
+            "CF": "LBNPLA07E02L219A",
+            "parentId": "albanese@mail.com"
+          },
+          "stopReserved": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "reserved": true,
+          "state": "NULL"
+        }
+      ],
+      "companions": [
+        {
+          "userDetails": {
+            "username": "movalli@mail.com",
+            "name": "Lore",
+            "surname": "Movalli",
+            "children": [],
+            "lines": []
+          },
+          "initialStop": {
+            "name": "Via Stefano Clemente 19",
+            "latitude": 45.078289,
+            "longitude": 7.658898,
+            "delayInMillis": 1200000
+          },
+          "finalStop": {
+            "name": "Scuola",
+            "latitude": 45.080868,
+            "longitude": 7.659967,
+            "delayInMillis": 0
+          },
+          "state": "CONFIRMED"
+        }
+      ]
+    }
+  ]
+}

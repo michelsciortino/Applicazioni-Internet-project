@@ -1,0 +1,133 @@
+{
+  "name": "Bruchi_cantanti",
+  "outwardStops": [
+    {
+      "name": "Via Sobrero 30",
+      "latitude": 45.082077,
+      "longitude": 7.666355,
+      "delayInMillis": 0
+    },
+    {
+      "name": "Via Pinelli 45",
+      "latitude": 45.081723,
+      "longitude": 7.663909,
+      "delayInMillis": 300000
+    },
+    {
+      "name": "Via San Donato 47",
+      "latitude": 45.080973,
+      "longitude": 7.662972,
+      "delayInMillis": 600000
+    },
+    {
+      "name": "Via Galvani 14",
+      "latitude": 45.081246,
+      "longitude": 7.661332,
+      "delayInMillis": 900000
+    },
+    {
+      "name": "Scuola",
+      "latitude": 45.080868,
+      "longitude": 7.659967,
+      "delayInMillis": 1200000
+    }
+  ],
+  "returnStops": [
+    {
+      "name": "Scuola",
+      "latitude": 45.080868,
+      "longitude": 7.659967,
+      "delayInMillis": 0
+    },
+    {
+      "name": "Via Galvani 14",
+      "latitude": 45.081246,
+      "longitude": 7.661332,
+      "delayInMillis": 300000
+    },
+    {
+      "name": "Via San Donato 47",
+      "latitude": 45.080973,
+      "longitude": 7.662972,
+      "delayInMillis": 600000
+    },
+    {
+      "name": "Via Pinelli 45",
+      "latitude": 45.081723,
+      "longitude": 7.663909,
+      "delayInMillis": 900000
+    },
+    {
+      "name": "Via Sobrero 30",
+      "latitude": 45.082077,
+      "longitude": 7.666355,
+      "delayInMillis": 1200000
+    }
+  ],
+  "subscribedChildren": [
+    {
+      "parentId": "rossi@mail.com",
+      "name": "Benedetta",
+      "surname": "Rossi",
+      "CF": "BNDRSS01C25B919P"
+    },
+    {
+      "parentId": "bianchi@mail.com",
+      "name": "Aurora",
+      "surname": "Bianchi",
+      "CF": "ARRBNC01C25B919P"
+    },
+    {
+      "parentId": "primo@mail.com",
+      "name": "Chanel",
+      "surname": "Primo",
+      "CF": "CHNPRM01C25B919P"
+    },
+    {
+      "parentId": "bruno@mail.com",
+      "name": "Matteo",
+      "surname": "Bruno",
+      "CF": "MTTBRN01C25B919P"
+    },
+    {
+      "parentId": "secondo@mail.com",
+      "name": "Sara",
+      "surname": "Secondo",
+      "CF": "SRASCN01C25B919P"
+    },
+    {
+      "parentId": "fumagalli@mail.com",
+      "name": "Simone",
+      "surname": "Fumagalli",
+      "CF": "SMNFMG01C25B919P"
+    },
+    {
+      "parentId": "verdi@mail.com",
+      "name": "Claudia",
+      "surname": "Verdi",
+      "CF": "CLDVRD01C25B919P"
+    },
+    {
+      "parentId": "youssef@mail.com",
+      "name": "Iaia",
+      "surname": "Youssef",
+      "CF": "IAIYSS01C25B919P"
+    },
+    {
+      "parentId": "chin@mail.com",
+      "name": "Shibo",
+      "surname": "Chin",
+      "CF": "SHBCHN01C25B919P"
+    },
+    {
+      "parentId": "palermo@mail.com",
+      "name": "Jessica",
+      "surname": "Palermo",
+      "CF": "PLRJSC06A46L219G"
+    }
+  ],
+  "admins": [
+    "chin@mail.com",
+    "amoroso@mail.com"
+  ]
+}
