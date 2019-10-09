@@ -17,12 +17,10 @@
         </button>
         <mat-menu #notificationsMenu="matMenu" yPosition="below">
             <div class="padded notifications">
-                <div class="notification" *ngFor="let notification of notifications" [ngClass]="{ 'unread': notification.unread }" (click)="openNotification(notification)">
+                <div class="notification" *ngFor="let notification of notifications" [ngClass]="{ 'unread': notification.unread }" (click)="$event.stopPropagation(); openNotification(notification)">
                     <div>
                         <span><b>{{notification.sender}}</b>: </span>
-                        <span>
-                        {{notification.message}}
-                    </span>
+                        <span>{{notification.message}}</span>
                     </div>
                     <div>
                         <span class="date">{{getTimeString(notification.date)}}</span>
