@@ -9,6 +9,7 @@ import { UserInfo } from 'src/app/models/user';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NotificationService } from 'src/app/services/notifications/notification.service';
 import { Notification } from 'src/app/models/notification';
+import Utils from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private userInfoSub: Subscription;
   private isMobileSub: Subscription;
   private unreadCountSub: Subscription;
+
+  getTimeString = Utils.getTimeString;
 
   loggedUser: UserInfo;
 

@@ -25,7 +25,7 @@
                     </span>
                     </div>
                     <div>
-                        <span class="date">{{notification.date.toLocaleString()}}</span>
+                        <span class="date">{{getTimeString(notification.date)}}</span>
                     </div>
                 </div>
                 <span *ngIf="!notifications || notifications.length==0" class="marged padded center-horizontal center-vertical">No Notifications</span>

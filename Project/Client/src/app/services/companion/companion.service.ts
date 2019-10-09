@@ -28,7 +28,13 @@ export class CompanionService {
     }
 
     public getRequests(): Observable<CompanionRequest[]> {
-        return this.http.get(`${CompanionService.companionEndpoint}/companionRequests`) as Observable<CompanionRequest[]>;
+        return this.http.get(`${CompanionService.companionEndpoint}/companionRequests`)
+            .pipe(
+                map((requests: CompanionRequest[]) => {
+                    requests.forEach(r => r.date = new Date(r.date));
+                    return requests;
+                })
+            ) as Observable<CompanionRequest[]>;
     }
 
     public cancelRequest(lineName: string, direction: string, date: Date): Observable<any> {
@@ -134,21 +140,21 @@ export class CompanionRequestsDataSource {
     public getPendingRequests(): Observable<CompanionRequest[]> {
         return this.requestsSbj.asObservable()
             .pipe(
-                map(requests => requests.filter(request => request.state == CompanionState.AVAILABLE))
+                map(requests => requests.filter(request => request.state === CompanionState.AVAILABLE))
             );
     }
 
     public getAcceptedRequests(): Observable<CompanionRequest[]> {
         return this.requestsSbj.asObservable()
             .pipe(
-                map(requests => requests.filter(request => request.state == CompanionState.CHOSEN))
+                map(requests => requests.filter(request => request.state === CompanionState.CHOSEN))
             );
     }
 
     public getConfirmedRequests(): Observable<CompanionRequest[]> {
         return this.requestsSbj.asObservable()
             .pipe(
-                map(requests => requests.filter(request => request.state == CompanionState.CONFIRMED))
+                map(requests => requests.filter(request => request.state === CompanionState.CONFIRMED))
             );
     }
 

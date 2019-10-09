@@ -8,12 +8,9 @@
 
         <div style="border: 1px solid rgba(0, 0, 0, .12); border-radius: 4px; overflow: hidden;">
             <nav mat-tab-nav-bar [backgroundColor]="background">
-                <a mat-tab-link (click)="switchToTab(RequestsTab.PENDING)"
-                    [active]="activeTab === RequestsTab.PENDING || false">Pending</a>
-                <a mat-tab-link (click)="switchToTab(RequestsTab.ACCEPTED)"
-                    [active]="activeTab === RequestsTab.ACCEPTED || false">Accepted</a>
-                <a mat-tab-link (click)="switchToTab(RequestsTab.CONFIRMED)"
-                    [active]="activeTab === RequestsTab.CONFIRMED || false">Confirmed</a>
+                <a mat-tab-link (click)="switchToTab(RequestsTab.PENDING)" [active]="activeTab === RequestsTab.PENDING || false">Pending</a>
+                <a mat-tab-link (click)="switchToTab(RequestsTab.ACCEPTED)" [active]="activeTab === RequestsTab.ACCEPTED || false">Accepted</a>
+                <a mat-tab-link (click)="switchToTab(RequestsTab.CONFIRMED)" [active]="activeTab === RequestsTab.CONFIRMED || false">Confirmed</a>
             </nav>
 
             <div class="marged overflow-auto">
@@ -27,8 +24,7 @@
                             <th class="mat-header-cell">Final Stop</th>
                             <th *ngIf="activeTab === RequestsTab.ACCEPTED" class="mat-header-cell mat-cell-button">
                                 Confirm</th>
-                            <th *ngIf="activeTab === RequestsTab.PENDING || activeTab === RequestsTab.ACCEPTED"
-                                class="mat-header-cell mat-cell-button">Cancel</th>
+                            <th *ngIf="activeTab === RequestsTab.PENDING || activeTab === RequestsTab.ACCEPTED" class="mat-header-cell mat-cell-button">Cancel</th>
                         </tr>
                     </thead>
 
@@ -39,7 +35,7 @@
                             <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted"> {{request.direction}}
                             </td>
                             <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
-                                {{getTimeString(element.date)}}
+                                {{getTimeString(request.date)}}
                             </td>
                             <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
                                 {{request.initialStop.name}} </td>
@@ -53,8 +49,7 @@
                                 </button>
                             </td>
 
-                            <td *ngIf="activeTab === RequestsTab.ACCEPTED || activeTab === RequestsTab.PENDING"
-                                class="mat-cell mat-cell-button">
+                            <td *ngIf="activeTab === RequestsTab.ACCEPTED || activeTab === RequestsTab.PENDING" class="mat-cell mat-cell-button">
                                 <button mat-icon-button (click)="cancelRequest(request)">
                                     <mat-icon class="red">clear</mat-icon>
                                 </button>
