@@ -124,6 +124,8 @@ public class LinesController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         } catch (InternalServerErrorException ie) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (BadRequestException be) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, be.getMessage());
         } catch (UnauthorizedRequestException ue) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {

@@ -16,9 +16,14 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.util.resources.it.TimeZoneNames_it;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -63,6 +68,11 @@ public class DatabaseService implements DatabaseServiceInterface {
 
     private static Date midnightTime(Date date) {
         return new Date(date.getTime() + 24 * 60 * 60 * 1000);
+    }
+
+    private static String dateToISO(Date date){
+        SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        return format.format(date);
     }
 
     /**
@@ -604,9 +614,10 @@ public class DatabaseService implements DatabaseServiceInterface {
         //Check if performer is present
         if (!performer.isPresent() || !userNotification.isPresent())
             throw new ResourceNotFoundException("Performer User or Notification not found");
-        //If notification is already read: Throw BadRequest
+
         if (userNotification.get().getIsRead())
-            throw new BadRequestException("Notification already read");
+            return;
+
         userNotification.get().setIsRead(true);
         userNotificationRepository.save(userNotification.get());
     }
@@ -1441,7 +1452,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         .stream()
                         .filter(n -> {
                             Race r = n.getReferredRace();
-                            return r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
+                            return n.getTargetUsername().equals(companion) && r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
                         })
                         .findFirst();
                 uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSendToUser(userNotification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(userNotification)));
@@ -1541,7 +1552,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         .stream()
                         .filter(n -> {
                             Race r = n.getReferredRace();
-                            return r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
+                            return n.getTargetUsername().equals(companion) && r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
                         })
                         .findFirst();
                 uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSendToUser(userNotification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(userNotification)));
@@ -1644,7 +1655,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         .stream()
                         .filter(n -> {
                             Race r = n.getReferredRace();
-                            return r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
+                            return n.getTargetUsername().equals(companion) && r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
                         })
                         .findFirst();
                 uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSendToUser(userNotification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(userNotification)));
@@ -1816,7 +1827,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                             .stream()
                             .filter(n -> {
                                 Race r = n.getReferredRace();
-                                return r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
+                                return n.getTargetUsername().equals(user) && r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
                             })
                             .findFirst();
                     uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSendToUser(user, "/queue/notifications", userNotificationToClientUserNotification(userNotification)));
@@ -1953,7 +1964,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                             .stream()
                             .filter(n -> {
                                 Race r = n.getReferredRace();
-                                return r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
+                                return n.getTargetUsername().equals(user) && r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
                             })
                             .findFirst();
                     uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSendToUser(user, "/queue/notifications", userNotificationToClientUserNotification(userNotification)));
@@ -2418,7 +2429,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                                     .stream()
                                     .filter(n -> {
                                         Race r = n.getReferredRace();
-                                        return r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
+                                        return n.getTargetUsername().equals(p.getChildDetails().getParentId()) && r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
                                     })
                                     .findFirst();
                             uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSendToUser(userNotification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(userNotification)));
@@ -2535,10 +2546,10 @@ public class DatabaseService implements DatabaseServiceInterface {
                                     .stream()
                                     .filter(n -> {
                                         Race r = n.getReferredRace();
-                                        return r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
+                                        return n.getTargetUsername().equals(p.getChildDetails().getParentId()) && r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
                                     })
                                     .findFirst();
-                            uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSendToUser(userNotification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(userNotification)));
+                            uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSendToUser(p.getChildDetails().getParentId(), "/queue/notifications", userNotificationToClientUserNotification(userNotification)));
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -2637,7 +2648,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                             .stream()
                             .filter(n -> {
                                 Race r = n.getReferredRace();
-                                return r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
+                                return n.getTargetUsername().equals(p.getChildDetails().getParentId()) && r.getLineName().equals(race.get().getLineName()) && r.getDirection().equals(race.get().getDirection()) && r.getDate().equals(race.get().getDate());
                             })
                             .findFirst();
                     uNotification.ifPresent(userNotification -> this.messagingTemplate.convertAndSendToUser(userNotification.getTargetUsername(), "/queue/notifications", userNotificationToClientUserNotification(userNotification)));
@@ -2717,7 +2728,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         ", of direction " + race.get().getDirection().toString() +
                         " has started.");
         notification.setId(null);
-        this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + race.get().getDate() + "/" + race.get().getDirection(), userNotificationToClientUserNotification(notification));
+        this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + dateToISO(race.get().getDate()) + "/" + race.get().getDirection(), userNotificationToClientUserNotification(notification));
     }
 
     @Transactional
@@ -2837,7 +2848,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         notification.setIsRead(false);
         notification.setMessage(null);
         notification.setId(null);
-        this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + race.get().getDate() + "/" + race.get().getDirection(), userNotificationToClientUserNotification(notification));
+        this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + dateToISO(race.get().getDate()) + "/" + race.get().getDirection(), userNotificationToClientUserNotification(notification));
     }
 
     @Transactional
@@ -2965,7 +2976,7 @@ public class DatabaseService implements DatabaseServiceInterface {
         notification.setIsRead(false);
         notification.setMessage(null);
         notification.setId(null);
-        this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + race.get().getDate() + "/" + race.get().getDirection(), userNotificationToClientUserNotification(notification));
+        this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + dateToISO(race.get().getDate()) + "/" + race.get().getDirection(), userNotificationToClientUserNotification(notification));
     }
 
     @Override
@@ -3093,7 +3104,7 @@ public class DatabaseService implements DatabaseServiceInterface {
                         ", of direction " + race.get().getDirection().toString() +
                         " has ended.");
         notification.setId(null);
-        this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + race.get().getDate() + "/" + race.get().getDirection(), userNotificationToClientUserNotification(notification));
+        this.messagingTemplate.convertAndSend("/topic/notifications/" + race.get().getLineName() + "/" + dateToISO(race.get().getDate()) + "/" + race.get().getDirection(), userNotificationToClientUserNotification(notification));
     }
 
     private boolean isCompanionOfRace(List<Companion> companions, List<String> roles, Companion companion) {

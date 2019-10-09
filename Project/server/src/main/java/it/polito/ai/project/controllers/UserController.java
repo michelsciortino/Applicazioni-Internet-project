@@ -59,8 +59,10 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/readNotification", method = RequestMethod.POST)
-    public ResponseEntity readNotification(@AuthenticationPrincipal UserCredentials userCredentials, @RequestBody String notificationId) {
+    @RequestMapping(value = "{username}/notifications/{id}/read", method = RequestMethod.POST)
+    public ResponseEntity readNotification(@AuthenticationPrincipal UserCredentials userCredentials,
+                                           @PathVariable(value = "username") String username,
+                                           @PathVariable(value="id") String notificationId) {
         try {
             db.readNotification(userCredentials.getUsername(), notificationId);
             return ok(HttpStatus.OK);
@@ -110,22 +112,6 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-//    @RequestMapping(value = "{username}/broadcastNotifications", method = RequestMethod.GET)
-//    public ResponseEntity getBroadcastNotifications(@AuthenticationPrincipal UserCredentials userCredentials, @PathVariable(value = "username") String username, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "0") int pageNumber) {
-//        try {
-//
-//            return ok(db.getUserBroadcastNotifications(pageNumber, pageSize, userCredentials.getUsername()));
-//        } catch (ResourceNotFoundException re) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        } catch (InternalServerErrorException ie) {
-//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-//        } catch (UnauthorizedRequestException ue) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-//        } catch (Exception e) {
-//            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
 
     @RequestMapping(value = "{username}", method = RequestMethod.GET)
     public ResponseEntity getUser(@PathVariable(value = "username") String username) {
