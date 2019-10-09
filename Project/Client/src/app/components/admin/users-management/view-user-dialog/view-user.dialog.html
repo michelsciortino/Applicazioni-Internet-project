@@ -1,0 +1,80 @@
+<div mat-dialog-content class="no-scroll fit-content">
+    <div>
+        <h3 class="title">User</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Mail</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> {{data.user.mail}}</td>
+                    <td> {{data.user.name}}</td>
+                    <td> {{data.user.surname}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row">
+
+        <div class="inline" *ngIf="data.user.contacts && data.user.contacts.length>0">
+            <h3 class="title">Roles</h3>
+
+            <table>
+                <tbody>
+                    <tr *ngFor="let role of data.user.roles">
+                        <td>{{role}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="inline" *ngIf="data.user.contacts && data.user.contacts.length>0">
+            <h3 class="title">Contacts</h3>
+
+            <table>
+                <tbody>
+                    <tr *ngFor="let contact of data.user.contacts">
+                        <td> {{contact}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div *ngIf="data.user.children && data.user.children.length>0">
+            <h3 class="title">Children</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Fiscal Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let child of data.user.children">
+                        <td>{{child.name}}</td>
+                        <td>{{child.cf}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div *ngIf="data.user.lines && data.user.lines.length>0">
+            <h3 class="title">Administrated Lines</h3>
+            <table>
+                <tbody>
+                    <tr *ngFor="let line of data.user.lines">
+                        <td>{{line}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div mat-dialog-actions>
+        <button mat-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+    </div>

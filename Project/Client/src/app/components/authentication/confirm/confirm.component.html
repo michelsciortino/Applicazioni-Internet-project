@@ -1,0 +1,38 @@
+<div class="padded-content">
+    <mat-card class="compact-card centered">
+        <p>Confirm Mail</p>
+        <div class="auth-content">
+            <form [formGroup]="form" (ngSubmit)="confirm()">
+                <mat-form-field>
+                    <mat-label>Insert Name</mat-label>
+                    <input matInput type="text" placeholder="Insert Name" [formControl]="form.controls['name']">
+                    <mat-error *ngIf="!form.controls['name'].valid">Insert a valid name</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Insert Surname</mat-label>
+                    <input matInput type="text" placeholder="Insert Surname" [formControl]="form.controls['surname']">
+                    <mat-error *ngIf="!form.controls['surname'].valid">Insert a valid surname</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Insert Password</mat-label>
+                    <input matInput type="password" placeholder="Insert Password" [formControl]="form.controls['password1']" passwordToggle>
+                    <mat-error *ngIf="!form.controls['password1'].valid">Insert a valid password</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Repeat Password</mat-label>
+                    <input matInput type="password" placeholder="Repeat Password" [formControl]="form.controls['password2']" passwordToggle>
+                    <mat-error *ngIf="!form.controls['password2'].valid">Insert a valid password</mat-error>
+                </mat-form-field>
+
+                <mat-error *ngIf="!form.valid && form.controls['password2'].valid && form.controls['password1'].valid"> Passwords do not match</mat-error>
+
+                <mat-spinner [diameter]="32" [style.display]="showSpinner ? 'block ' : 'none ' ">
+                </mat-spinner>
+                <div class="form-error">
+                    <mat-error *ngIf="errorMessage">{{errorMessage}}</mat-error>
+                </div>
+                <button [disabled]="!form.valid || busy" mat-raised-button color="primary" type="submit ">Confirm</button>
+            </form>
+        </div>
+    </mat-card>
+</div>

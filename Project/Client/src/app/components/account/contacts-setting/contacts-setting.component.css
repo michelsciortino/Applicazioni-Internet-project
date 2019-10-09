@@ -1,0 +1,56 @@
+td,
+th {
+    text-align: left;
+    padding-right: 10px;
+    vertical-align: center;
+    padding-bottom: 0px;
+}
+
+tr td:last-child,
+th:last-child {
+    padding-right: 0px;
+}
+
+table {
+    height: 100%;
+    overflow: auto;
+    margin: 0px auto;
+    border-spacing: 0px;
+}
+
+table:last-of-type{
+    margin-bottom: 5px;
+}
+
+.no-scroll {
+    overflow: initial;
+}
+
+.title {
+    text-align: center;
+    margin: 0px 0px 4px 0px;
+    border-bottom: #c8c8c8 1px solid;
+    width: 100%
+}
+
+::ng-deep .mat-icon{
+    height:25px !important;
+    width:25px !important;
+    font-size:25px !important;
+}
+
+.grey{
+    color: rgb(173, 173, 173);
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
+.custom-form-field {
+    width: 200px;
+}

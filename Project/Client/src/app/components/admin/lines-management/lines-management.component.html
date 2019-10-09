@@ -1,0 +1,51 @@
+<div class="padded-content">
+    <mat-card class="compact-card scroll">
+
+        <p class=" inline-grid">Manage Lines</p>
+
+        <div class="overflow-auto">
+            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource"
+                [ngClass]="{'hidden': dataSource.isEmpty()}">
+
+                <!-- LineName Column -->
+                <ng-container matColumnDef="LineName">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef> LineName </th>
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.name}} </td>
+                </ng-container>
+
+                <!-- Children Column -->
+                <ng-container matColumnDef="Children">
+                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> Children
+                    </th>
+                    <td class="center-vertical centered-text" mat-cell *matCellDef="let element">
+                        {{element.subscribedChildren.length}} </td>
+                </ng-container>
+
+                <!-- Admin Column -->
+                <ng-container matColumnDef="Admins">
+                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> Admins
+                    </th>
+                    <td class="center-vertical centered-text" mat-cell *matCellDef="let element">
+                        {{element.admins.length}} </td>
+                </ng-container>
+
+                <!-- Edit-Action Column -->
+                <ng-container matColumnDef="View-Action">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
+                        <button mat-icon-button (click)="$event.stopPropagation(); viewLine(element)">
+                            <mat-icon>info_outline</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
+                <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}"></tr>
+            </mat-table>
+
+            <div *ngIf="dataSource?.isEmpty()" class="grey">NO RACES FOUND</div>
+
+        </div>
+
+    </mat-card>
+</div>

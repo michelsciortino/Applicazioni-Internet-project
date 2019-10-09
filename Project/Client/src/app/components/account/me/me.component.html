@@ -1,0 +1,51 @@
+<div class="padded-content">
+    <mat-card class="compact-card centered">
+        <p>Me</p>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mail</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td> {{myInfo.mail}}</td>
+                        <td> {{myInfo.name}}</td>
+                        <td> {{myInfo.surname}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="inline">
+                <p class="title">Roles</p>
+                <table>
+                    <tbody>
+                        <tr *ngFor="let role of myInfo.roles">
+                            <td>{{role}} </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div *ngIf="myInfo.lines && myInfo.isAdmin()">
+                <p class="title">Administrated Lines</p>
+                <table>
+                    <tbody *ngIf="myInfo.lines.length>0">
+                        <tr *ngFor="let line of myInfo.lines">
+                            <td>{{line}}</td>
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="myInfo.lines.length==0">
+                        <tr>
+                            <td class="grey">NO LINES</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </mat-card>
+</div>

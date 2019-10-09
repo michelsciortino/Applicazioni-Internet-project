@@ -1,0 +1,56 @@
+<div class="center-horizontal expanded" [ngClass]="{ 'expanded' : isMobile, 'perc_85': !isMobile }">
+
+    <mat-drawer-container hasBackdrop="false">
+        <mat-drawer #drawer mode="over" class="sidenav-bar">
+            <h3 mat-subheader class="title-drawer">Stops {{lineSelected.name}}</h3>
+            <mat-list *ngFor="let stop of lineSelected.outwardStops; let i = index">
+                <mat-list-item role="listitem">{{i}}) {{stop.name}}</mat-list-item>
+            </mat-list>
+        </mat-drawer>
+        <mat-card class="map-card expanded">
+            <!--SEE MORE-->
+            <mat-button-toggle *ngIf="lineSelected.name!=null" class="sidenav-button" (click)="drawer.open()">
+                <mat-icon *ngIf="!drawer.opened">keyboard_arrow_right</mat-icon>
+            </mat-button-toggle>
+            <!--SELECT LINE-->
+            <div class="select-box" [ngClass]="{ 'select-box-mobile' : isMobile }">
+                <mat-card class="mat-select-card">
+                    <mat-form-field class="expanded">
+                        <mat-label>Select a line</mat-label>
+                        <mat-select [formControl]="lineControl" (selectionChange)="onLineSelected($event)"
+                            [(value)]="lineSelected">
+                            <mat-option *ngFor="let line of lines" [value]="line">{{line.name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-card>
+            </div>
+            <!--MAP-->
+            <agm-map [latitude]="centerLat" [longitude]="centerLng" [zoom]="zoom" (mapReady)="onMapReady($event)"
+                (mapClick)="drawer.close();addMarker($event.coords.lat, $event.coords.lng)">
+                <agm-marker #gm *ngFor="let marker of markers" [latitude]="marker.lat" [longitude]="marker.lng"
+                    [iconUrl]="marker.icon" [opacity]="marker.alpha" [markerDraggable]="false"
+                    (markerClick)="selectMarker($event)" (mouseOver)="onMouseOver(infoWindow, $event)"
+                    (mouseOut)="onMouseOut(infoWindow, $event)">
+                    <agm-info-window [disableAutoPan]="false" #infoWindow>
+                        <div>
+                            {{marker.options.info}} -
+                            {{marker.options.stopName}}
+                        </div>
+                        <div>
+                            lat: {{marker.lat}}
+                        </div>
+                        <div>
+                            lng: {{marker.lng}}
+                        </div>
+                    </agm-info-window>
+
+                </agm-marker>
+                <!--<agm-direction [origin]="origin" [destination]="destination" [waypoints]="waypoints">
+                    </agm-direction>-->
+            </agm-map>
+            <!--<p *ngIf="selectedMarker">
+                Lat: {{ selectedMarker.lat }} Lng: {{ selectedMarker.lng }}
+            </p>-->
+        </mat-card>
+    </mat-drawer-container>
+</div>

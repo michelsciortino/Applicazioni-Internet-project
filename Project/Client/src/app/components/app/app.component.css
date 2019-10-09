@@ -1,0 +1,182 @@
+@font-face {
+    font-family: "Material Icons";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format("woff2");
+}
+
+.material-icons {
+    font-family: "Material Icons";
+    font-size: 24px;
+}
+
+.main-content {
+    max-width: 1600px;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.sidenav {
+    min-width: 120px;
+}
+
+.app-toolbar {
+    height: 56px;
+}
+
+.is-mobile .app-toolbar {
+    position: fixed;
+    /* Make sure the toolbar will stay on top of the content as it scrolls past. */
+    z-index: 2;
+}
+
+h1.app-name {
+    margin-left: 8px;
+}
+
+.sidenav-container {
+    /* When the sidenav is not fixed, stretch the sidenav container to fill the available space. This
+       causes `<mat-sidenav-content>` to act as our scrolling element for desktop layouts. */
+    flex: 1;
+}
+
+.is-mobile .sidenav-container {
+    /* When the sidenav is fixed, don't constrain the height of the sidenav container. This allows the
+       `<body>` to be our scrolling element for mobile layouts. */
+    flex: 1 0 auto;
+}
+
+.fill-remaining-space {
+    /* This fills the remaining space, by using flexbox.
+       Every toolbar row uses a flexbox row layout. */
+    flex: 1 1 auto;
+    height: inherit;
+    height: -webkit-fill-available;
+}
+
+::ng-deep .mat-button-focus-overlay {
+    background-color: transparent !important;
+}
+
+.spacer {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+
+#contacts {
+    height: fit-content;
+    color: darkgrey;
+    font-size: 14px;
+}
+
+.footer {
+    bottom: 0px;
+    height: fit-content;
+}
+
+.footer * {
+    white-space: pre-wrap;
+    height: fit-content;
+}
+
+.full-height {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    flex-grow: 1;
+}
+
+.footer span {
+    padding: 0 10px;
+}
+
+.icon {
+    height: 45px !important;
+    width: 45px !important;
+    font-size: 30px !important;
+    display: initial !important;
+}
+
+.username {
+    font-size: 12px;
+    padding-top: 5px;
+    padding-right: 16px;
+}
+
+.icon mat-icon {
+    display: initial !important;
+}
+
+::ng-deep .mat-menu-panel {
+    max-width: initial !important;
+    width: fit-content !important;
+}
+
+.notifications table {
+    border-collapse: collapse;
+}
+
+.notifications td,
+.notifications th {
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.notifications td:last-child,
+.notifications th:last-child {
+    padding-right: 0px;
+}
+
+.notifications tr:last-child td {
+    border-bottom: none;
+}
+
+.unread {
+    /* background-color: rgb(233, 233, 233); */
+}
+
+.notification.unread::before {
+    content: "";
+    position: absolute;
+    margin-top: 12px;
+    margin-left: -16px;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    border-radius: 4px;
+}
+
+.notifications {
+    max-height: 450px;
+    overflow: auto;
+    max-width: 328px;
+    cursor: pointer;
+}
+
+.notification {
+    margin-left: 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.notification:last-child {
+    margin-bottom: 0px;
+}
+
+.notification .date {
+    color: rgb(80, 80, 80);
+    font-size: 10px;
+}

@@ -1,0 +1,59 @@
+<div mat-dialog-content class="no-scroll fit-content">
+    <div>
+        <h3 class="title">Select Stop</h3>
+        <p>child: {{child.name}} {{child.surname}}</p>
+
+        <div class="marged overflow-auto">
+            <table *ngIf="racesReservableChecked.length>0" class="expanded mat-table">
+                <thead>
+                    <tr class="mat-header-row">
+                        <th class="mat-header-cell">LineName</th>
+                        <th class="mat-header-cell">Direction</th>
+                        <th class="mat-header-cell">Date</th>
+                        <th class="mat-header-cell mat-cell-button">Select</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let race of racesReservableChecked" class="mat-row">
+                        <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                            {{race?.race?.line?.name}}
+                        </td>
+                        <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                            {{race?.race?.direction}}
+                        </td>
+                        <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
+                            {{race?.race?.date?.toLocaleDateString()}},
+                            {{race?.race?.date?.toLocaleTimeString([],{ hour: '2-digit', minute: '2-digit' })}}
+                        </td>
+                        <td class="center-horizontal center-vertical squeeze">
+                            <mat-checkbox [checked]="race.checked"
+                                (change)="this.data.reserve.onSelectRace(race, $event)">
+                            </mat-checkbox>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="racesReservableChecked.length==0" class="marged padded grey">
+                NO RACES SELECT
+            </div>
+        </div>
+
+        <!-- ReserveStop selection -->
+        <mat-form-field>
+            <mat-label>Reserve Stop</mat-label>
+            <mat-select [(value)]="stopSelected">
+                <mat-option *ngFor="let stop of stops" [value]="stop">
+                    {{stop.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div mat-dialog-actions>
+            <button mat-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+            <button mat-button [disabled]="racesReservableChecked.length==0" (click)="reserveChild()"
+                cdkFocusInitial>Send</button>
+        </div>
+
+    </div>
+</div>

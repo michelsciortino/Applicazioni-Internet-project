@@ -1,0 +1,95 @@
+<div mat-dialog-content class="no-scroll">
+    <div>
+        <h3 class="title">Line {{line?.name}}</h3>
+    </div>
+    <div class="row">
+        <div>
+            <h3 class="title">Stop Outward</h3>
+            <div class="timeline">
+                <div class="stop-container" *ngFor="let l of line?.outwardStops">
+                    <div class="stop">
+                        <p>
+                            <span>{{l.name}}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h3 class="title">Stop Return</h3>
+            <div class="timeline">
+                <div class="stop-container" *ngFor="let l of line?.returnStops">
+                    <div class="stop">
+                        <p>
+                            <span>{{l.name}}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-auto m-t-8" class="block">
+            <h3 class="title">Admins</h3>
+            <div class="overflow-auto p-b-8">
+                <table class="max-width">
+                    <thead>
+                        <tr>
+                            <th>Mail</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="line?.admins?.length>0">
+                        <tr *ngFor="let admin of line.admins; let i = index">
+                            <td>{{admin}}</td>
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="line?.admins?.length===0">
+                        <tr class="grey">
+                            <td colspan="6" class="centered-text">NO ADMINS</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="overflow-auto m-t-8">
+            <h3 class="title">Subscribe Children</h3>
+            <div class="overflow-auto p-b-8">
+                <table class="max-width">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Surname</th>
+                            <th>Parent</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="line?.subscribedChildren?.length>0">
+                        <tr *ngFor="let child of line.subscribedChildren; let i = index">
+                            <td>{{i}}</td>
+                            <td>{{child.name}}</td>
+                            <td>{{child.surname}}</td>
+                            <td>{{child.parentId}}</td>
+                            <td>
+                                <button mat-icon-button *ngIf="isAdminOfLine()" class="center-vertical centered-text"
+                                    (click)="removeChildtoLine(child)">
+                                    <mat-icon class="red">remove</mat-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="line?.subscribedChildren?.length===0">
+                        <tr class="grey">
+                            <td colspan="6" class="centered-text">NO CHILDREN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+        <button class="right absolute" *ngIf="isAdminOfLine()" mat-raised-button (click)="addChildtoLine()">Add Child
+            <mat-icon class="green margin-left">
+                add</mat-icon></button>
+    </div>
+</div>

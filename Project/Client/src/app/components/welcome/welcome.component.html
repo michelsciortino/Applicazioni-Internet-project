@@ -1,0 +1,34 @@
+<link href="https://fonts.googleapis.com/css?family=Nunito:800&display=swap" rel="stylesheet">
+
+<div class="image-container" [ngClass]="{ 'mobile-head-img' : isMobile }">
+    <!--<h1 class="title">Welcome to pedibus</h1>-->
+    <img src="../../../assets/LooneyTunesCityWithOBJ.png" />
+</div>
+
+<div class="components-grid">
+    <div class="components-grid-cell">
+        <mat-card class="info">
+            <h3>What is the Pedibus</h3>
+            <img src="../../../assets/fila.png" alt="" />
+            <p>The Pedibus is an initiative to accompany children on foot to school, under the supervision of an adult.
+                Convivial, healthy, economic and ecological, the Pedibus is a life-changing invention!</p>
+        </mat-card>
+    </div>
+    <div class="components-grid-cell">
+        <mat-card class="info">
+            <h3>How does it work?</h3>
+            <img src="../../../assets/bus.png" alt="" />
+            <p>Like a real bus, the Pedibus respects a schedule, follows a route and has its own drivers. The only
+                difference is that it is a walking bus, organized and managed by the parents.</p>
+        </mat-card>
+    </div>
+    <div class="components-grid-cell">
+        <mat-card class="info">
+            <h3>Our Lines</h3>
+            <img src="../../../assets/map.jpg" alt="" />
+            <p>Our lines cover almost the entire territory of the city of Turin. If other lines are necessary they can
+                be indicated to the administrators.</p>
+            <button mat-raised-button color="accent" routerLink="./lines">See More</button>
+        </mat-card>
+    </div>
+</div>

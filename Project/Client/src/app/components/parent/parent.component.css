@@ -1,0 +1,30 @@
+
+mat-card {
+    max-width: 400px;
+    text-align: center;
+}
+
+mat-form-field {
+    padding-left: 8px;
+    padding-right: 8px;
+    width: 80%;
+}
+
+.form-error {
+    margin: 8px;
+}
+
+mat-spinner {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.border{
+    
+    margin: 0px 0px 4px 0px;
+    border-bottom: #c8c8c8 1px solid;
+    width: 100%
+}

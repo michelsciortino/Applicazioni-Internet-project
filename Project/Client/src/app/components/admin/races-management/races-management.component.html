@@ -1,0 +1,113 @@
+<div class="padded-content">
+    <mat-card class="compact-card scroll">
+
+        <div>
+            <p class=" inline-grid">Manage Races</p>
+            <button mat-raised-button mat-icon-button class="add-button inline-grid" (click)="openAddRacesDialog()">
+                <mat-icon class="green">add</mat-icon>
+            </button>
+        </div>
+        <div class="spinner-container" *ngIf="loading">
+            <mat-spinner [diameter]="70"></mat-spinner>
+        </div>
+
+        <!-- line selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>Line</mat-label>
+            <mat-select [(value)]="lineSelected">
+                <mat-option *ngFor="let line of lines" [value]="line">
+                    {{line.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Way selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>Direction</mat-label>
+            <mat-select [(value)]="directionSelected">
+                <mat-option *ngFor="let dir of directions" [value]="dir">
+                    {{dir.text}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- From Date selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>From Date</mat-label>
+            <input matInput [matDatepicker]="pickerFrom" [(ngModel)]="fromDateSelected">
+            <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFrom disabled="false" [startAt]="fromDateSelected"></mat-datepicker>
+        </mat-form-field>
+
+        <!-- To Date selection -->
+        <mat-form-field class="races-selection">
+            <mat-label>To Date</mat-label>
+            <input matInput [matDatepicker]="pickerTo" [(ngModel)]="toDateSelected">
+            <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+            <mat-datepicker #pickerTo disabled="false" [startAt]="toDateSelected"></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-raised-button [disabled]="lineSelected==null || directionSelected==null" (click)="search()">Search</button>
+        <div class="overflow-auto">
+            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource" matSort [ngClass]="{'hidden': dataSource.isEmpty()}">
+
+                <!-- LineName Column -->
+                <ng-container matColumnDef="LineName">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> LineName </th>
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.line.name}} </td>
+                </ng-container>
+
+                <!-- Direction Column -->
+                <ng-container matColumnDef="Direction">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> Direction </th>
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{element.direction}} </td>
+                </ng-container>
+
+                <!-- Date Column -->
+                <ng-container matColumnDef="Date">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+                    <td class="center-vertical" mat-cell *matCellDef="let element"> {{getTimeString(element.date)}}
+                    </td>
+                </ng-container>
+
+                <!-- Passengers Column -->
+                <ng-container matColumnDef="Passengers">
+                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> Passengers </th>
+                    <td mat-cell class="center-vertical centered-text" *matCellDef="let element">
+                        {{getPassengerReservedNumber(element.passengers)}} </td>
+                </ng-container>
+
+                <!-- Companions Column -->
+                <ng-container matColumnDef="Companions">
+                    <th class="squeeze center-vertical centered-text" mat-header-cell *matHeaderCellDef> Companions
+                    </th>
+                    <td mat-cell class="squeeze center-vertical centered-text" *matCellDef="let element">
+                        {{element.companions.length}} </td>
+                </ng-container>
+
+                <!-- State Column -->
+                <ng-container matColumnDef="State">
+                    <th class="center-vertical centered-text" mat-header-cell *matHeaderCellDef> State</th>
+                    <td mat-cell class="center-vertical centered-text" *matCellDef="let element">{{element.raceState}}
+                    </td>
+                </ng-container>
+
+                <!-- Edit-Action Column -->
+                <ng-container matColumnDef="Remove-Action">
+                    <th class="center-vertical" mat-header-cell *matHeaderCellDef></th>
+                    <td mat-cell class="squeeze center-vertical" *matCellDef="let element">
+                        <button *ngIf="isAdminOfLine(element) && element.raceState==='SCHEDULED'" mat-icon-button (click)="$event.stopPropagation(); removeRace(element)">
+                            <mat-icon>delete_outline</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
+                <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()" [ngClass]="{ 'mobile': isMobile}" (click)="viewRace(row)"></tr>
+            </mat-table>
+
+            <div *ngIf="dataSource.empty===true" class="grey">NO RACES FOUND</div>
+
+        </div>
+    </mat-card>
+</div>

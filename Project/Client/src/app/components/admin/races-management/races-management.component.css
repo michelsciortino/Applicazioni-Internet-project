@@ -1,0 +1,81 @@
+table {
+    width: 100%;
+}
+
+td {
+    text-align: left;
+    min-width: 100px;
+}
+
+td span {
+    display: block;
+}
+
+tr td:last-child,
+th:last-child {
+    padding-right: 0px;
+}
+
+td span {
+    display: block;
+}
+
+.squeeze {
+    min-width: 0px;
+    padding: 0px !important;
+}
+
+.center-vertical {
+    vertical-align: middle;
+}
+
+.mat-cell,
+.mat-header-cell {
+    padding: 8px;
+}
+
+.spinner-container {
+    margin: 20px;
+    display: inline-block;
+}
+
+.races-content {
+    width: fit-content;
+}
+
+.races-selection {
+    margin: 8px;
+    margin-bottom: 0;
+}
+
+tr {
+    border: 1px solid black;
+}
+
+mat-select {
+    width: fit-content !important;
+    min-width: 100%;
+}
+
+::ng-deep .mat-form-field-infix {
+    min-width: 75px !important;
+    width: fit-content !important;
+}
+
+::ng-deep mat-select .mat-select-value {
+    min-width: 2ch;
+    padding-right: 8px;
+    max-width: 25ch;
+}
+
+::ng-deep mat-select .mat-select-placeholder {
+    width: fit-content;
+    min-width: 10ch;
+}
+
+.add-button{
+    position: absolute;
+    z-index: 1;
+    right: 8px;
+    float: right;
+}

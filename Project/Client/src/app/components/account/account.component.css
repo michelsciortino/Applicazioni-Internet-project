@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+body {
+    margin: 0px;
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+    font-family: Nunito;
+}
+
+.section-title {
+    text-align: center;
+    font-family: Nunito;
+}
+
+.admin-content {
+    text-align: center;
+    margin: 2em;
+}
+
+mat-card {
+    max-width: 400px;
+    text-align: center;
+}
+
+mat-form-field {
+    padding-left: 8px;
+    padding-right: 8px;
+    width: 80%;
+}
+
+.form-error {
+    margin: 8px;
+}
+
+mat-spinner {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}

@@ -1,0 +1,127 @@
+<div mat-dialog-content class="no-scroll">
+    <div>
+        <h3 class="title">Race</h3>
+        <div class="overflow-auto p-b-8">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Line Name</th>
+                        <th>Direction</th>
+                        <th>Date</th>
+                        <th>Hour</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{race?.line.name}}</td>
+                        <td>{{race?.direction}}</td>
+                        <td>{{race?.date?.toLocaleDateString()}}</td>
+                        <td>{{race?.date?.toLocaleTimeString()}}</td>
+                        <td>{{race?.raceState}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div>
+            <h3 class="title">Line</h3>
+            <div class="timeline">
+                <div class="stop-container" *ngFor="let stop of race?.direction=='OUTWARD'? race?.line.outwardStops : race?.line.returnStops">
+                    <div class="stop" [ngClass]="{ 'covered': isStopCovered(stop), 'uncovered': !isStopCovered(stop)}">
+                        <p>
+                            <span class="block">{{stop.name}}</span>
+                            <span class="block">{{getTime(race.date.getTime()+stop.delayInMillis)}}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overflow-auto">
+            <div class="overflow-auto">
+                <h3 class="title">Companions</h3>
+                <div class="overflow-auto p-b-8">
+                    <table *ngIf="race" class="max-width mat-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Initial Stop</th>
+                                <th>Final Stop</th>
+                                <th>State</th>
+                                <th *ngIf="isAdmin && race?.raceState=='SCHEDULED'">Accept</th>
+                                <th *ngIf="isAdmin && race?.raceState=='SCHEDULED'">Reject</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="race.companions.length>0">
+                            <tr *ngFor="let companion of race.companions">
+                                <td class="mat-cell center-vertical">{{companion.userDetails.mail}} </td>
+                                <td class="mat-cell">{{companion.initialStop.name}} </td>
+                                <td class="mat-cell">{{companion.finalStop.name}} </td>
+                                <td class="mat-cell">{{companion.state}}</td>
+                                <td class="mat-cell" *ngIf="isAdmin && race?.raceState=='SCHEDULED'">
+                                    <button mat-icon-button *ngIf="companion.state === 'AVAILABLE'" (click)="acceptRequest(race,companion)">
+                                        <mat-icon class="green">check</mat-icon>
+                                    </button>
+                                </td>
+                                <td class="mat-cell" *ngIf="isAdmin && race?.raceState=='SCHEDULED'">
+                                    <button mat-icon-button *ngIf="isAdmin && companion.state === 'AVAILABLE' || companion.state === 'CHOSEN'" (click)="rejectRequest(race,companion)">
+                                        <mat-icon class="red">clear</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="race.companions.length==0">
+                            <tr class="grey">
+                                <td colspan="6" class="centered-text mat-cell center-vertical">NO COMPANIONS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="overflow-auto m-t-8">
+                <h3 class="title">Passengers</h3>
+                <div class="overflow-auto p-b-8">
+                    <table class="max-width">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Reserved Stop</th>
+                                <th>Taken at Stop</th>
+                                <th>Leaved at Stop</th>
+                                <th>IsReserved</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="race?.passengers?.length>0">
+                            <tr *ngFor="let passenger of race.passengers">
+                                <td>{{passenger.childDetails.name}}</td>
+                                <td>{{passenger.stopReserved?.name}}</td>
+                                <td>{{passenger.stopTaken?.name}}</td>
+                                <td>{{passenger.stopDelivered?.name}}</td>
+                                <td *ngIf="passenger.reserved" class="center-vertical centered-text">
+                                    <mat-icon class="green opacity50">check</mat-icon>
+                                </td>
+                                <td *ngIf="!passenger.reserved" class="center-vertical centered-text">
+                                    <mat-icon class="red opacity50">clear</mat-icon>
+                                </td>
+                                <td>{{passenger.state}}</td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="race?.passengers?.length===0">
+                            <tr class="grey">
+                                <td colspan="6" class="centered-text">NO PASSENGERS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div mat-dialog-actions>
+        <button mat-raised-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+        <button class="right absolute" [disabled]="!isRaceValidable()" *ngIf="isAdmin && race?.raceState == 'SCHEDULED'" mat-raised-button (click)="validate()">Validate</button>
+    </div>
+</div>

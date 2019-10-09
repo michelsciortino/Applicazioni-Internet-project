@@ -1,0 +1,36 @@
+<div mat-dialog-content class="no-scroll fit-content">
+    <div>
+        <h3 class="title">New Child</h3>
+        <!-- Name Input -->
+        <mat-form-field class="custom-form-field">
+            <input matInput type="text" placeholder="Name" [(ngModel)]="child.name" required>
+            <button mat-button *ngIf="child.name" matSuffix mat-icon-button aria-label="Clear" (click)="name=''">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <!-- Surname Input -->
+        <mat-form-field class="custom-form-field">
+            <input matInput type="text" placeholder="Surname" [(ngModel)]="child.surname" required>
+            <button mat-button *ngIf="child.surname" matSuffix mat-icon-button aria-label="Clear" (click)="surname=''">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <!-- FiscalCode Input -->
+        <mat-form-field class="block">
+            <input matInput type="text" placeholder="FiscalCode" [(ngModel)]="child.cf" pattern="^[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]$" required>
+            <button mat-button *ngIf="child.cf" matSuffix mat-icon-button aria-label="Clear" (click)="fiscalCode=''">
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-error *ngIf="!checkCF()">
+                    Please enter a valid FiscalCode
+                  </mat-error>
+        </mat-form-field>
+
+        <div mat-dialog-actions>
+            <button mat-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
+            <button mat-button [disabled]="!isComplete() || !checkCF()" (click)="addChild()" cdkFocusInitial>Add</button>
+        </div>
+
+    </div>

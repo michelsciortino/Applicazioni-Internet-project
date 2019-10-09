@@ -1,0 +1,38 @@
+.no-scroll {
+    overflow: initial;
+}
+
+.title {
+    text-align: center;
+    margin: 0px 0px 4px 0px;
+    border-bottom: #c8c8c8 1px solid;
+    width: 100%
+}
+
+mat-form-field {
+    margin-right: 12px;
+}
+
+.custom-form-field {
+    max-width: 150px;
+}
+
+.mat-form-field.block{
+    display: block;
+}   
+
+.mat-form-field.block:first-of-type{
+    margin-top: 30px;
+}   
+
+.mat-form-field.block:last-of-type{
+    margin-bottom: 0px;
+}   
+
+.red-icon {
+    color: red;
+}
+
+.green-icon {
+    color: green;
+}
