@@ -48,18 +48,18 @@ services:
   #   ports:
   #     - "8080:8080"
        
-  #angular:
-  #  image: nginx:alpine
-  #  container_name: angular
-  #  ports: 
-  #    - 4200:80
-  #  depends_on:
-  #    - springapi
-  #  volumes:
-  #    - ./nginx.conf:/etc/nginx/nginx.conf
-  #    - ../client/dist/client/:/usr/share/nginx/html
-  #  networks:
-  #    - frontendNetwork
+  angular:
+    image: nginx:alpine
+    container_name: angular
+    ports: 
+      - 4200:80
+    depends_on:
+      - springapi
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ../client/dist/Client/:/usr/share/nginx/html
+    networks:
+      - frontendNetwork
      
 volumes:
   database:

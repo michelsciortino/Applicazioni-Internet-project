@@ -6,4 +6,5 @@ export class Line {
     public outwardStops: Stop[];
     public returnStops: Stop[];
     public subscribedChildren: Child[];
+    public admins: string[];
 }

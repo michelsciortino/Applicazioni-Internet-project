@@ -4,7 +4,10 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 export interface DialogData {
     title: '';
     message: '';
-  }
+    NO: null;
+    YES: null;
+    CANCEL: null;
+}
 
 @Component({
     selector: 'app-confirm-dialog',

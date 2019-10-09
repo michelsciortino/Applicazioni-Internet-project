@@ -1,11 +1,8 @@
 <div class="padded-content">
     <mat-card class="scroll">
         <p>Today Parent Races</p>
-        <div class="spinner-container" *ngIf="loading">
-            <mat-spinner [diameter]="70"></mat-spinner>
-        </div>
         <div class="marged overflow-auto">
-            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource" *ngIf="!loading && !dataSource?.isEmpty()">
+            <mat-table class="fit-content center-horizontal" [dataSource]="dataSource" *ngIf="!dataSource?.isEmpty()">
                 <ng-container matColumnDef="children">
                     <th mat-header-cell *matHeaderCellDef>Children</th>
                     <td mat-cell *matCellDef="let race">

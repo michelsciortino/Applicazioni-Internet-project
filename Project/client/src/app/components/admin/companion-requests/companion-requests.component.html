@@ -2,18 +2,11 @@
     <mat-card class="compact-card scroll">
         <p>Accompanying Requests</p>
 
-        <div class="spinner-container" *ngIf="loading">
-            <mat-spinner [diameter]="70"></mat-spinner>
-        </div>
-
         <div style="border: 1px solid rgba(0, 0, 0, .12); border-radius: 4px; overflow: hidden;">
-            <nav mat-tab-nav-bar [backgroundColor]="background">
-                <a mat-tab-link (click)="switchToTab(RequestsTab.PENDING)"
-                    [active]="activeTab === RequestsTab.PENDING || false">Pending</a>
-                <a mat-tab-link (click)="switchToTab(RequestsTab.ACCEPTED)"
-                    [active]="activeTab === RequestsTab.ACCEPTED || false">Accepted</a>
-                <a mat-tab-link (click)="switchToTab(RequestsTab.CONFIRMED)"
-                    [active]="activeTab === RequestsTab.CONFIRMED || false">Confirmed</a>
+            <nav mat-tab-nav-bar>
+                <a mat-tab-link (click)="switchToTab(RequestsTab.PENDING)" [active]="activeTab === RequestsTab.PENDING || false">Pending</a>
+                <a mat-tab-link (click)="switchToTab(RequestsTab.ACCEPTED)" [active]="activeTab === RequestsTab.ACCEPTED || false">Accepted</a>
+                <a mat-tab-link (click)="switchToTab(RequestsTab.CONFIRMED)" [active]="activeTab === RequestsTab.CONFIRMED || false">Confirmed</a>
             </nav>
 
             <div class="marged overflow-auto">
@@ -52,8 +45,7 @@
                             <td class="mat-cell cdk-column-Mail mat-column-Mail ng-star-inserted">
                                 {{request.finalStop.name}} </td>
                             <td *ngIf="activeTab === RequestsTab.PENDING" class="mat-cell mat-cell-button">
-                                <button mat-icon-button class="green"
-                                    (click)="$event.stopPropagation();acceptRequest(request)">
+                                <button mat-icon-button class="green" (click)="$event.stopPropagation();acceptRequest(request)">
                                     <mat-icon>check</mat-icon>
                                 </button>
                             </td>

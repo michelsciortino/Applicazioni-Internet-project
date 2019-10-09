@@ -18,7 +18,7 @@ import { Line } from 'src/app/models/line';
 export class SubscribeChildDialog implements OnInit {
 
     disableSelect = new FormControl(true);
-    private usersSbj = new BehaviorSubject<UserInfo[]>([]);
+    public usersSbj = new BehaviorSubject<UserInfo[]>([]);
 
     users: UserInfo[];
 

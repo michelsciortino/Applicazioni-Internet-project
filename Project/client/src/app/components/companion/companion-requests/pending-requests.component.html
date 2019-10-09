@@ -2,12 +2,8 @@
     <mat-card class="compact-card scroll">
         <p>Accompanying Requests</p>
 
-        <div class="spinner-container" *ngIf="loading">
-            <mat-spinner [diameter]="70"></mat-spinner>
-        </div>
-
         <div style="border: 1px solid rgba(0, 0, 0, .12); border-radius: 4px; overflow: hidden;">
-            <nav mat-tab-nav-bar [backgroundColor]="background">
+            <nav mat-tab-nav-bar>
                 <a mat-tab-link (click)="switchToTab(RequestsTab.PENDING)" [active]="activeTab === RequestsTab.PENDING || false">Pending</a>
                 <a mat-tab-link (click)="switchToTab(RequestsTab.ACCEPTED)" [active]="activeTab === RequestsTab.ACCEPTED || false">Accepted</a>
                 <a mat-tab-link (click)="switchToTab(RequestsTab.CONFIRMED)" [active]="activeTab === RequestsTab.CONFIRMED || false">Confirmed</a>

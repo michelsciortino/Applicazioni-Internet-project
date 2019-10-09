@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"millepedibus.races"},{"v":2,"unique":true,"key":{"lineName":1,"direction":1,"date":1},"name":"raceIndex","ns":"millepedibus.races"}],"uuid":"dc2c138c704747e8b3df7a1ea11601cc"}
