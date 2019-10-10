@@ -119,7 +119,7 @@ import { ParentTodayLinesComponent } from './components/home/parent/today-races/
     AngularSvgIconModule,
     NguCarouselModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyA039REtD8cDNtCN-VMciUzLgkbUH87JCg'
+      apiKey: 'AIzaSyDWpg3aFHTn0N0vskQ5tgO9jliZuwzZ8yA'
     }),
     AgmDirectionModule,
   ],
